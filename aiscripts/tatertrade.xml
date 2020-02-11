@@ -110,14 +110,14 @@
   </order>
 
   <interrupts>
-    <handler ref="SectorChangeHandler"/>
+	<handler ref="SectorChangeHandler"/>
     <handler ref="AttackHandler" />
     <handler ref="MissileLockHandler" />
     <handler ref="ScannedHandler" />
     <handler ref="InspectedHandler"/>
     <handler ref="FoundAbandonedHandler"/>
+    <handler ref="FoundLockboxHandler"/>
     <handler ref="ResupplyHandler" />
-    <handler ref="JobRemoveRequestHandler" />
     <handler ref="TargetInvalidHandler"/>
   </interrupts>
 
@@ -128,6 +128,8 @@
     <set_order_syncpoint_reached order="this.ship.order"/>
 
     <set_command_action commandaction="commandaction.searchingtrades" />
+	
+	<include_interrupt_actions ref="GetBlacklistgroup"/>
 
     <!-- <set_value name="$object" exact="[]" />  -->
     <!-- Im gonna have to do this here, if i want to make it easier to add new factions. -->
@@ -308,7 +310,7 @@
 
       <do_if value="$gotowarelist == 2">
         <do_if value="$shipbuildingwares">
-          <set_value name="$warestoadd" exact="[ware.energycells,ware.engineparts,ware.hullparts,ware.fieldcoils,ware.advancedelectronics,ware.weaponcomponents,ware.turretcomponents]"/>
+          <set_value name="$warestoadd" exact="[ware.advancedelectronics,ware.antimatterconverters,ware.engineparts,ware.hullparts,ware.smartchips,ware.weaponcomponents]"/>
           <set_value name="$addtolist" exact="true"/>
         </do_if>
         <set_value name="$listchecked" exact="true"/>
@@ -317,7 +319,7 @@
 
       <do_if value="$gotowarelist == 3">
         <do_if value="$stationbuildingwares">
-          <set_value name="$warestoadd" exact="[ware.energycells,ware.hullparts,ware.claytronics,ware.advancedelectronics,ware.turretcomponents,ware.shieldcomponents,ware.fieldcoils]"/>
+          <set_value name="$warestoadd" exact="[ware.claytronics,ware.energycells,ware.hullparts]"/>
           <set_value name="$addtolist" exact="true"/>
         </do_if>
         <set_value name="$listchecked" exact="true"/>
@@ -326,7 +328,7 @@
 
       <do_if value="$gotowarelist == 4">
         <do_if value="$hightechwares">
-          <set_value name="$warestoadd" exact="[ware.advancedcomposites,ware.engineparts,ware.hullparts,ware.microchips,ware.plasmaconductors,ware.quantumtubes,ware.scanningarrays]"/>
+          <set_value name="$warestoadd" exact="[ware.advancedcomposites,ware.advancedelectronics,ware.antimatterconverters,ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.microchips,ware.missilecomponents,ware.plasmaconductors,ware.quantumtubes,ware.scanningarrays,ware.shieldcomponents,ware.smartchips,ware.turretcomponents,ware.weaponcomponents]"/>
           <set_value name="$addtolist" exact="true"/>
         </do_if>
         <set_value name="$listchecked" exact="true"/>
@@ -335,7 +337,7 @@
 
       <do_if value="$gotowarelist == 5">
         <do_if value="$refinedwares">
-          <set_value name="$warestoadd" exact="[ware.antimattercells,ware.graphene,ware.superfluidcoolant,ware.refinedmetals,ware.siliconwafers,ware.teladianium]"/>
+          <set_value name="$warestoadd" exact="[ware.antimattercells,ware.energycells,ware.graphene,ware.superfluidcoolant,ware.refinedmetals,ware.siliconwafers,ware.teladianium]"/>
           <set_value name="$addtolist" exact="true"/>
         </do_if>
         <set_value name="$listchecked" exact="true"/>
@@ -344,7 +346,7 @@
 
       <do_if value="$gotowarelist == 6">
         <do_if value="$biowares">
-          <set_value name="$warestoadd" exact="[ware.spices,ware.meat,ware.wheat,ware.sojabeans,ware.majasnails,ware.sunriseflowers,ware.swampplant]"/>
+          <set_value name="$warestoadd" exact="[ware.spices,ware.meat,ware.wheat,ware.sojabeans,ware.majasnails,ware.sunriseflowers,ware.swampplant,ware.foodrations,ware.medicalsupplies,ware.sojahusk,ware.nostropoil,ware.water]"/>
           <set_value name="$addtolist" exact="true"/>
         </do_if>
         <set_value name="$listchecked" exact="true"/>
@@ -504,6 +506,7 @@
               <match_buyer>
                 <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
                 <match tradesknownto="this.owner"/>
+				<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
               </match_buyer>
             </find_buy_offer>
 
@@ -583,7 +586,7 @@
             <do_if value="$GrofferBuy">
               <set_value name="$debugchance" exact="1" />
               <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Selling '+$Gromount+' '+$GrofferBuy.ware+' for '+$GrofferBuy.unitprice/100+' at '+$GrofferBuy.buyer.knownname+' DealAvailiability: '+$GrofferBuy.available" output="false" append="true" />
-              <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname" interaction="showonmap" object="this.ship" money="$Gromount*$GrofferBuy.unitprice" text="'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'" />
+              <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname" interaction="showonmap" object="this.ship" money="$Gromount*$GrofferBuy.unitprice" text="'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'" />
               <create_trade_order name="$GrofferBuy" object="this.object" tradeoffer="$GrofferBuy" amount="$Gromount" immediate="false" />
               <resume label="afterdealsetup" />  <!-- Why does this trade offer have to be be so hard to setup -->
             </do_if>
@@ -790,6 +793,7 @@
                 <match_seller>
                     <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
                     <match tradesknownto="this.owner"/>
+					<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
                 </match_seller>
                 </find_sell_offer>
 
@@ -945,6 +949,7 @@
           <match_buyer>
             <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
             <match tradesknownto="this.owner"/>
+			<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
           </match_buyer>
           </find_buy_offer>
 
@@ -966,6 +971,7 @@
           <match_seller>
               <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
               <match tradesknownto="this.owner"/>
+			  <match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
           </match_seller>
           </find_sell_offer>
 
@@ -1178,17 +1184,17 @@
             <do_if value="$GrofitFound">
               <do_if value="($GrofferBuy.buyer.owner == this.ship.owner) or ($GrofferSell.seller.owner == this.ship.owner)">
                 <do_if value="($GrofferBuy.buyer.owner == this.ship.owner) and not ($GrofferSell.seller.owner == this.ship.owner)">
-                  <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" text="'Queuing up Supply Run for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to supply '+$GrofferBuy.buyer.knownname" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" text="'Queuing up Supply Run for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to supply '+$GrofferBuy.buyer.knownname" />
                 </do_if>
                 <do_if value="($GrofferSell.seller.owner == this.ship.owner) and not ($GrofferBuy.buyer.owner == this.ship.owner)">
-                  <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="'Queuing up Station Ware Sale for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*$itemcostbuy+' in profit.'" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="'Queuing up Station Ware Sale for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*$itemcostbuy+' in profit.'" />
                 </do_if>
                 <do_if value="($GrofferSell.seller.owner == this.ship.owner) and ($GrofferBuy.buyer.owner == this.ship.owner)">
-                  <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Queuing up Cargo Transport Run for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Queuing up Cargo Transport Run for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname" />
                 </do_if>
               </do_if>
               <do_else>
-                <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
+                <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
               </do_else>
             </do_if>
             <do_if value="$StationTrade"><!-- Make seperate log types depending what the trader is doing. -->
@@ -1197,14 +1203,14 @@
                 <do_if value="$GrofferSell.seller.owner == this.ship.owner">
                   <!-- Are We selling to a player station? -->
                   <do_if value="$GrofferBuy.buyer.owner == this.ship.owner">
-                    <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Station Trader: Supplying '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname" />
+                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Station Trader: Supplying '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname" />
                   </do_if>
                   <do_else>
-                    <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="'Station Trader: Selling '+$Gromount+' '+$GrofferSell.ware+' at the price of '+$itemcostbuy+' Expected Profit is '+$Gromount*$itemcostbuy " />
+                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="'Station Trader: Selling '+$Gromount+' '+$GrofferSell.ware+' at the price of '+$itemcostbuy+' Expected Profit is '+$Gromount*$itemcostbuy " />
                   </do_else> 
                 </do_if>
                 <do_else>
-                  <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
                 </do_else>             
               </do_if>
               <!-- Buying wares for the station. -->
@@ -1212,14 +1218,14 @@
                 <do_if value="$GrofferBuy.buyer.owner == this.ship.owner">
                   <!-- Are We buying from a player station? -->
                   <do_if value="not ($GrofferSell.seller.owner == this.ship.owner)">
-                    <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostbuy*100" text="'Station Trader: Buying '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' at the price of '+$itemcostbuy+' Expected Cost is '+$Gromount*$itemcostbuy" />
+                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostbuy*100" text="'Station Trader: Buying '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' at the price of '+$itemcostbuy+' Expected Cost is '+$Gromount*$itemcostbuy" />
                   </do_if>
                   <do_else>
-                    <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname" />
+                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname" />
                   </do_else>
                 </do_if>
                 <do_else>
-                  <write_to_logbook category="general" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
                 </do_else>  
               </do_if>
             </do_if>
