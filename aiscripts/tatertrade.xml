@@ -277,7 +277,7 @@
         ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
         ware.teladianium,ware.turretcomponents,ware.water,ware.wheat,ware.energycells,ware.foodrations,ware.graphene,ware.majadust,ware.majasnails,ware.meat,
         ware.microchips,ware.quantumtubes,ware.medicalsupplies,ware.missilecomponents,ware.nostropoil,ware.plasmaconductors,ware.smartchips,ware.sojabeans,
-        ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents]"/>
+        ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents,ware.cheltmeat,ware.scruffinfruits]"/>
         <resume label="addtowarelist" />
       </do_if>
 
@@ -292,7 +292,7 @@
           ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
           ware.teladianium,ware.turretcomponents,ware.water,ware.wheat,ware.energycells,ware.foodrations,ware.graphene,ware.majasnails,ware.meat,
           ware.microchips,ware.quantumtubes,ware.medicalsupplies,ware.missilecomponents,ware.nostropoil,ware.plasmaconductors,ware.smartchips,ware.sojabeans,
-          ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents]"/>
+          ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents,ware.cheltmeat,ware.scruffinfruits]"/>
           <set_value name="$addtolist" exact="true"/>
         </do_if>
         <set_value name="$listchecked" exact="true"/>
@@ -346,7 +346,7 @@
 
       <do_if value="$gotowarelist == 6">
         <do_if value="$biowares">
-          <set_value name="$warestoadd" exact="[ware.spices,ware.meat,ware.wheat,ware.sojabeans,ware.majasnails,ware.sunriseflowers,ware.swampplant,ware.foodrations,ware.medicalsupplies,ware.sojahusk,ware.nostropoil,ware.water]"/>
+          <set_value name="$warestoadd" exact="[ware.spices,ware.meat,ware.wheat,ware.sojabeans,ware.majasnails,ware.sunriseflowers,ware.swampplant,ware.foodrations,ware.medicalsupplies,ware.sojahusk,ware.nostropoil,ware.water,ware.cheltmeat,ware.scruffinfruits]"/>
           <set_value name="$addtolist" exact="true"/>
         </do_if>
         <set_value name="$listchecked" exact="true"/>
