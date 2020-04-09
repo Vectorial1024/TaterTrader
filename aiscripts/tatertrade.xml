@@ -1103,7 +1103,7 @@
                     </do_if>
 
                     <do_if value="$CheckGrofit"><!-- Use a variable inplace of just copy pasting the section below. -->
-                      <do_if value="$Grofit lt $Amount*($buycost-$sellcost)*$distancescale">
+                      <do_if value="$Grofit lt $Amount*(($buycost - $sellcost)f * $distancescale)ct">
                         <set_value name="$Grofit" exact="$Amount*($buycost-$sellcost)" />
                         <set_value name="$GrofferSell" exact="$selloffer" />
                         <set_value name="$GrofferBuy" exact="$buyoffer" />
