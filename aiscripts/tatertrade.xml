@@ -420,6 +420,32 @@
       <find_cluster_in_range distances="$clusterstable" multiple="true" object="$range" mindistance="$minsell" maxdistance="$maxsell"/>
       <set_value name="$sellspaces" exact="$clusterstable.keys.sorted" /> <!-- sort them -->
       <remove_value name="$clusterstable"/>
+	  
+	  <!-- More blacklist stuff from DA -->
+	  <!-- Remove cluster from buyspaces if it is not $range ($home but always a sector) and is part of blacklist. We lose potential sectors in a contested cluster but I would have to rewrite a lot to fix and I'm not feeling up to it -->
+	  <do_all exact="$buyspaces.count" counter="$blacklistcounter1" reverse="true">
+		<wait exact="1ms"/>
+		<find_sector name="$blacklistsectorlisttocheck" space="$buyspaces.{$blacklistcounter1}" multiple="true" />
+		<do_all exact="$blacklistsectorlisttocheck.count" counter="$blacklistsectorcounter1" reverse="true">
+			<do_if value="($blacklistsectorlisttocheck.{$blacklistsectorcounter1} != $range) and (($blacklistsectorlisttocheck.{$blacklistsectorcounter1}.isblacklisted.{blacklisttype.sectoractivity}.{$blacklistgroup}.{this.assignedcontrolled}) or ($blacklistsectorlisttocheck.{$blacklistsectorcounter1}.isblacklisted.{blacklisttype.sectortravel}.{$blacklistgroup}.{this.assignedcontrolled}))">
+				<debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Removing ' + $buyspaces.{$blacklistcounter1}.knownname + ' from buyspaces - DA" output="false" append="true" />
+				<remove_value name="$buyspaces.{$blacklistcounter1}" />
+				<break/>
+			</do_if>
+		</do_all>
+	  </do_all>
+	  <!-- Remove cluster from sellspaces, same as above -->
+	  <do_all exact="$sellspaces.count" counter="$blacklistcounter2" reverse="true">
+		<wait exact="1ms"/>
+		<find_sector name="$blacklistsectorlisttocheck" space="$sellspaces.{$blacklistcounter2}" multiple="true" />
+		<do_all exact="$blacklistsectorlisttocheck.count" counter="$blacklistsectorcounter2" reverse="true">
+			<do_if value="($blacklistsectorlisttocheck.{$blacklistsectorcounter2} != $range) and (($blacklistsectorlisttocheck.{$blacklistsectorcounter2}.isblacklisted.{blacklisttype.sectoractivity}.{$blacklistgroup}.{this.assignedcontrolled}) or ($blacklistsectorlisttocheck.{$blacklistsectorcounter2}.isblacklisted.{blacklisttype.sectortravel}.{$blacklistgroup}.{this.assignedcontrolled}))">
+				<debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Removing ' + $sellspaces.{$blacklistcounter2}.knownname + ' from sellspaces - DA" output="false" append="true" />
+				<remove_value name="$sellspaces.{$blacklistcounter2}" />
+				<break/>
+			</do_if>
+		</do_all>
+	  </do_all>
 
       <!-- Exclude selected sectors. -->
       <do_if value="not ($excludedsectors == null)">
