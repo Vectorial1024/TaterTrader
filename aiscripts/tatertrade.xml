@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
  <!-- TaterTrade Ai, Created by Ludsoe. Version 4-->
-<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="4">
+<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="5">
   <order id="TaterTrade" name="TaterTrade" description="Advanced Trader Logic" category="trade" infinite="true">
     <params>
       <!-- Define where the trader will base itself -->
@@ -34,6 +34,12 @@
         <input_param name="step" value="1"/>
       </param>
       <param name="distancecheck" type="bool" default="false" text="Check Distance" comment="Should we compare distances between trade deals?" />
+	  <param name="distancecheckpercent" default="2" type="number" text="% Penalty per Jump" comment="How much of a penalty each jump is.">
+        <input_param name="startvalue" value="2"/>
+        <input_param name="min" value="1"/>
+        <input_param name="max" value="10"/>
+        <input_param name="step" value="1"/>
+      </param>
       <param name="discount" default="100" type="number" text="Owned Station Buy Mod" comment="How much we pay at stations.">
         <input_param name="startvalue" value="100"/>
         <input_param name="min" value="0"/>
@@ -80,20 +86,29 @@
 
       <!-- Allow Players to exclude entire factions from the traders trade lists. -->
       <param name="enablebans" type="bool" default="false" text="Enable Trade Bans" comment="Enable faction trade bans?" />
-      <param name="playerban" type="bool" default="false" text="Player Owned" comment="Ban faction from trade lists?" />
+      <param name="playerban" type="bool" default="false" text="{20203,101}" comment="Ban faction from trade lists?" />
       <!-- Argon Based Factions -->
-      <param name="argonban" type="bool" default="false" text="Argon Federation" comment="Ban faction from trade lists?" />
-      <param name="antigoneban" type="bool" default="false" text="Antigone Republic" comment="Ban faction from trade lists?" />
+      <param name="argonban" type="bool" default="false" text="{20203,201}" comment="Ban faction from trade lists?" />
+      <param name="antigoneban" type="bool" default="false" text="{20203,301}" comment="Ban faction from trade lists?" />
       <!-- Teladi Based Factions -->
-      <param name="teladiban" type="bool" default="false" text="Teladi Company" comment="Ban faction from trade lists?" />
-      <param name="ministryban" type="bool" default="false" text="Ministry of Finance" comment="Ban faction from trade lists?" />
+      <param name="teladiban" type="bool" default="false" text="{20203,601}" comment="Ban faction from trade lists?" />
+      <param name="ministryban" type="bool" default="false" text="{20203,701}" comment="Ban faction from trade lists?" />
       <!-- Paranid Based Factions -->
-      <param name="paranidban" type="bool" default="false" text="Godrealm Of The Paranid" comment="Ban faction from trade lists?" />
-      <param name="holyorderban" type="bool" default="false" text="Holy Order of the Pontifex" comment="Ban faction from trade lists?" />
-      <param name="allianceban" type="bool" default="false" text="Alliance of the Word" comment="Ban faction from trade lists?" />
+      <param name="paranidban" type="bool" default="false" text="{20203,401}" comment="Ban faction from trade lists?" />
+      <param name="holyorderban" type="bool" default="false" text="{20203,501}" comment="Ban faction from trade lists?" />
+      <param name="allianceban" type="bool" default="false" text="{20203,801}" comment="Ban faction from trade lists?" />
+	  <param name="trinityban" type="bool" default="false" text="{20203,2301}" comment="Ban faction from trade lists?" />
+	  <!-- Split Based Factions -->
+	  <param name="splitban" type="bool" default="false" text="{20203,2001}" comment="Ban faction from trade lists?" />
+	  <param name="freesplitban" type="bool" default="false" text="{20203,1601}" comment="Ban faction from trade lists?" />
+	  <param name="courtban" type="bool" default="false" text="{20203,1801}" comment="Ban faction from trade lists?" />
       <!-- Pirate Factions -->
-      <param name="hatikvahban" type="bool" default="false" text="Hatikvah Free League" comment="Ban faction from trade lists?" />
-      <param name="scaleplateban" type="bool" default="false" text="Scale Plate Pact" comment="Ban faction from trade lists?" />
+      <param name="buccaneersban" type="bool" default="false" text="{20203,2401}" comment="Ban faction from trade lists?" />
+	  <param name="fallensplitban" type="bool" default="false" text="{20203,1701}" comment="Ban faction from trade lists?" />
+	  <param name="hatikvahban" type="bool" default="false" text="{20203,901}" comment="Ban faction from trade lists?" />
+      <param name="scaleplateban" type="bool" default="false" text="{20203,1001}" comment="Ban faction from trade lists?" />
+	  
+	  
       
       <!-- If your looking into tweaking this, be aware that high space speeds may cause performance issues. -->
       <param name="scanspeed" default="5" type="number" text="Scan Speed" comment="How fast do we calculate?">
@@ -155,17 +170,35 @@
       <do_if value="$allianceban">
         <append_to_list name="$bannedfactions" exact="faction.alliance"/>
       </do_if>
+	  <do_if value="$trinityban">
+        <append_to_list name="$bannedfactions" exact="faction.trinity"/>
+      </do_if>
       <do_if value="$teladiban ">
         <append_to_list name="$bannedfactions" exact="faction.teladi"/>
       </do_if>
       <do_if value="$ministryban">
         <append_to_list name="$bannedfactions" exact="faction.ministry"/>
       </do_if>
+	  <do_if value="$splitban">
+        <append_to_list name="$bannedfactions" exact="faction.split"/>
+      </do_if>
+	  <do_if value="$freesplitban">
+        <append_to_list name="$bannedfactions" exact="faction.freesplit"/>
+      </do_if>
+	  <do_if value="$courtban">
+        <append_to_list name="$bannedfactions" exact="faction.court"/>
+      </do_if>
       <do_if value="$hatikvahban">
         <append_to_list name="$bannedfactions" exact="faction.hatikvah"/>
       </do_if>
       <do_if value="$scaleplateban">
         <append_to_list name="$bannedfactions" exact="faction.scaleplate"/>
+      </do_if>
+	  <do_if value="$buccaneersban">
+        <append_to_list name="$bannedfactions" exact="faction.buccaneers"/>
+      </do_if>
+	  <do_if value="$fallensplitban">
+        <append_to_list name="$bannedfactions" exact="faction.fallensplit"/>
       </do_if>
     </do_if>
   </init>
@@ -245,6 +278,11 @@
     </do_if>
     <do_if value="$scantickrate == null">
       <set_value name="$scantickrate" exact="5" />
+    </do_if>
+  </patch>
+  <patch sinceversion="5">
+	<do_if value="$distancecheckpercent == null">
+      <set_value name="$distancecheckpercent" exact="2"/>
     </do_if>
   </patch>
 
@@ -583,10 +621,10 @@
               <set_value name="$Amount" exact="[this.ship.cargo.{$buyoffer.ware}.count,$buyoffer.amount].min"/>
 
               <set_value name="$distancescale" exact="1"/>
-              <set_value name="$distance" exact="this.ship.gatedistance.{$buyoffer.buyer}"/>
+              <set_value name="$distance" exact="this.ship.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}"/>
               <do_if value="$distancecheck">
                 <do_if value="$distance gt 0">
-                  <set_value name="$distancescale" exact="1-($distance*0.02)f"/>
+                  <set_value name="$distancescale" exact="1-($distance*($distancecheckpercent / 100))f"/>
                 </do_if>
               </do_if>
 
@@ -696,7 +734,7 @@
                   <set_value name="$wareprice" exact="$foundbuyoffer.unitprice/100*$discount2/100" />
                 </do_if>
 
-                <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'   Scanning buy offer for ('+$foundbuyoffer.ware+') at ('+$foundbuyoffer.buyer.knownname+') Price: '+$wareprice+' Amount: '+$foundbuyoffer.amount+' Faction: '+$foundbuyoffer.buyer.owner+' Restriction: '+$foundbuyoffer.restriction.faction+' Raw OfferPrice: '+$foundbuyoffer.unitprice/100+' Relation: '+$foundbuyoffer.buyer.relationto.{this.ship.owner}+' Gate Distance: '+$home.gatedistance.{$foundbuyoffer.buyer}+' Distance Raw: '+$home.distanceto.{$foundbuyoffer.buyer}" output="false" append="true" />
+                <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'   Scanning buy offer for ('+$foundbuyoffer.ware+') at ('+$foundbuyoffer.buyer.knownname+') Price: '+$wareprice+' Amount: '+$foundbuyoffer.amount+' Faction: '+$foundbuyoffer.buyer.owner+' Restriction: '+$foundbuyoffer.restriction.faction+' Raw OfferPrice: '+$foundbuyoffer.unitprice/100+' Relation: '+$foundbuyoffer.buyer.relationto.{this.ship.owner}+' Gate Distance: '+$home.gatedistance.{$foundbuyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+$home.distanceto.{$foundbuyoffer.buyer}" output="false" append="true" />
 
                 <do_if value="$wareprice gt $stationselloffer.unitprice/100"> <!-- Only consider the trade if they are paying more then the station is selling, we arnt a charity here. -->
                   <do_if value="$wareprice gt $bestprice"> <!-- Is it better then the previus best deal? -->
@@ -768,7 +806,7 @@
                 <set_value name="$offerpriority" exact="$offerpriority+($bestamount/$WareCapacity)*25" />
 
                 <do_if value="$distancecheck">
-                  <set_value name="$offerpriority" exact="$offerpriority-($home.gatedistance.{$bestdeal.buyer}/2)" />
+                  <set_value name="$offerpriority" exact="$offerpriority-($home.gatedistance.{$bestdeal.buyer}.{$blacklistgroup}.{this.assignedcontrolled}/2)" />
                 </do_if>
 
                 <do_if value="$offerpriority gt $highestpriority">
@@ -783,7 +821,7 @@
                 </do_if>
 
                 <!-- Assign a priority based on the profit gained from the trade. -->
-                <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Selling: ('+$stationselloffer.ware+') Best Deal: ('+$bestdeal.buyer.knownname+') Price: '+$bestdeal.unitprice/100+' Profit: '+$profit+' Amount: ( '+$bestamount+' / '+$WareCapacity+' Max) Priority: '+$offerpriority+' GateDistance: '+$home.gatedistance.{$bestdeal.buyer}+' StockLevel: '+$stationselloffer.stocklevel*100+'% CargoFill: '+(($bestamount)f/($WareCapacity)f)*100+'%'" output="false" append="true" /> 
+                <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Selling: ('+$stationselloffer.ware+') Best Deal: ('+$bestdeal.buyer.knownname+') Price: '+$bestdeal.unitprice/100+' Profit: '+$profit+' Amount: ( '+$bestamount+' / '+$WareCapacity+' Max) Priority: '+$offerpriority+' GateDistance: '+$home.gatedistance.{$bestdeal.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' StockLevel: '+$stationselloffer.stocklevel*100+'% CargoFill: '+(($bestamount)f/($WareCapacity)f)*100+'%'" output="false" append="true" /> 
               </do_if>
             </do_if>
           </do_all>
@@ -910,7 +948,7 @@
                 <set_value name="$offerpriority" exact="$offerpriority+($costdiff/2)" />
 
                 <do_if value="$distancecheck">
-                  <set_value name="$offerpriority" exact="$offerpriority-($home.gatedistance.{$bestdeal.seller}/2)" />
+                  <set_value name="$offerpriority" exact="$offerpriority-($home.gatedistance.{$bestdeal.seller}.{$blacklistgroup}.{this.assignedcontrolled}/2)" />
                 </do_if>
 
                 <do_if value="$offerpriority gt $highestpriority">
@@ -926,7 +964,7 @@
                   </do_if>
                 </do_if>
 
-                <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Buying: ('+$stationbuyoffer.ware+') Best Deal: ('+$bestdeal.seller.knownname+') Price: '+$bestprice+' Amount: ( '+$bestamount+' / '+$WareCapacity+' Max) Priority: '+$offerpriority+' GateDistance: '+$home.gatedistance.{$bestdeal.seller}+' StockLevel: '+$stationbuyoffer.stocklevel*100+'% CargoFill: '+(($bestamount)f/($WareCapacity)f)*100+'%'" output="false" append="true" /> 
+                <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Buying: ('+$stationbuyoffer.ware+') Best Deal: ('+$bestdeal.seller.knownname+') Price: '+$bestprice+' Amount: ( '+$bestamount+' / '+$WareCapacity+' Max) Priority: '+$offerpriority+' GateDistance: '+$home.gatedistance.{$bestdeal.seller}.{$blacklistgroup}.{this.assignedcontrolled}+' StockLevel: '+$stationbuyoffer.stocklevel*100+'% CargoFill: '+(($bestamount)f/($WareCapacity)f)*100+'%'" output="false" append="true" /> 
               </do_if>
             </do_if>
           </do_all>
@@ -1042,7 +1080,7 @@
                 <set_value name="$buycost" exact="$buyoffer.unitprice/100*$discount2/100" />
                 <!-- <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'This buyer has the same owner as us, or the buy price is '+$buycost" output="false" append="true" />  -->
               </do_if>
-              <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="' Scanning buy offer for ('+$buyoffer.ware+') at ('+$buyoffer.buyer.knownname+') Price: '+$buycost+' Faction: '+$buyoffer.buyer.owner+' Restriction: '+$buyoffer.restriction.faction+' Raw OfferPrice: '+$buyoffer.unitprice/100+' Relation: '+$buyoffer.buyer.relationto.{this.ship.owner}+' Gate Distance: '+this.ship.gatedistance.{$buyoffer.buyer}+' Distance Raw: '+this.ship.distanceto.{$buyoffer.buyer}" output="false" append="true" />
+              <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="' Scanning buy offer for ('+$buyoffer.ware+') at ('+$buyoffer.buyer.knownname+') Price: '+$buycost+' Faction: '+$buyoffer.buyer.owner+' Restriction: '+$buyoffer.restriction.faction+' Raw OfferPrice: '+$buyoffer.unitprice/100+' Relation: '+$buyoffer.buyer.relationto.{this.ship.owner}+' Gate Distance: '+this.ship.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+this.ship.distanceto.{$buyoffer.buyer}" output="false" append="true" />
               
               <!-- If fast trade is enabled, and we already scanned for the best sell offer -->
               <do_if value="not $fasttrade or $bestsell == 0">
@@ -1105,18 +1143,18 @@
 
                     <set_value name="$distancescale" exact="1"/>
                     <do_if value="$distancecheck">
-                      <set_value name="$distance" exact="this.ship.gatedistance.{$selloffer.seller}"/>
+                      <set_value name="$distance" exact="this.ship.gatedistance.{$selloffer.seller}.{$blacklistgroup}.{this.assignedcontrolled}"/>
                       <do_if value="$distance gt 0"> <!-- Only worry about distance when it involves going through gates. -->
                         <!-- <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Ratio: '+$Ratio+' Rating: '+$Rating+' DistanceScale: '+(1-($distance*0.02)f)+' Result: '+($Rating)f*(1-($distance*0.02)f)" output="false" append="true" />  -->
-                        <set_value name="$Rating" exact="($Rating)f*(1-($distance*0.02)f)"/>
+                        <set_value name="$Rating" exact="($Rating)f*(1-($distance*($distancecheckpercent / 100))f)"/>
                       </do_if>
-                      <set_value name="$distance" exact="$selloffer.seller.gatedistance.{$buyoffer.buyer}+this.ship.gatedistance.{$selloffer.seller}"/>
+                      <set_value name="$distance" exact="$selloffer.seller.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+this.ship.gatedistance.{$selloffer.seller}.{$blacklistgroup}.{this.assignedcontrolled}"/>
                       <do_if value="$distance gt 0">
-                        <set_value name="$distancescale" exact="1-($distance*0.02)f"/>
+                        <set_value name="$distancescale" exact="1-($distance*($distancecheckpercent / 100))f"/>
                       </do_if>
                     </do_if>
                     
-                    <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'   Scanning sell offer for ('+$buyoffer.ware+') at ('+$selloffer.seller.knownname+') Faction: ('+$selloffer.seller.owner+') Restriction: ('+$selloffer.restriction.faction+') Buying at '+$buycost+' Selling at '+$sellcost+' Average: '+$buyoffer.ware.averageprice/100+' Amount: '+$Amount+' Grofit: '+ $Amount*($buycost-$sellcost)+' Ratio: '+$Ratio+' Rating: '+$Rating+' RawSellOffer Price: '+$selloffer.unitprice/100+' Relation: '+$selloffer.seller.relationto.{this.ship.owner}+' Gate Distance: '+$selloffer.seller.gatedistance.{$buyoffer.buyer}+' Distance Raw: '+$selloffer.seller.distanceto.{$buyoffer.buyer}+' Distance Scale: '+$distancescale" output="false" append="true" />
+                    <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'   Scanning sell offer for ('+$buyoffer.ware+') at ('+$selloffer.seller.knownname+') Faction: ('+$selloffer.seller.owner+') Restriction: ('+$selloffer.restriction.faction+') Buying at '+$buycost+' Selling at '+$sellcost+' Average: '+$buyoffer.ware.averageprice/100+' Amount: '+$Amount+' Grofit: '+ $Amount*($buycost-$sellcost)+' Ratio: '+$Ratio+' Rating: '+$Rating+' RawSellOffer Price: '+$selloffer.unitprice/100+' Relation: '+$selloffer.seller.relationto.{this.ship.owner}+' Gate Distance: '+$selloffer.seller.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+$selloffer.seller.distanceto.{$buyoffer.buyer}+' Distance Scale: '+$distancescale" output="false" append="true" />
 
                     <do_if value="$bestrating lt $Rating">
                       <set_value name="$bestrating" exact="$Rating"/>
