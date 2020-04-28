@@ -4,10 +4,10 @@
   <order id="TaterTrade" name="TaterTrade" description="Advanced Trader Logic" category="trade" infinite="true">
     <params>
       <!-- Define where the trader will base itself -->
-      <param name="home" default="this.sector" type="object" text="TraderHome" comment="Home Sector/Station">
+      <param name="home" default="this.sector" type="object" text="{3282837,101}" comment="Home Sector/Station">
         <input_param name="class" value="[class.sector,class.station]"/>
       </param>
-      <param name="returnhome" type="bool" default="false" text="HomeBound" comment="Return Home after completing a trade?" />
+      <param name="returnhome" type="bool" default="false" text="{3282837,102}" comment="Return Home after completing a trade?" />
       <!-- Some Range configurations -->
       <param name="minbuy" default="0" type="number" advanced="true" text="{1041, 10066}" comment="Min gate distance to buy. Buy range supported if $minbuy and $maxbuy are provided">
         <input_param name="startvalue" value="0"/>
@@ -33,29 +33,29 @@
         <input_param name="max" value="[@this.ship.commander.tradenpc.skill.management, @this.ship.pilot.skill.piloting].max * 2"/>
         <input_param name="step" value="1"/>
       </param>
-      <param name="distancecheck" type="bool" default="false" text="Check Distance" comment="Should we compare distances between trade deals?" />
-	  <param name="distancecheckpercent" default="2" type="number" text="% Penalty per Jump" comment="How much of a penalty each jump is.">
+      <param name="distancecheck" type="bool" default="false" text="{3282837,103}" comment="Should we compare distances between trade deals?" />
+	  <param name="distancecheckpercent" default="2" type="number" text="{3282837,104}" comment="How much of a penalty each jump is.">
         <input_param name="startvalue" value="2"/>
         <input_param name="min" value="1"/>
         <input_param name="max" value="10"/>
         <input_param name="step" value="1"/>
       </param>
-      <param name="discount" default="100" type="number" text="Owned Station Buy Mod" comment="How much we pay at stations.">
+      <param name="discount" default="100" type="number" text="{3282837,105}" comment="How much we pay at stations.">
         <input_param name="startvalue" value="100"/>
         <input_param name="min" value="0"/>
         <input_param name="max" value="200"/>
         <input_param name="step" value="5"/>
       </param>
-      <param name="discount2" default="100" type="number" text="Owned Station Sell Mod" comment="How much we pay at stations.">
+      <param name="discount2" default="100" type="number" text="{3282837,106}" comment="How much we pay at stations.">
         <input_param name="startvalue" value="100"/>
         <input_param name="min" value="0"/>
         <input_param name="max" value="200"/>
         <input_param name="step" value="5"/>
       </param>
-      <param name="bypass" type="bool" default="false" text="FreeTrade" comment="Do we ignore faction restrictions on owned stations?" />
-      <param name="fasttrade" type="bool" default="false" text="FastTrade" comment="Attempt to optimise the search engine by skipping deals we deem improfitable." />
-      <param name="stationmode" type="bool" default="false" text="Station Trader" comment="When enabled, toggles the trader into station trader mode." />
-      <param name="blackmarket" type="bool" default="false" text="Station Smuggler" comment="When enabled, allows the trader to trade illegal wares when in station trader mode." />
+      <param name="bypass" type="bool" default="false" text="{3282837,107}" comment="Do we ignore faction restrictions on owned stations?" />
+      <param name="fasttrade" type="bool" default="false" text="{3282837,108}" comment="Attempt to optimise the search engine by skipping deals we deem improfitable." />
+      <param name="stationmode" type="bool" default="false" text="{3282837,109}" comment="When enabled, toggles the trader into station trader mode." />
+      <param name="blackmarket" type="bool" default="false" text="{3282837,110}" comment="When enabled, allows the trader to trade illegal wares when in station trader mode." />
 
       <!-- What are we hauling? -->
       <param name="warebasket" default="[]" type="list" text="{1041, 10146}" comment="Wares">
@@ -63,29 +63,29 @@
         <input_param name="cancarry" value="this.ship"/>
       </param>
 
-      <param name="usepresets" type="bool" default="true" text="Copy Presets" comment="Button to enable presets." />
-      <param name="allwares" type="bool" default="false" text="All Wares" comment="Enable all wares in the basket." />
-      <param name="legalwares" type="bool" default="true" text="Legal Wares" comment="Enable all the legal wares." />
-      <param name="illegalwares" type="bool" default="false" text="Illegal Wares" comment="Enable all the illegal wares." />
-      <param name="shipbuildingwares" type="bool" default="false" text="ShipBuilding Wares" comment="Enable all the shipbuilding wares." />
-      <param name="stationbuildingwares" type="bool" default="false" text="StationBuilding Wares" comment="Enable all the stationbuilding wares." />
-      <param name="hightechwares" type="bool" default="false" text="HighTech Wares" comment="Enable all the HichTech wares." />
-      <param name="refinedwares" type="bool" default="false" text="Refined Wares" comment="Enable all the Refined wares." />
-      <param name="biowares" type="bool" default="false" text="Biological Wares" comment="Enable all the Bio wares." />
+      <param name="usepresets" type="bool" default="true" text="{3282837,111}" comment="Button to enable presets." />
+      <param name="allwares" type="bool" default="false" text="{3282837,112}" comment="Enable all wares in the basket." />
+      <param name="legalwares" type="bool" default="true" text="{3282837,113}" comment="Enable all the legal wares." />
+      <param name="illegalwares" type="bool" default="false" text="{3282837,114}" comment="Enable all the illegal wares." />
+      <param name="shipbuildingwares" type="bool" default="false" text="{3282837,115}" comment="Enable all the shipbuilding wares." />
+      <param name="stationbuildingwares" type="bool" default="false" text="{3282837,116}" comment="Enable all the stationbuilding wares." />
+      <param name="hightechwares" type="bool" default="false" text="{3282837,117}" comment="Enable all the HichTech wares." />
+      <param name="refinedwares" type="bool" default="false" text="{3282837,118}" comment="Enable all the Refined wares." />
+      <param name="biowares" type="bool" default="false" text="{3282837,119}" comment="Enable all the Bio wares." />
       
       <!-- Allow Players to exclude sectors for whatever reason. -->
-      <param name="excludedsectors" default="[]" type="list" text="Excluded Sector" comment="Sectors the player wants excluded from trade searches.">
+      <param name="excludedsectors" default="[]" type="list" text="{3282837,120}" comment="Sectors the player wants excluded from trade searches.">
         <input_param name="type" value="'object'"/>
         <input_param name="class" value="[class.sector]"/>
       </param>
 
-      <param name="includedsectors" default="[]" type="list" text="Included Sector" comment="Sectors the player wants included in trade searches.">
+      <param name="includedsectors" default="[]" type="list" text="{3282837,121}" comment="Sectors the player wants included in trade searches.">
         <input_param name="type" value="'object'"/>
         <input_param name="class" value="[class.sector]"/>
       </param>
 
       <!-- Allow Players to exclude entire factions from the traders trade lists. -->
-      <param name="enablebans" type="bool" default="false" text="Enable Trade Bans" comment="Enable faction trade bans?" />
+      <param name="enablebans" type="bool" default="false" text="{3282837,122}" comment="Enable faction trade bans?" />
       <param name="playerban" type="bool" default="false" text="{20203,101}" comment="Ban faction from trade lists?" />
       <!-- Argon Based Factions -->
       <param name="argonban" type="bool" default="false" text="{20203,201}" comment="Ban faction from trade lists?" />
@@ -650,7 +650,7 @@
             <do_if value="$GrofferBuy">
               <set_value name="$debugchance" exact="1" />
               <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Selling '+$Gromount+' '+$GrofferBuy.ware+' for '+$GrofferBuy.unitprice/100+' at '+$GrofferBuy.buyer.knownname+' DealAvailiability: '+$GrofferBuy.available" output="false" append="true" />
-              <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname" interaction="showonmap" object="this.ship" money="$Gromount*$GrofferBuy.unitprice" text="'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'" />
+              <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname" interaction="showonmap" object="this.ship" money="$Gromount*$GrofferBuy.unitprice" text="{3282837,201}.[$Gromount,$GrofferBuy.ware,$GrofferBuy.unitprice/100,$Gromount*$GrofferBuy.unitprice/100]" />
               <create_trade_order name="$GrofferBuy" object="this.object" tradeoffer="$GrofferBuy" amount="$Gromount" immediate="false" />
               <resume label="afterdealsetup" />  <!-- Why does this trade offer have to be be so hard to setup -->
             </do_if>
@@ -1248,17 +1248,17 @@
             <do_if value="$GrofitFound">
               <do_if value="($GrofferBuy.buyer.owner == this.ship.owner) or ($GrofferSell.seller.owner == this.ship.owner)">
                 <do_if value="($GrofferBuy.buyer.owner == this.ship.owner) and not ($GrofferSell.seller.owner == this.ship.owner)">
-                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" text="'Queuing up Supply Run for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to supply '+$GrofferBuy.buyer.knownname" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" text="{3282837,202}.[$Gromount,$GrofferSell.ware,$itemcostsell,$GrofferBuy.buyer.knownname]" />
                 </do_if>
                 <do_if value="($GrofferSell.seller.owner == this.ship.owner) and not ($GrofferBuy.buyer.owner == this.ship.owner)">
-                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="'Queuing up Station Ware Sale for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*$itemcostbuy+' in profit.'" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="{3282837,203}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$itemcostbuy,$Gromount*$itemcostbuy]" />
                 </do_if>
                 <do_if value="($GrofferSell.seller.owner == this.ship.owner) and ($GrofferBuy.buyer.owner == this.ship.owner)">
-                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Queuing up Cargo Transport Run for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,204}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$GrofferBuy.buyer.knownname]" />
                 </do_if>
               </do_if>
               <do_else>
-                <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
+                <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]" />
               </do_else>
             </do_if>
             <do_if value="$StationTrade"><!-- Make seperate log types depending what the trader is doing. -->
@@ -1267,14 +1267,14 @@
                 <do_if value="$GrofferSell.seller.owner == this.ship.owner">
                   <!-- Are We selling to a player station? -->
                   <do_if value="$GrofferBuy.buyer.owner == this.ship.owner">
-                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Station Trader: Supplying '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname" />
+                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,207}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$GrofferBuy.buyer.knownname]" />
                   </do_if>
                   <do_else>
-                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="'Station Trader: Selling '+$Gromount+' '+$GrofferSell.ware+' at the price of '+$itemcostbuy+' Expected Profit is '+$Gromount*$itemcostbuy " />
+                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="{3282837,208}.[$Gromount,$GrofferSell.ware,$itemcostbuy,$Gromount*$itemcostbuy]" />
                   </do_else> 
                 </do_if>
                 <do_else>
-                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]" />
                 </do_else>             
               </do_if>
               <!-- Buying wares for the station. -->
@@ -1282,14 +1282,14 @@
                 <do_if value="$GrofferBuy.buyer.owner == this.ship.owner">
                   <!-- Are We buying from a player station? -->
                   <do_if value="not ($GrofferSell.seller.owner == this.ship.owner)">
-                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostbuy*100" text="'Station Trader: Buying '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' at the price of '+$itemcostbuy+' Expected Cost is '+$Gromount*$itemcostbuy" />
+                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostbuy*100" text="{3282837,209}.[$Gromount,$GrofferSell.ware,$GrofferBuy.buyer.knownname,$itemcostbuy,$Gromount*$itemcostbuy]" />
                   </do_if>
                   <do_else>
-                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname" />
+                    <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,210}.[$Gromount,$GrofferSell.ware,$GrofferBuy.buyer.knownname,$GrofferSell.seller.knownname]" />
                   </do_else>
                 </do_if>
                 <do_else>
-                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'" />
+                  <write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]" />
                 </do_else>  
               </do_if>
             </do_if>
