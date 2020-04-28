@@ -2,48 +2,48 @@
 <language id="49">
 
 <page id="3282837" title="DeadAir Tatertrader T Files" descr="names used in DeadAir Tatertrader mod" voice="no">
- <t id="100">Parameters</t>
- <t id="101">Trader Home</t>
- <t id="102">Home Bound</t>
- <t id="103">Check Distance</t>
- <t id="104">% Penalty per Jump</t>
- <t id="105">Owned Station Buy Mod</t>
- <t id="106">Owned Station Sell Mod</t>
- <t id="107">Free Trade</t>
- <t id="108">Fast Trade</t>
- <t id="109">Station Trader</t>
- <t id="110">Station Smuggler</t>
- <t id="111">Copy Presets</t>
- <t id="112">All Wares</t>
- <t id="113">Legal Wares</t>
- <t id="114">Illegal Wares</t>
- <t id="115">Ship Building Wares</t>
- <t id="116">Station Building Wares</t>
- <t id="117">HighTech Wares</t>
- <t id="118">Refined Wares</t>
- <t id="119">Biological Wares</t>
- <t id="120">Excluded Sector</t>
- <t id="121">Included Sector</t>
- <t id="122">Enable Trade Bans</t>
- <t id="123">Scan Speed</t>
- <t id="200">Logbook Messages (complete line in comment above entry)</t>
-<!--'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'-->
- <t id="201">Selling %1 %2 from cargo at %3. I should earn %4 in profit.</t>
-<!--'Queuing up Supply Run for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to supply '+$GrofferBuy.buyer.knownname-->
- <t id="202">Queuing up supply run for %1 %2. Buying at %3 to supply %4.</t>
-<!--'Queuing up Station Ware Sale for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*$itemcostbuy+' in profit.'-->
- <t id="203">Queuing up station ware sale for %1 %2 from %3 to sell at %4. I should earn %5 in profit.</t>
-<!--'Queuing up Cargo Transport Run for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname-->
- <t id="204">Queuing up cargo transport run for %1 %2 from %3 to %4.</t>
-<!--'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'-->
- <t id="205">Queuing up trade order for %1 %2. Buying at %3 to sell at %4. I should earn %5 in profit.</t>
-<!--'Station Trader: Supplying '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname-->
- <t id="207">Station Trader: Supplying %1 %2 from %3 to %4.</t>
-<!--'Station Trader: Selling '+$Gromount+' '+$GrofferSell.ware+' at the price of '+$itemcostbuy+' Expected Profit is '+$Gromount*$itemcostbuy-->
- <t id="208">Station Trader: Selling %1 %2 at the price of %3. Expected profit is %4.</t>
-<!--'Station Trader: Buying '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' at the price of '+$itemcostbuy+' Expected Cost is '+$Gromount*$itemcostbuy-->
- <t id="209">Station Trader: Buying %1 %2 for %3 at the price of %4. Expected cost is %5.</t>
-<!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
- <t id="210">Station Trader: Fetching %1 %2 for %3 from %4.</t>
+ <t id="100">Parameter</t>
+ <t id="101">Heimat</t>
+ <t id="102">An Heimat gebunden</t>
+ <t id="103">Benutze Distanz</t>
+ <t id="104">% Strafe pro Sprung</t>
+ <t id="105">Eigene Station: Kauf Modifikator</t>
+ <t id="106">Eigene Station: Verkauf Modifikator</t>
+ <t id="107">Freier Handel</t>
+ <t id="108">Schneller Handel</t>
+ <t id="109">Stationshändler</t>
+ <t id="110">Stationsschmuggler</t>
+ <t id="111">Kopiere Voreinstellung</t>
+ <t id="112">Alle Waren</t>
+ <t id="113">Legale Waren</t>
+ <t id="114">Illegale Waren</t>
+ <t id="115">Schiffsbau Waren</t>
+ <t id="116">Stationsbau Waren</t>
+ <t id="117">HighTech Waren</t>
+ <t id="118">Raffinierte Waren</t>
+ <t id="119">Biologische Waren</t>
+ <t id="120">Ausgeschlossene Sektoren</t>
+ <t id="121">Eingeschlossene Sektoren</t>
+ <t id="122">Aktiviere Handels-Ban</t>
+ <t id="123">Suchgeschwindigkeit</t>
+ <t id="200">Logbuch Nachrichten (komplette Zeile im Kommentar über dem Eintrag)</t>
+<!--'Verkaufe '+$Gromount+' '+$GrofferBuy.ware+' '+$GrofferBuy.unitprice/100+' aus meinem Frachtraum bei ... Ich sollte '+$Gromount*$GrofferBuy.unitprice/100+' Credits erwirtschaften.'-->
+ <t id="201">Verkaufe %1 %2 aus meinem Frachtraum bei %3. Ich sollte %4 Credits erwirtschaften.</t>
+<!--'Plane Lieferung von '+$Gromount+' '+$GrofferSell.ware+' Besorge Waren bei '+$itemcostsell+' und liefere an '+$GrofferBuy.buyer.knownname-->
+ <t id="202">Plane Lieferung von %1 %2. Besorge Waren bei %3 und liefere an %4.</t>
+<!--'Plane Verkauf von Stationswaren '+$Gromount+' '+$GrofferSell.ware+' von '+$GrofferSell.seller.knownname+' wird verkauft an '+$itemcostbuy+' Ich sollte '+$Gromount*$itemcostbuy+' Credits erwirtschaften.'-->
+ <t id="203">Plane Verkauf von Stationswaren: %1 %2 von %3 wird verkauft an %4. Ich sollte %5 Credits erwirtschaften.</t>
+<!--'Plane Frachttransport für '+$Gromount+' '+$GrofferSell.ware+' von '+$GrofferSell.seller.knownname+' nach '+$GrofferBuy.buyer.knownname-->
+ <t id="204">Plane Frachttransport für %1 %2 von %3 nach %4.</t>
+<!--'Plane Handelsgeschäft für '+$Gromount+' '+$GrofferSell.ware+' Kaufe bei '+$itemcostsell+' und verkaufe bei '+$itemcostbuy+' Ich sollte '+$Gromount*($itemcostbuy-$itemcostsell)+' Credits erwirtschaften.'-->
+ <t id="205">Plane Handelsgeschäft für %1 %2. Kaufe bei %3 and verkaufe bei %4. Ich sollte %5 Credits erwirtschaften.</t>
+<!--'Stationshändler: Liefere '+$Gromount+' '+$GrofferSell.ware+' von '+$GrofferSell.seller.knownname+' nach '+$GrofferBuy.buyer.knownname-->
+ <t id="207">Stationshändler: Liefere %1 %2 von %3 nach %4.</t>
+<!--'Stationshändler: Verkaufe '+$Gromount+' '+$GrofferSell.ware+' zum Preis von '+$itemcostbuy+' Erwarteter Gewinn: '+$Gromount*$itemcostbuy-->
+ <t id="208">Stationshändler: Verkaufe %1 %2 zum Preis von %3. Erwarteter Gewinn: %4.</t>
+<!--'Stationshändler: Kaufe '+$Gromount+' '+$GrofferSell.ware+' für '+$GrofferBuy.buyer.knownname+' zum Preis von '+$itemcostbuy+' Erwartete Kosten: '+$Gromount*$itemcostbuy-->
+ <t id="209">Stationshändler: Kaufe %1 %2 für %3 zum Preis von %4. Erwartete Kosten: %5.</t>
+<!--'Stationshändler: Besorge '+$Gromount+' '+$GrofferSell.ware+' für '+$GrofferBuy.buyer.knownname+' von '+$GrofferSell.seller.knownname-->
+ <t id="210">Stationshändler: Besorge %1 %2 für %3 von %4.</t>
 </page>
 </language>
