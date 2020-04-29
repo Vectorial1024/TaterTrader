@@ -466,7 +466,7 @@
 		<find_sector name="$blacklistsectorlisttocheck" space="$buyspaces.{$blacklistcounter1}" multiple="true" />
 		<do_all exact="$blacklistsectorlisttocheck.count" counter="$blacklistsectorcounter1" reverse="true">
 			<do_if value="($blacklistsectorlisttocheck.{$blacklistsectorcounter1} != $range) and (($blacklistsectorlisttocheck.{$blacklistsectorcounter1}.isblacklisted.{blacklisttype.sectoractivity}.{$blacklistgroup}.{this.assignedcontrolled}) or ($blacklistsectorlisttocheck.{$blacklistsectorcounter1}.isblacklisted.{blacklisttype.sectortravel}.{$blacklistgroup}.{this.assignedcontrolled}))">
-				<debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Removing ' + $buyspaces.{$blacklistcounter1}.knownname + ' from buyspaces - DA" output="false" append="true" />
+				<debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Removing ' + $buyspaces.{$blacklistcounter1}.knownname + ' from buyspaces - DA'" output="false" append="true" />
 				<remove_value name="$buyspaces.{$blacklistcounter1}" />
 				<break/>
 			</do_if>
@@ -478,7 +478,7 @@
 		<find_sector name="$blacklistsectorlisttocheck" space="$sellspaces.{$blacklistcounter2}" multiple="true" />
 		<do_all exact="$blacklistsectorlisttocheck.count" counter="$blacklistsectorcounter2" reverse="true">
 			<do_if value="($blacklistsectorlisttocheck.{$blacklistsectorcounter2} != $range) and (($blacklistsectorlisttocheck.{$blacklistsectorcounter2}.isblacklisted.{blacklisttype.sectoractivity}.{$blacklistgroup}.{this.assignedcontrolled}) or ($blacklistsectorlisttocheck.{$blacklistsectorcounter2}.isblacklisted.{blacklisttype.sectortravel}.{$blacklistgroup}.{this.assignedcontrolled}))">
-				<debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Removing ' + $sellspaces.{$blacklistcounter2}.knownname + ' from sellspaces - DA" output="false" append="true" />
+				<debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Removing ' + $sellspaces.{$blacklistcounter2}.knownname + ' from sellspaces - DA'" output="false" append="true" />
 				<remove_value name="$sellspaces.{$blacklistcounter2}" />
 				<break/>
 			</do_if>
