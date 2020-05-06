@@ -4,11 +4,11 @@
 <page id="3282837" title="DeadAir Tatertrader T Files" descr="names used in DeadAir Tatertrader mod" voice="no">
  <t id="100">Parameter</t>
  <t id="101">Heimat</t>
- <t id="102">An Heimat gebunden</t>
- <t id="103">Benutze Distanz</t>
- <t id="104">% Strafe pro Sprung</t>
- <t id="105">Eigene Station: Kauf Modifikator</t>
- <t id="106">Eigene Station: Verkauf Modifikator</t>
+ <t id="102">Heimflug nach Handel</t>
+ <t id="103">Nutze Entfernungsstrafe</t>
+ <t id="104">Strafe pro Sprung in %</t>
+ <t id="105">Eig.Station|Kaufmodifikator</t>
+ <t id="106">Eig.Station|Verkaufmodifikator</t>
  <t id="107">Freier Handel</t>
  <t id="108">Schneller Handel</t>
  <t id="109">Stationshändler</t>
@@ -17,33 +17,33 @@
  <t id="112">Alle Waren</t>
  <t id="113">Legale Waren</t>
  <t id="114">Illegale Waren</t>
- <t id="115">Schiffsbau Waren</t>
- <t id="116">Stationsbau Waren</t>
- <t id="117">HighTech Waren</t>
- <t id="118">Raffinierte Waren</t>
+ <t id="115">Schiffsbauwaren</t>
+ <t id="116">Stationsbauwaren</t>
+ <t id="117">HighTech-Waren</t>
+ <t id="118">Veredelte Waren</t>
  <t id="119">Biologische Waren</t>
- <t id="120">Ausgeschlossene Sektoren</t>
- <t id="121">Eingeschlossene Sektoren</t>
- <t id="122">Aktiviere Handels-Ban</t>
+ <t id="120">ausgeschlossene Sektoren</t>
+ <t id="121">eingeschlossene Sektoren</t>
+ <t id="122">Aktiviere Handels-Banns</t>
  <t id="123">Suchgeschwindigkeit</t>
- <t id="200">Logbuch Nachrichten (komplette Zeile im Kommentar über dem Eintrag)</t>
+ <t id="200">Logbuchnachrichten (komplette Zeile im Kommentar über dem Eintrag)</t>
 <!--'Verkaufe '+$Gromount+' '+$GrofferBuy.ware+' '+$GrofferBuy.unitprice/100+' aus meinem Frachtraum bei ... Ich sollte '+$Gromount*$GrofferBuy.unitprice/100+' Credits erwirtschaften.'-->
- <t id="201">Verkaufe %1 %2 aus meinem Frachtraum bei %3. Ich sollte %4 Credits erwirtschaften.</t>
+ <t id="201">Verkaufe %1 %2 aus meinem Frachtraum zu je %3 Cr. Ich sollte %4 Credits erwirtschaften.</t>
 <!--'Plane Lieferung von '+$Gromount+' '+$GrofferSell.ware+' Besorge Waren bei '+$itemcostsell+' und liefere an '+$GrofferBuy.buyer.knownname-->
- <t id="202">Plane Lieferung von %1 %2. Besorge Waren bei %3 und liefere an %4.</t>
+ <t id="202">Plane Lieferung von %1 %2. Besorge Waren zu je %3 Cr und liefere an %4.</t>
 <!--'Plane Verkauf von Stationswaren '+$Gromount+' '+$GrofferSell.ware+' von '+$GrofferSell.seller.knownname+' wird verkauft an '+$itemcostbuy+' Ich sollte '+$Gromount*$itemcostbuy+' Credits erwirtschaften.'-->
- <t id="203">Plane Verkauf von Stationswaren: %1 %2 von %3 wird verkauft an %4. Ich sollte %5 Credits erwirtschaften.</t>
+ <t id="203">Plane Verkauf von Stationswaren: %1 %2 von %3 wird verkauft zu je %4 Cr. Ich sollte %5 Credits erwirtschaften.</t>
 <!--'Plane Frachttransport für '+$Gromount+' '+$GrofferSell.ware+' von '+$GrofferSell.seller.knownname+' nach '+$GrofferBuy.buyer.knownname-->
- <t id="204">Plane Frachttransport für %1 %2 von %3 nach %4.</t>
+ <t id="204">Plane Frachttransport über %1 %2 von %3 nach %4.</t>
 <!--'Plane Handelsgeschäft für '+$Gromount+' '+$GrofferSell.ware+' Kaufe bei '+$itemcostsell+' und verkaufe bei '+$itemcostbuy+' Ich sollte '+$Gromount*($itemcostbuy-$itemcostsell)+' Credits erwirtschaften.'-->
- <t id="205">Plane Handelsgeschäft für %1 %2. Kaufe bei %3 and verkaufe bei %4. Ich sollte %5 Credits erwirtschaften.</t>
+ <t id="205">Plane Handelsgeschäft über %1 %2. Kaufe zu je %3 Cr und verkaufe zu je %4 Cr. Ich sollte %5 Credits erwirtschaften.</t>
 <!--'Stationshändler: Liefere '+$Gromount+' '+$GrofferSell.ware+' von '+$GrofferSell.seller.knownname+' nach '+$GrofferBuy.buyer.knownname-->
  <t id="207">Stationshändler: Liefere %1 %2 von %3 nach %4.</t>
 <!--'Stationshändler: Verkaufe '+$Gromount+' '+$GrofferSell.ware+' zum Preis von '+$itemcostbuy+' Erwarteter Gewinn: '+$Gromount*$itemcostbuy-->
- <t id="208">Stationshändler: Verkaufe %1 %2 zum Preis von %3. Erwarteter Gewinn: %4.</t>
+ <t id="208">Stationshändler: Verkaufe %1 %2 zum Preis von je %3 Cr. Erwarteter Gewinn: %4.</t>
 <!--'Stationshändler: Kaufe '+$Gromount+' '+$GrofferSell.ware+' für '+$GrofferBuy.buyer.knownname+' zum Preis von '+$itemcostbuy+' Erwartete Kosten: '+$Gromount*$itemcostbuy-->
- <t id="209">Stationshändler: Kaufe %1 %2 für %3 zum Preis von %4. Erwartete Kosten: %5.</t>
+ <t id="209">Stationshändler: Kaufe %1 %2 für %3 zum Preis von je %4 Cr. Erwartete Kosten: %5.</t>
 <!--'Stationshändler: Besorge '+$Gromount+' '+$GrofferSell.ware+' für '+$GrofferBuy.buyer.knownname+' von '+$GrofferSell.seller.knownname-->
- <t id="210">Stationshändler: Besorge %1 %2 für %3 von %4.</t>
+ <t id="210">Stationshändler: Besorge %1 %2 für je %3 Cr von %4.</t>
 </page>
 </language>
