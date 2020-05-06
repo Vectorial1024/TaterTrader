@@ -111,7 +111,7 @@
 	  
       
       <!-- If your looking into tweaking this, be aware that high space speeds may cause performance issues. -->
-      <param name="scanspeed" default="5" type="number" text="Scan Speed" comment="How fast do we calculate?">
+      <param name="scanspeed" default="5" type="number" text="{3282837,123}" comment="How fast do we calculate?">
         <input_param name="startvalue" value="5"/>
         <input_param name="min" value="1"/>
         <input_param name="max" value="15"/>
