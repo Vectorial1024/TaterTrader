@@ -26,6 +26,9 @@
  <t id="121">Included Sector</t>
  <t id="122">Enable Trade Bans</t>
  <t id="123">Scan Speed</t>
+ <t id="124">Large legal wares</t>
+ <t id="125">Medium legal wares</t>
+ <t id="126">Small legal wares</t>
  <t id="200">Logbook Messages (complete line in comment above entry)</t>
 <!--'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'-->
  <t id="201">Selling %1 %2 from cargo at %3. I should earn %4 in profit.</t>

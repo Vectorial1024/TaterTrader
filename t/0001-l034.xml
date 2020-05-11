@@ -26,6 +26,9 @@
  <t id="121">(Included Sector)Sectores Incluidos</t>
  <t id="122">(Enable Trade Bans)Activar Prohibiciones Comerciales</t>
  <t id="123">(Scan Speed)Velocidad de Escaneo</t>
+ <t id="124">Large legal wares</t>
+ <t id="125">Medium legal wares</t>
+ <t id="126">Small legal wares</t>
  <t id="200">Mensajes del Libro de Registro (complete line in comment above entry)</t>
 <!--'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'-->
  <t id="201">Vendiendo: %1 %2 de la carga a %3. deberia obtener %4 Cr de Beneficio.</t>

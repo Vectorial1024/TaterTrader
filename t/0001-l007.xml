@@ -26,6 +26,9 @@
  <t id="121">Включенный сектор</t>
  <t id="122">Включить ограничение на торговлю</t>
  <t id="123">Скорость сканирования</t>
+ <t id="124">Large legal wares</t>
+ <t id="125">Medium legal wares</t>
+ <t id="126">Small legal wares</t>
  <t id="200">Сообщения в журнале (полная строка в комментариях над записью)</t>
 <!--'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'-->
  <t id="201">Продажа %1 %2 от груза на %3. Я должен заработать %4 в прибыли.</t>

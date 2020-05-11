@@ -26,6 +26,9 @@
  <t id="121">eingeschlossene Sektoren</t>
  <t id="122">Aktiviere Handels-Banns</t>
  <t id="123">Suchgeschwindigkeit</t>
+ <t id="124">Large legal wares</t>
+ <t id="125">Medium legal wares</t>
+ <t id="126">Small legal wares</t>
  <t id="200">Logbuchnachrichten (komplette Zeile im Kommentar über dem Eintrag)</t>
 <!--'Verkaufe '+$Gromount+' '+$GrofferBuy.ware+' '+$GrofferBuy.unitprice/100+' aus meinem Frachtraum bei ... Ich sollte '+$Gromount*$GrofferBuy.unitprice/100+' Credits erwirtschaften.'-->
  <t id="201">Verkaufe %1 %2 aus meinem Frachtraum zu je %3 Cr. Ich sollte %4 Credits erwirtschaften.</t>

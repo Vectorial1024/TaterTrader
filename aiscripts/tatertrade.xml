@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
  <!-- TaterTrade Ai, Created by Ludsoe. Version 4-->
-<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="5">
+ <!-- Maintained by DeadAir. Version 5+-->
+<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="6">
   <order id="TaterTrade" name="TaterTrade" description="Advanced Trader Logic" category="trade" infinite="true">
     <params>
       <!-- Define where the trader will base itself -->
@@ -72,6 +73,9 @@
       <param name="hightechwares" type="bool" default="false" text="{3282837,117}" comment="Enable all the HichTech wares." />
       <param name="refinedwares" type="bool" default="false" text="{3282837,118}" comment="Enable all the Refined wares." />
       <param name="biowares" type="bool" default="false" text="{3282837,119}" comment="Enable all the Bio wares." />
+	  <param name="largelegalwares" type="bool" default="false" text="{3282837,124}" comment="Enable all large volume legal wares." />
+	  <param name="mediumlegalwares" type="bool" default="false" text="{3282837,125}" comment="Enable all medium volume legal wares." />
+	  <param name="smalllegalwares" type="bool" default="false" text="{3282837,126}" comment="Enable all small volume legal wares." />
       
       <!-- Allow Players to exclude sectors for whatever reason. -->
       <param name="excludedsectors" default="[]" type="list" text="{3282837,120}" comment="Sectors the player wants excluded from trade searches.">
@@ -111,7 +115,7 @@
 	  
       
       <!-- If your looking into tweaking this, be aware that high space speeds may cause performance issues. -->
-      <param name="scanspeed" default="5" type="number" text="{3282837,123}" comment="How fast do we calculate?">
+      <param name="scanspeed" default="5" type="number" text="Scan Speed" comment="How fast do we calculate?">
         <input_param name="startvalue" value="5"/>
         <input_param name="min" value="1"/>
         <input_param name="max" value="15"/>
@@ -139,6 +143,7 @@
   <init>
     <!-- <set_value name="$object" exact="this.assignedcontrolled" /> -->
 	<set_value name="$TaterDebugChance" exact="false" />
+	<set_value name="$debugchance" exact="0" />
     <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Starting Log File Version: 4'" output="false" append="false" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
     
     <set_order_syncpoint_reached order="this.ship.order"/>
@@ -286,6 +291,21 @@
       <set_value name="$distancecheckpercent" exact="2"/>
     </do_if>
   </patch>
+  <patch sinceversion="6">
+	<do_if value="$largelegalwares == null">
+      <set_value name="$largelegalwares" exact="false"/>
+    </do_if>
+	<do_if value="$mediumlegalwares == null">
+      <set_value name="$mediumlegalwares" exact="false"/>
+    </do_if>
+	<do_if value="$smalllegalwares == null">
+      <set_value name="$smalllegalwares" exact="false"/>
+    </do_if>
+	<do_if value="this.assignedcontrolled.hasownaccount and not this.assignedcontrolled.tradeorders.count">
+      <!-- NB: at the moment, ships only have temporary accounts set up when they have trade orders. These temp accounts are cleared when the trades are cleaned up. -->
+      <remove_object_account object="this.assignedcontrolled" transfer="true"/>
+    </do_if>
+  </patch>
 
   <!-- Lets code the actual trade logic here. -->
   <attention min="unknown">
@@ -304,142 +324,140 @@
  
       <label name="detectpresets" />
       <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Detecting Presets!'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-      <!-- Figure out what we are ment to trade, may be a combination of checkboxes and manually added wares. -->
-      <set_value name="$addtolist" exact="false"/>
-      <set_value name="$gotowarelist" exact="0"/>
-      <set_value name="$warestoadd" exact="[]"/>
 
-      <do_if value="$allwares">
-        <set_value name="$addtolist" exact="true"/>
-        <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Trade All Wares Enabled!'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-        <set_value name="$warestoadd" exact="[ware.spacefuel,ware.spaceweed,ware.advancedcomposites,ware.advancedelectronics,ware.antimattercells,ware.antimatterconverters,ware.claytronics,
-        ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
-        ware.teladianium,ware.turretcomponents,ware.water,ware.wheat,ware.energycells,ware.foodrations,ware.graphene,ware.majadust,ware.majasnails,ware.meat,
-        ware.microchips,ware.quantumtubes,ware.medicalsupplies,ware.missilecomponents,ware.nostropoil,ware.plasmaconductors,ware.smartchips,ware.sojabeans,
-        ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents,ware.cheltmeat,ware.scruffinfruits]"/>
-        <resume label="addtowarelist" />
-      </do_if>
-
-      <label name="warelistloop" />      
+      <label name="warelistloop" /> 
+	  <!-- Let's try to clean this up DA-->
+	  <!-- Goal one, stop this loop DA-->
+	  <!-- We will define the lists for the parameters here, then actually add them to ware basket in next label DA-->
       <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Looping Preset Lists! Loop: '+$gotowarelist" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-      <set_value name="$listchecked" exact="false"/>
-      <set_value name="$addtolist" exact="false"/>
-
-      <do_if value="$gotowarelist == 0">
-        <do_if value="$legalwares">
-          <set_value name="$warestoadd" exact="[ware.advancedcomposites,ware.advancedelectronics,ware.antimattercells,ware.antimatterconverters,ware.claytronics,
-          ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
-          ware.teladianium,ware.turretcomponents,ware.water,ware.wheat,ware.energycells,ware.foodrations,ware.graphene,ware.majasnails,ware.meat,
-          ware.microchips,ware.quantumtubes,ware.medicalsupplies,ware.missilecomponents,ware.nostropoil,ware.plasmaconductors,ware.smartchips,ware.sojabeans,
-          ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents,ware.cheltmeat,ware.scruffinfruits]"/>
-          <set_value name="$addtolist" exact="true"/>
-        </do_if>
-        <set_value name="$listchecked" exact="true"/>
-        <resume label="addtowarelist" />
-      </do_if>
-
-      <do_if value="$gotowarelist == 1">
-        <do_if value="$illegalwares">
-          <set_value name="$warestoadd" exact="[ware.spacefuel,ware.spaceweed,ware.majadust]"/>
-          <set_value name="$addtolist" exact="true"/>
-        </do_if>
-        <set_value name="$listchecked" exact="true"/>
-        <resume label="addtowarelist" />
-      </do_if>
-
-      <do_if value="$gotowarelist == 2">
-        <do_if value="$shipbuildingwares">
-          <set_value name="$warestoadd" exact="[ware.advancedelectronics,ware.antimatterconverters,ware.engineparts,ware.hullparts,ware.smartchips,ware.weaponcomponents]"/>
-          <set_value name="$addtolist" exact="true"/>
-        </do_if>
-        <set_value name="$listchecked" exact="true"/>
-        <resume label="addtowarelist" />
-      </do_if>
-
-      <do_if value="$gotowarelist == 3">
-        <do_if value="$stationbuildingwares">
-          <set_value name="$warestoadd" exact="[ware.claytronics,ware.energycells,ware.hullparts]"/>
-          <set_value name="$addtolist" exact="true"/>
-        </do_if>
-        <set_value name="$listchecked" exact="true"/>
-        <resume label="addtowarelist" />
-      </do_if>
-
-      <do_if value="$gotowarelist == 4">
-        <do_if value="$hightechwares">
-          <set_value name="$warestoadd" exact="[ware.advancedcomposites,ware.advancedelectronics,ware.antimatterconverters,ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.microchips,ware.missilecomponents,ware.plasmaconductors,ware.quantumtubes,ware.scanningarrays,ware.shieldcomponents,ware.smartchips,ware.turretcomponents,ware.weaponcomponents]"/>
-          <set_value name="$addtolist" exact="true"/>
-        </do_if>
-        <set_value name="$listchecked" exact="true"/>
-        <resume label="addtowarelist" />
-      </do_if>
-
-      <do_if value="$gotowarelist == 5">
-        <do_if value="$refinedwares">
-          <set_value name="$warestoadd" exact="[ware.antimattercells,ware.energycells,ware.graphene,ware.superfluidcoolant,ware.refinedmetals,ware.siliconwafers,ware.teladianium]"/>
-          <set_value name="$addtolist" exact="true"/>
-        </do_if>
-        <set_value name="$listchecked" exact="true"/>
-        <resume label="addtowarelist" />
-      </do_if>
-
-      <do_if value="$gotowarelist == 6">
-        <do_if value="$biowares">
-          <set_value name="$warestoadd" exact="[ware.spices,ware.meat,ware.wheat,ware.sojabeans,ware.majasnails,ware.sunriseflowers,ware.swampplant,ware.foodrations,ware.medicalsupplies,ware.sojahusk,ware.nostropoil,ware.water,ware.cheltmeat,ware.scruffinfruits]"/>
-          <set_value name="$addtolist" exact="true"/>
-        </do_if>
-        <set_value name="$listchecked" exact="true"/>
-        <resume label="addtowarelist" />
-      </do_if>
-
-      <!-- Heres a Code example on how to add a additional preset wares list.
-      <do_if value="$gotowarelist == 7"> - - - - Increment the number in this to allow recursive checking - - - -
-        <do_if value="$variable_to_enable"> - - - - Change this variable to whatever new checkbox you add to enable the list. - - - -
-          <set_value name="$warestoadd" exact="[]"/> - - - - This is the list of wares to add when this preset is enabled - - - -
-          <set_value name="$addtolist" exact="true"/>
-        </do_if>
-        <set_value name="$listchecked" exact="true"/>
-        <resume label="addtowarelist" />
-      </do_if>
-      -->
+	  <!-- We will set the ware lists here, then process in the next label DA-->
+	
+	<do_if value="$usepresets">
+		<do_if value="$allwares">
+			<set_value name="$allwareslist" exact="[ware.spacefuel,ware.spaceweed,ware.advancedcomposites,ware.advancedelectronics,ware.antimattercells,ware.antimatterconverters,ware.claytronics,
+				ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
+				ware.teladianium,ware.turretcomponents,ware.water,ware.wheat,ware.energycells,ware.foodrations,ware.graphene,ware.majadust,ware.majasnails,ware.meat,
+				ware.microchips,ware.quantumtubes,ware.medicalsupplies,ware.missilecomponents,ware.nostropoil,ware.plasmaconductors,ware.smartchips,ware.sojabeans,
+				ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents]"/>
+			<!-- lets make this compatible for DLC and non DLC DA-->
+			<do_if value="@ware.cheltmeat.id">
+				<append_list_elements name="$allwareslist" other="[ware.cheltmeat,ware.scruffinfruits]" />
+			</do_if>
+			<resume label="addtowarelist" />
+		</do_if>
+		<do_else>
+			<do_if value="$legalwares">
+				<set_value name="$legalwareslist" exact="[ware.advancedcomposites,ware.advancedelectronics,ware.antimattercells,ware.antimatterconverters,ware.claytronics,
+					ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
+					ware.teladianium,ware.turretcomponents,ware.water,ware.wheat,ware.energycells,ware.foodrations,ware.graphene,ware.majasnails,ware.meat,
+					ware.microchips,ware.quantumtubes,ware.medicalsupplies,ware.missilecomponents,ware.nostropoil,ware.plasmaconductors,ware.smartchips,ware.sojabeans,
+					ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents]"/>
+				<!-- lets make this compatible for DLC and non DLC DA-->
+				<do_if value="@ware.cheltmeat.id">
+					<append_list_elements name="$legalwareslist" other="[ware.cheltmeat,ware.scruffinfruits]" />
+				</do_if>
+			</do_if>
+			<do_if value="$illegalwares">
+				<set_value name="$illegalwareslist" exact="[ware.spacefuel,ware.spaceweed,ware.majadust]"/>
+			</do_if>
+			<do_if value="$shipbuildingwares">
+				<set_value name="$shipbuildingwareslist" exact="[ware.advancedelectronics,ware.antimatterconverters,ware.engineparts,ware.hullparts,ware.smartchips,ware.weaponcomponents]"/>
+			</do_if>
+			<do_if value="$stationbuildingwares">
+				<set_value name="$stationbuildingwareslist" exact="[ware.claytronics,ware.energycells,ware.hullparts]"/>
+			</do_if>
+			<do_if value="$hightechwares">
+				<set_value name="$hightechwareslist" exact="[ware.advancedcomposites,ware.advancedelectronics,ware.antimatterconverters,ware.dronecomponents,ware.engineparts,
+					ware.fieldcoils,ware.hullparts,ware.microchips,ware.missilecomponents,ware.plasmaconductors,ware.quantumtubes,ware.scanningarrays,ware.shieldcomponents,
+					ware.smartchips,ware.turretcomponents,ware.weaponcomponents]"/>
+			</do_if>
+			<do_if value="$refinedwares">
+				<set_value name="$refinedwareslist" exact="[ware.antimattercells,ware.energycells,ware.graphene,ware.superfluidcoolant,ware.refinedmetals,ware.siliconwafers,ware.teladianium]"/>
+			</do_if>
+			<do_if value="$biowares">
+				<set_value name="$biowareslist" exact="[ware.spices,ware.meat,ware.wheat,ware.sojabeans,ware.majasnails,ware.sunriseflowers,ware.swampplant,ware.foodrations,ware.medicalsupplies,
+					ware.sojahusk,ware.nostropoil,ware.water]"/>
+				<!-- lets make this compatible for DLC and non DLC DA-->
+				<do_if value="@ware.cheltmeat.id">
+					<append_list_elements name="$biowareslist" other="[ware.cheltmeat,ware.scruffinfruits]" />
+				</do_if>
+			</do_if>
+			<do_if value="$largelegalwares">
+				<set_value name="$largelegalwareslist" exact="[ware.scanningarrays,ware.plasmaconductors,ware.advancedcomposites,ware.dronecomponents,ware.advancedelectronics,
+					ware.claytronics,ware.quantumtubes,ware.microchips,ware.weaponcomponents,ware.turretcomponents]"/>
+			</do_if>
+			<do_if value="$mediumlegalwares">
+				<set_value name="$mediumlegalwareslist" exact="[ware.siliconwafers,ware.antimattercells,ware.teladianium,ware.superfluidcoolant,ware.engineparts,ware.fieldcoils,
+					ware.refinedmetals,ware.hullparts,ware.antimatterconverters,ware.shieldcomponents]"/>
+			</do_if>
+			<do_if value="$smalllegalwares">
+				<set_value name="$smalllegalwareslist" exact="[ware.majasnails,ware.water,ware.swampplant,ware.meat,ware.sunriseflowers,ware.sojabeans,ware.wheat,ware.spices,
+					ware.missilecomponents,ware.medicalsupplies,ware.smartchips,ware.sojahusk,ware.energycells,ware.nostropoil,ware.foodrations]"/>
+			</do_if>
+		</do_else>
+	</do_if>
 
       <label name="addtowarelist" />
-      <!-- This allows us to bulk add wares to the basket, but this is horribly inefficent. I need a better way to prevent adding duplicates. -->
-      <do_if value="$addtolist or $listchecked">
-        <do_if value="$warestoadd.count gt 0">
-          <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Adding wares to basket! Wares: '+$warestoadd.count" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-          <do_all exact="$warestoadd.count" counter="$ware">
-            <set_value name="$addtolist" exact="true"/>
-            <do_if value="$warebasket.count gt 0">
-              <do_all exact="$warebasket.count" counter="$basket">
-                <do_if value="$warestoadd.{$ware} == $warebasket.{$basket}">
-                  <set_value name="$addtolist" exact="false"/>
-                </do_if>
-              </do_all>
-            </do_if>
-            <do_if value="$addtolist">
-              <append_to_list name="$warebasket" exact="$warestoadd.{$ware}"/>
-              <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Adding Ware: ('+$warestoadd.{$ware}+') to basket'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-            </do_if>
-          </do_all>
-        </do_if>
-
-        <set_value name="$listchecked" exact="false"/>
-        <set_value name="$addtolist" exact="false"/>
-        <set_value name="$warestoadd" exact="[]"/>
-        <set_value name="$gotowarelist" exact="$gotowarelist+1"/>
-        <resume label="warelistloop" />
-      </do_if>
-
-      <remove_value name="$listchecked"/>
-      <remove_value name="$addtolist"/>
-      <remove_value name="$warestoadd"/>
-      <remove_value name="$gotowarelist"/>
+	  <!-- No looping, just checking if a ware list exists, then removing the list (prevents duplicates), and adding it back in DA-->
+	<do_if value="$allwares">
+		<remove_from_list name="$warebasket" list="$allwareslist" multiple="true" />
+		<append_list_elements name="$warebasket" other="$allwareslist" />
+	</do_if>
+	<do_else>
+		<do_if value="$legalwares">
+			<remove_from_list name="$warebasket" list="$legalwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$legalwareslist" />
+		</do_if>
+		<do_if value="$illegalwares">
+			<remove_from_list name="$warebasket" list="$illegalwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$illegalwareslist" />
+		</do_if>
+		<do_if value="$shipbuildingwares">
+			<remove_from_list name="$warebasket" list="$shipbuildingwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$shipbuildingwareslist" />
+		</do_if>
+		<do_if value="$stationbuildingwares">
+			<remove_from_list name="$warebasket" list="$stationbuildingwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$stationbuildingwareslist" />
+		</do_if>
+		<do_if value="$hightechwares">
+			<remove_from_list name="$warebasket" list="$hightechwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$hightechwareslist" />
+		</do_if>
+		<do_if value="$refinedwares">
+			<remove_from_list name="$warebasket" list="$refinedwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$refinedwareslist" />
+		</do_if>
+		<do_if value="$biowares">
+			<remove_from_list name="$warebasket" list="$biowareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$biowareslist" />
+		</do_if>
+		<do_if value="$largelegalwares">
+			<remove_from_list name="$warebasket" list="$largelegalwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$largelegalwareslist" />
+		</do_if>
+		<do_if value="$mediumlegalwares">
+			<remove_from_list name="$warebasket" list="$mediumlegalwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$mediumlegalwareslist" />
+		</do_if>
+		<do_if value="$smalllegalwares">
+			<remove_from_list name="$warebasket" list="$smalllegalwareslist" multiple="true" />
+			<append_list_elements name="$warebasket" other="$smalllegalwareslist" />
+		</do_if>
+	</do_else>
+	
+	<sort_list list="$warebasket" sortbyvalue="loop.element.volume" sortdescending="true"/>
+	
 
       <label name="start" />
       <set_command_action commandaction="commandaction.searchingtrades" />
       <!-- Figure out what we are ment to do, free trading or station supply. -->
       <!-- For now assuming sector based trade. -->
+	  
+	  <!-- remove old account DA-->
+	<do_if value="this.assignedcontrolled.hasownaccount and not this.assignedcontrolled.tradeorders.count">
+		<remove_object_account object="this.assignedcontrolled" transfer="true"/>
+	</do_if>
       
       <do_if value="$home.isclass.space">
         <set_value name="$range" exact="$home" />
@@ -558,9 +576,9 @@
 
       <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Sectors in Range Buy: '+$buyspaces.count+' Sell: '+$sellspaces.count" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
       <!-- What wares do we currently have, lets try to sell them to the highest bidder. -->
- 		  <set_value name="$Cargo" exact="this.ship.cargo.list" />
+	  <set_value name="$Cargo" exact="this.ship.cargo.list" />
       <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Scanning CargoBay: '+$Cargo.count" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-		  <do_if value="$Cargo.count gt 0">
+	  <do_if value="$Cargo.count gt 0">
         <do_all exact="$Cargo.count" counter="$ware">
           <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'CargoBay Contains: '+$Cargo.{$ware}+' Amount: '+this.ship.cargo.{$Cargo.{$ware}}.count" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
         </do_all>
@@ -770,7 +788,7 @@
                     <do_if value="$checkdeal">
                       <set_value name="$spendablemoney" exact="player.money/100" />
                       <do_if value="this.ship.commander">
-                        <do_if value="this.ship.commander.hasownaccount"> <!-- For proper compatability with commanders that arnt stations. -->
+                        <do_if value="(this.ship.commander.hasownaccount) and (this.ship.commander.defaultorder.id != 'TaterTrade')"> <!-- For proper compatability with commanders that arnt stations. -->
                           <!--<debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'I have a commander! Has Account: '+this.ship.commander.hasownaccount" output="false" append="true" /> -->
                           <set_value name="$spendablemoney" exact="this.ship.commander.money/100" />
                         </do_if>
@@ -907,7 +925,7 @@
 
                   <set_value name="$spendablemoney" exact="player.money/100" />
                   <do_if value="this.ship.commander">
-                    <do_if value="this.ship.commander.hasownaccount"> <!-- For proper compatability with commanders that arnt stations. -->
+                    <do_if value="(this.ship.commander.hasownaccount) and (this.ship.commander.defaultorder.id != 'TaterTrade')"> <!-- For proper compatability with commanders that arnt stations. -->
                       <!--<debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'I have a commander! Has Account: '+this.ship.commander.hasownaccount" output="false" append="true" /> -->
                       <set_value name="$spendablemoney" exact="this.ship.commander.money/100" />
                     </do_if>
@@ -1108,7 +1126,7 @@
                     
                     <set_value name="$spendablemoney" exact="player.money/100" />
                     <do_if value="this.ship.commander">
-                      <do_if value="this.ship.commander.hasownaccount"> <!-- For proper compatability with commanders that arnt stations. -->
+                      <do_if value="(this.ship.commander.hasownaccount) and (this.ship.commander.defaultorder.id != 'TaterTrade')"> <!-- For proper compatability with commanders that arnt stations. -->
                         <!--  <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'I have a commander!'" output="false" append="true" /> -->
                         <set_value name="$spendablemoney" exact="this.ship.commander.money/100" />
                       </do_if>
@@ -1236,7 +1254,7 @@
       <do_if value="$GrofitFound or $StationTrade">
         <set_value name="$spendablemoney" exact="player.money/100" />
         <do_if value="this.ship.commander">
-          <do_if value="this.ship.commander.hasownaccount"> <!-- For proper compatability with commanders that arnt stations. -->
+          <do_if value="(this.ship.commander.hasownaccount) and (this.ship.commander.defaultorder.id != 'TaterTrade')"> <!-- For proper compatability with commanders that arnt stations. -->
             <!-- <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'I have a commander!'" output="false" append="true" /> -->
             <set_value name="$spendablemoney" exact="this.ship.commander.money/100" />
           </do_if>
@@ -1354,7 +1372,8 @@
       <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Orders Should of finished by now.'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 
       <!-- Add a delay after the order "ends" -->
-      <wait exact="200ms"/>
+	  <!-- Longer wait DA-->
+      <wait min="1s" max="5s"/>
       <debug_to_file name="this.ship.knownname" directory="'TaterTrader'" text="'Resetting Log File Version: 4'" output="false" append="false" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
       <resume label="start" />
       <!-- Might need a way to restart the script after a amount of time to prevent the build up of issues. -->
