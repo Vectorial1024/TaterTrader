@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
  <!-- TaterTrade Ai, Created by Ludsoe. Version 4-->
  <!-- Maintained by DeadAir. Version 5+-->
-<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="8">
+<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="9">
   <order id="TaterTrade" name="TaterTrade" description="Advanced Trader Logic" category="trade" infinite="true">
     <params>
       <!-- Define where the trader will base itself -->
@@ -144,7 +144,7 @@
     <!-- <set_value name="$object" exact="this.assignedcontrolled" /> -->
 	<set_value name="$TaterDebugChance" exact="false" />
 	<set_value name="$debugchance" exact="0" />
-    <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Starting Log File Version: 8'" output="false" append="false" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+    <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Starting Log File Version: 9'" output="false" append="false" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
     
     <set_order_syncpoint_reached order="this.ship.order"/>
 
@@ -346,6 +346,9 @@
 			<resume label="addtowarelist" />
 		</do_if>
 		<do_else>
+			<!-- this should solve the zombie problem but will also clear all player added wares -->
+			<!-- going to have to add yet another parameter, sorry vectorial -->
+			<clear_list list="$warebasket" />
 			<do_if value="$legalwares">
 				<set_value name="$legalwareslist" exact="[ware.advancedcomposites,ware.advancedelectronics,ware.antimattercells,ware.antimatterconverters,ware.claytronics,
 					ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
@@ -882,7 +885,7 @@
           <do_all exact="$Cargo.count" counter="$ware">
             <find_buy_offer tradepartner="this.ship" space="$sellspaces.{$sector}" result="$buyers" wares="$Cargo.{$ware}" multiple="true">
               <match_buyer>
-                <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
+                <match_relation_to object="this.ship" relation="dock" comparison="ge" />
                 <match tradesknownto="this.owner"/>
 				<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
               </match_buyer>
@@ -949,7 +952,7 @@
 
               <set_value name="$totalearned" exact="$distancescale*($Amount)f*($buycost)f"/>
 
-              <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Buy Offer for: '+$buyoffer.ware+' at '+$buyoffer.buyer.knownname+' Amount: '+$Amount+' DesiredAmount: '+$buyoffer.desiredamount+' OfferAmount: '+$buyoffer.offeramount+' Stock: '+$buyoffer.stocklevel+' Profit: '+ $Amount*$buycost+' Payout: '+$buycost+' Distance: '+$distance+' DistanceScale: '+$distancescale+' Scaled: '+$totalearned+' HighestGrofit: '+$Grofit+' Available: '+$buyoffer.available+' Restricted: '+$buyoffer.restriction.faction+' MinAmount: '+$buyoffer.minamount+' IsMission: '+$buyoffer.ismission+' IsExchange: '+$buyoffer.iswareexchange+' FreeSpace: '+$buyoffer.buyer.cargo.{$buyoffer.ware}.free+' CommandersMoney: '+$buyoffer.buyer.money+' Exists: '+$buyoffer.exists+' Ware Illegal: '+$buyoffer.ware.illegalto.{$buyoffer.buyer.owner}.{null}" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+              <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Buy Offer for: '+$buyoffer.ware+' at '+$buyoffer.buyer.knownname+' Amount: '+$Amount+' DesiredAmount: '+$buyoffer.desiredamount+' OfferAmount: '+$buyoffer.offeramount+' Stock: '+$buyoffer.stocklevel+' Profit: '+ $Amount*$buycost+' Payout: '+$buycost+' Distance: '+$distance+' DistanceScale: '+$distancescale+' Scaled: '+$totalearned+' HighestGrofit: '+$Grofit+' Available: '+$buyoffer.available+' Restricted: '+$buyoffer.restriction.factions.count+' MinAmount: '+$buyoffer.minamount+' IsMission: '+$buyoffer.ismission+' IsExchange: '+$buyoffer.iswareexchange+' FreeSpace: '+$buyoffer.buyer.cargo.{$buyoffer.ware}.free+' CommandersMoney: '+$buyoffer.buyer.money+' Exists: '+$buyoffer.exists+' Ware Illegal: '+$buyoffer.ware.illegalto.{$buyoffer.buyer.owner}.{null}" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
               <do_if value="$totalearned gt $Grofit"> <!-- is it a better deal then the last check? -->
                 <set_value name="$Grofit" exact="$totalearned" />
                 <set_value name="$GrofferBuy" exact="$buyoffer" />
@@ -1021,12 +1024,20 @@
               <!-- Scan for routes we can run, then save them -->
               <set_value name="$foundbuyers" exact="[]" />
               <do_all exact="$sellspaces.count" counter="$sector">
-                <find_buy_offer tradepartner="this.ship" space="$sellspaces.{$sector}" result="$buyers" wares="$stationselloffer.ware" multiple="true">
-                  <match_buyer>
-                    <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
-                    <match tradesknownto="this.owner"/>
-                  </match_buyer>
-                </find_buy_offer>
+                <do_if value="($stationselloffer.restriction.factions.count != 0 and $stationselloffer.restriction.factions != null)">
+					<find_buy_offer tradepartner="this.ship" space="$sellspaces.{$sector}" result="$buyers" wares="$stationselloffer.ware" multiple="true">
+					  <match_buyer owner="$stationselloffer.restriction.factions" negateownerfilter="$stationselloffer.restriction.inverted" tradesknownto="this.owner">
+						<match_relation_to object="this.ship" relation="dock" comparison="ge" />
+					  </match_buyer>
+					</find_buy_offer>
+				</do_if>
+				<do_else>
+					<find_buy_offer tradepartner="this.ship" space="$sellspaces.{$sector}" result="$buyers" wares="$stationselloffer.ware" multiple="true">
+					  <match_buyer tradesknownto="this.owner">
+						<match_relation_to object="this.ship" relation="dock" comparison="ge" />
+					  </match_buyer>
+					</find_buy_offer>
+				</do_else>
 
                 <set_value name="$scantick" exact="$scantick+1" />
                 <do_if value="$scantick gt $scantickrate">
@@ -1052,7 +1063,7 @@
                   <set_value name="$wareprice" exact="$foundbuyoffer.unitprice/100*$discount2/100" />
                 </do_if>
 
-                <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning buy offer for ('+$foundbuyoffer.ware+') at ('+$foundbuyoffer.buyer.knownname+') Price: '+$wareprice+' Amount: '+$foundbuyoffer.amount+' Faction: '+$foundbuyoffer.buyer.owner+' Restriction: '+$foundbuyoffer.restriction.faction+' Raw OfferPrice: '+$foundbuyoffer.unitprice/100+' Relation: '+$foundbuyoffer.buyer.relationto.{this.ship.owner}+' Gate Distance: '+$home.gatedistance.{$foundbuyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+$home.distanceto.{$foundbuyoffer.buyer}" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+                <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning buy offer for ('+$foundbuyoffer.ware+') at ('+$foundbuyoffer.buyer.knownname+') Price: '+$wareprice+' Amount: '+$foundbuyoffer.amount+' Faction: '+$foundbuyoffer.buyer.owner+' Restriction: '+$foundbuyoffer.restriction.factions.count+' Raw OfferPrice: '+$foundbuyoffer.unitprice/100+' Relation: '+$foundbuyoffer.buyer.relationto.{this.ship.owner}+' Gate Distance: '+$home.gatedistance.{$foundbuyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+$home.distanceto.{$foundbuyoffer.buyer}" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 
                 <do_if value="$wareprice gt $stationselloffer.unitprice/100"> <!-- Only consider the trade if they are paying more then the station is selling, we arnt a charity here. -->
                   <do_if value="$wareprice gt $bestprice"> <!-- Is it better then the previus best deal? -->
@@ -1070,21 +1081,15 @@
                         </do_if>
                       </do_all>
                     </do_if>
-
-                    <!-- Check if the trade deal is restricted -->
-                    <do_if value="not ($stationselloffer.restriction.faction == null)">
-                      <do_if value="not ($stationselloffer.restriction.faction == $foundbuyoffer.buyer.owner) or not ($foundbuyoffer.restriction.faction == $stationselloffer.seller.owner) or not ($foundbuyoffer.restriction.faction == $stationselloffer.restriction.faction)">
-                        <set_value name="$checkdeal" exact="false"/>
-                      </do_if>
-                    </do_if>
-                    
+					
                     <do_if value="$foundbuyoffer.ware.illegalto.{$foundbuyoffer.buyer.owner}.{this.ship.owner}"> 
                       <do_if value="not $blackmarket"> <!-- Dont trade illegal wares automatically, player has to toggle that. -->
                         <set_value name="$checkdeal" exact="false" />
                       </do_if>
                       <!-- <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Ware: '+$stationbuyoffer.ware+' is illegal to '+$stationbuyoffer.buyer.owner+' Adjusting Priority to '+$offerpriority" output="false" append="true" /> -->
                     </do_if>
-
+					
+					
                     <do_if value="$checkdeal">
                       <set_value name="$spendablemoney" exact="player.money/100" />
                       <do_if value="this.ship.commander">
@@ -1180,13 +1185,22 @@
             <do_if value="$offerpriority gt $stockratio">
               <set_value name="$foundseller" exact="[]" />
               <do_all exact="$buyspaces.count" counter="$sector">
-                <find_sell_offer tradepartner="this.ship" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$stationbuyoffer.ware">
-                <match_seller>
-                    <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
-                    <match tradesknownto="this.owner"/>
-					<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
-                </match_seller>
-                </find_sell_offer>
+				<do_if value="($stationbuyoffer.restriction.factions.count != 0 and $stationbuyoffer.restriction.factions != null)">
+					<find_sell_offer tradepartner="this.ship" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$stationbuyoffer.ware">
+						<match_seller owner="$stationbuyoffer.restriction.factions" negateownerfilter="$stationbuyoffer.restriction.inverted" tradesknownto="this.owner">
+							<match_relation_to object="this.ship" relation="dock" comparison="ge" />
+							<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
+						</match_seller>
+					</find_sell_offer>
+				</do_if>
+				<do_else>
+					<find_sell_offer tradepartner="this.ship" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$stationbuyoffer.ware">
+						<match_seller tradesknownto="this.owner">
+							<match_relation_to object="this.ship" relation="dock" comparison="ge" />
+							<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
+						</match_seller>
+					</find_sell_offer>
+				</do_else>
 
                 <set_value name="$scantick" exact="$scantick+1" />
                 <do_if value="$scantick gt $scantickrate">
@@ -1221,11 +1235,6 @@
                   </do_all>
                 </do_if>
 
-                <!-- Check if the trade deal is restricted -->
-                <do_if value="not ($foundselloffer.restriction.faction == $stationbuyoffer.buyer.owner) and not ($stationbuyoffer.restriction.faction == $foundselloffer.seller.owner) and not ($stationbuyoffer.restriction.faction == $foundselloffer.restriction.faction)">
-                  <set_value name="$checkdeal" exact="false"/>
-                </do_if>
-
                 <do_if value="$checkdeal">
                   <set_value name="$wareprice" exact="$foundselloffer.unitprice/100" />
                   <do_if value="$foundselloffer.seller.owner == this.ship.owner">
@@ -1249,7 +1258,7 @@
                   </do_else>
                   <!--<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'SpaceLeft: '+this.ship.cargo.{$stationbuyoffer.ware}.free+' BuyAmount: '+$stationbuyoffer.amount+' SellAmount: '+$foundselloffer.amount+' AmountAfforded: '+$spendablemoney/(2*$wareprice)" output="false" append="true" /> -->
 
-                  <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning sell offer for ( '+$Amount+' '+$stationbuyoffer.ware+' ) at ('+$foundselloffer.seller.knownname+') Price: '+$wareprice+' Faction: '+$foundselloffer.seller.owner+' Restriction: '+$foundselloffer.restriction.faction+' Raw OfferPrice: '+$foundselloffer.unitprice/100+' BuyAmount: '+$stationbuyoffer.amount+' SellAmount: '+$foundselloffer.amount" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+                  <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning sell offer for ( '+$Amount+' '+$stationbuyoffer.ware+' ) at ('+$foundselloffer.seller.knownname+') Price: '+$wareprice+' Faction: '+$foundselloffer.seller.owner+' Restriction: '+$foundselloffer.restriction.factions.count+' Raw OfferPrice: '+$foundselloffer.unitprice/100+' BuyAmount: '+$stationbuyoffer.amount+' SellAmount: '+$foundselloffer.amount" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 
                   <do_if value="$wareprice lt $stationbuyoffer.unitprice/100"> <!-- Is the station selling it cheaper then we are asking? -->
                     <do_if value="($wareprice lt $bestprice) or ($Amount gt $bestamount)"> <!-- Is it better then the previus best deal? -->
@@ -1327,7 +1336,7 @@
       -->
 
       <do_if value="not ($warebasket.count gt 0)">
-        <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'\nNo Wares Detected! Resetting to start! Log File Version: 8'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+        <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'\nNo Wares Detected! Resetting to start! Log File Version: 9'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
         <wait exact="100ms" />
         <resume label="start" />
       </do_if>
@@ -1351,7 +1360,7 @@
           <!-- <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Scanning Sector for buy offers: '+$sellspaces.{$sector}" output="false" append="true" /> -->
           <find_buy_offer tradepartner="this.ship" space="$sellspaces.{$sector}" result="$buyers" multiple="true" wares="$warebasket.{$ware}">
           <match_buyer>
-            <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
+            <match_relation_to object="this.ship" relation="dock" comparison="ge" />
             <match tradesknownto="this.owner"/>
 			<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
           </match_buyer>
@@ -1373,7 +1382,7 @@
           <!-- <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Scanning Sector for sell offers: '+$buyspaces.{$sector}" output="false" append="true" /> -->
           <find_sell_offer tradepartner="this.ship" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$warebasket.{$ware}">
           <match_seller>
-              <match_relation_to object="this.ship" relation="enemy" comparison="not"/>
+              <match_relation_to object="this.ship" relation="dock" comparison="ge" />
               <match tradesknownto="this.owner"/>
 			  <match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.ship"/>
           </match_seller>
@@ -1420,7 +1429,7 @@
                 <set_value name="$buycost" exact="$buyoffer.unitprice/100*$discount2/100" />
                 <!-- <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'This buyer has the same owner as us, or the buy price is '+$buycost" output="false" append="true" />  -->
               </do_if>
-              <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="' Scanning buy offer for ('+$buyoffer.ware+') at ('+$buyoffer.buyer.knownname+') Price: '+$buycost+' Faction: '+$buyoffer.buyer.owner+' Restriction: '+$buyoffer.restriction.faction+' Raw OfferPrice: '+$buyoffer.unitprice/100+' Relation: '+$buyoffer.buyer.relationto.{this.ship.owner}+' Gate Distance: '+this.ship.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+this.ship.distanceto.{$buyoffer.buyer}" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+              <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="' Scanning buy offer for ('+$buyoffer.ware+') at ('+$buyoffer.buyer.knownname+') Price: '+$buycost+' Faction: '+$buyoffer.buyer.owner+' Restriction: '+$buyoffer.restriction.factions.count+' Raw OfferPrice: '+$buyoffer.unitprice/100+' Relation: '+$buyoffer.buyer.relationto.{this.ship.owner}+' Gate Distance: '+this.ship.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+this.ship.distanceto.{$buyoffer.buyer}" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
               
               <!-- If fast trade is enabled, and we already scanned for the best sell offer -->
               <do_if value="not $fasttrade or $bestsell == 0">
@@ -1468,15 +1477,44 @@
 
                     <set_value name="$CheckGrofit" exact="false"/>
                     <do_if value="not $bypass and (($selloffer.seller.owner == this.ship.owner) or ($buyoffer.buyer.owner == this.ship.owner))"> <!-- We're dealing with one of our owners stations, take special care here. -->
-                      <!-- <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Our owner ones one of these stations, additional checks are inplace.'" output="false" append="true" /> -->
-                      <!-- Try to allow trade between owned stations regardless of restriction. -->
-                      <do_if value="($selloffer.restriction.faction == $buyoffer.buyer.owner) or ($buyoffer.restriction.faction == $selloffer.seller.owner) or ($buyoffer.restriction.faction == $selloffer.restriction.faction)">
-                        <set_value name="$CheckGrofit" exact="true"/>
-                      </do_if>
-
-                      <do_if value="not ($selloffer.restriction.faction == null)">
-                        <set_value name="$Rating" exact="$Rating/2"/> <!-- Disadvantage restricted trade deals when calculating the bestdeal for fast trade. -->
-                      </do_if>                 
+						<!-- <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Our owner ones one of these stations, additional checks are inplace.'" output="false" append="true" /> -->
+						<!-- Try to allow trade between owned stations regardless of restriction. -->
+						<!-- trade rules are absolutely annoying, notes from drhay -->
+						<!-- if tradeoffer.restriction.inverted == 1, then the list returned by tradeoffer.restriction.factions is a blacklist. -->
+						<!-- This corresponds to leaving "restrict all factions" blank in the trade rule UI -->
+						<!-- if tradeoffer.restriction.inverted == 0, then the list returned by tradeoffer.restriction.factions is a whitelist. -->
+						<!-- This corresponds to checking the box for "restrict all factions" in the trade rule UI -->
+						<do_if value="($selloffer.restriction.factions.count != 0 and $selloffer.restriction.factions != null) or ($buyoffer.restriction.factions.count != 0 and $buyoffer.restriction.factions != null)">
+							<do_if value="($selloffer.restriction.factions.count != 0 and $selloffer.restriction.factions != null)">
+								<set_value name="$CheckGrofit" exact="true"/>
+								<do_if value="$selloffer.restriction.inverted == 1">
+								  <do_if value="($selloffer.restriction.factions.indexof.{$buyoffer.buyer.owner} gt 0)">
+									<set_value name="$CheckGrofit" exact="false"/>
+								  </do_if>
+								</do_if>
+								<do_elseif value="$selloffer.restriction.inverted == 0">
+								  <do_if value="($selloffer.restriction.factions.indexof.{$buyoffer.buyer.owner} lt 1)">
+									<set_value name="$CheckGrofit" exact="false"/>
+								  </do_if>
+								</do_elseif>
+							</do_if>
+							<do_if value="($buyoffer.restriction.factions.count != 0 and $buyoffer.restriction.factions != null)">
+								<set_value name="$CheckGrofit" exact="true"/>
+								<do_if value="$buyoffer.restriction.inverted == 1">
+								  <do_if value="($buyoffer.restriction.factions.indexof.{$selloffer.seller.owner} gt 0)">
+									<set_value name="$CheckGrofit" exact="false"/>
+								  </do_if>
+								</do_if>
+								<do_elseif value="$buyoffer.restriction.inverted == 0">
+								  <do_if value="($buyoffer.restriction.factions.indexof.{$selloffer.seller.owner} lt 1)">
+									<set_value name="$CheckGrofit" exact="false"/>
+								  </do_if>
+								</do_elseif>
+							</do_if>
+						</do_if>
+						<do_else>
+							<set_value name="$CheckGrofit" exact="true"/>
+						</do_else>                
                     </do_if>
                     <do_else> <!-- We arnt trading with a station our owner owns, no restrictions go! (Or maybe they dont care and allowed free trading for this ship.) -->
                       <set_value name="$CheckGrofit" exact="true"/>
@@ -1505,7 +1543,7 @@
 					  </do_else>
                     </do_if>
                     
-                    <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning sell offer for ('+$buyoffer.ware+') at ('+$selloffer.seller.knownname+') Faction: ('+$selloffer.seller.owner+') Restriction: ('+$selloffer.restriction.faction+') Buying at '+$buycost+' Selling at '+$sellcost+' Average: '+$buyoffer.ware.averageprice/100+' Amount: '+$Amount+' Grofit: '+ $Amount*($buycost-$sellcost)+' Ratio: '+$Ratio+' Rating: '+$Rating+' RawSellOffer Price: '+$selloffer.unitprice/100+' Relation: '+$selloffer.seller.relationto.{this.ship.owner}+' Gate Distance: '+$selloffer.seller.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+$selloffer.seller.distanceto.{$buyoffer.buyer}+' Distance Scale: '+$distancescale" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+                    <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning sell offer for ('+$buyoffer.ware+') at ('+$selloffer.seller.knownname+') Faction: ('+$selloffer.seller.owner+') Restriction: ('+$selloffer.restriction.factions+') Buying at '+$buycost+' Selling at '+$sellcost+' Average: '+$buyoffer.ware.averageprice/100+' Amount: '+$Amount+' Grofit: '+ $Amount*($buycost-$sellcost)+' Ratio: '+$Ratio+' Rating: '+$Rating+' RawSellOffer Price: '+$selloffer.unitprice/100+' Relation: '+$selloffer.seller.relationto.{this.ship.owner}+' Gate Distance: '+$selloffer.seller.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+$selloffer.seller.distanceto.{$buyoffer.buyer}+' Distance Scale: '+$distancescale" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 
                     <do_if value="$bestrating lt $Rating">
                       <set_value name="$bestrating" exact="$Rating"/>
@@ -1550,7 +1588,7 @@
                     <set_value name="$Amount" exact="[this.ship.cargo.{$buyoffer.ware}.free,$buyoffer.amount,$selloffer.amount].min"/>
                   </do_else>                
 
-                  <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning sell offer for ('+$buyoffer.ware+') at ('+$bestsell.seller.knownname+') Faction: ('+$bestsell.seller.owner+') Restriction: ('+$bestsell.restriction.faction+') Buying at '+$buycost+' Selling at '+$sellcost+' Average: '+$buyoffer.ware.averageprice/100+' Amount: '+$Amount+' Grofit: '+ $Amount*($buycost-$sellcost)" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+                  <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning sell offer for ('+$buyoffer.ware+') at ('+$bestsell.seller.knownname+') Faction: ('+$bestsell.seller.owner+') Restriction: ('+$bestsell.restriction.factions+') Buying at '+$buycost+' Selling at '+$sellcost+' Average: '+$buyoffer.ware.averageprice/100+' Amount: '+$Amount+' Grofit: '+ $Amount*($buycost-$sellcost)" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 
                   <do_if value="$Grofit lt $Amount*($buycost-$sellcost)">
                     <set_value name="$Grofit" exact="$Amount*($buycost-$sellcost)" />
@@ -1708,7 +1746,7 @@
       <!-- Add a delay after the order "ends" -->
 	  <!-- Longer wait DA-->
       <wait min="1s" max="5s"/>
-      <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Resetting Log File Version: 8'" output="false" append="false" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+      <debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Resetting Log File Version: 9'" output="false" append="false" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
       <resume label="start" />
       <!-- Might need a way to restart the script after a amount of time to prevent the build up of issues. -->
     </actions>
