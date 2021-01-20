@@ -600,7 +600,10 @@
 					<do_else>
 						<!-- if we reach here, this should be unnecessary -->
 						<set_value name="$QueenIWantToBreakFree" exact="false" />
-						<get_jump_path component="$jumppath" start="$range" end="$sector" multiple="true" useblacklist="$blacklistgroup" refobject="this.assignedcontrolled"/>
+						<get_jump_path component="$jumppath" multiple="true" useblacklist="$blacklistgroup" refobject="this.assignedcontrolled">
+							<start object="$range"/>
+							<end object="$sector"/>
+						</get_jump_path>
 						<!-- if we somehow can't get a jump route but we want to make sure not to remove our home sector -->
 						<do_if value="(($jumppath == null) or ($jumppath.count == 0 )) and ($range != $sector)">
 							<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- JumpPath.count %6 -- REMOVED BECAUSE INVALID JUMP PATH'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,@$jumppath.count]" 
@@ -727,7 +730,10 @@
 					<do_else>
 						<!-- if we reach here, this should be unnecessary -->
 						<set_value name="$QueenIWantToBreakFree" exact="false" />
-						<get_jump_path component="$jumppath" start="$range" end="$sector" multiple="true" useblacklist="$blacklistgroup" refobject="this.assignedcontrolled"/>
+						<get_jump_path component="$jumppath" multiple="true" useblacklist="$blacklistgroup" refobject="this.assignedcontrolled">
+							<start object="$range"/>
+							<end object="$sector"/>
+						</get_jump_path>
 						<!-- if we somehow can't get a jump route but we want to make sure not to remove our home sector -->
 						<do_if value="(($jumppath == null) or ($jumppath.count == 0 )) and ($range != $sector)">
 							<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- JumpPath.count %6 -- REMOVED BECAUSE INVALID JUMP PATH'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,@$jumppath.count]" 
