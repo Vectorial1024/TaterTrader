@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<diff xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd">
+<add sel="//do_if[@value='not $order.requiredskill or (this.combinedskill ge $order.requiredskill)']">
+	<do_if value="$order.id == 'TaterTrade'">
+		<set_value name="$added"/>
+		<run_script name="$scriptname">
+			<param name="home" value="$order.$home"/>
+			<param name="returnhome" value="$order.$returnhome"/>
+			<param name="minbuy" value="$order.$minbuy"/>
+			<param name="maxbuy" value="$order.$maxbuy"/>
+			<param name="minsell" value="$order.$minsell"/>
+			<param name="maxsell" value="$order.$maxsell"/>
+			<param name="distancecheck" value="$order.$distancecheck"/>
+			<param name="distancecheckpercent" value="$order.$distancecheckpercent"/>
+			<param name="discount" value="$order.$discount"/>
+			<param name="discount2" value="$order.$discount2"/>
+			<param name="bypass" value="$order.$bypass"/>
+			<param name="fasttrade" value="$order.$fasttrade"/>
+			<param name="stationmode" value="$order.$stationmode"/>
+			<param name="blackmarket" value="$order.$blackmarket"/>
+			<param name="warebasket" value="$order.$warebasket"/>
+			<param name="usepresets" value="$order.$usepresets"/>
+			<param name="allwares" value="$order.$allwares"/>
+			<param name="legalwares" value="$order.$legalwares"/>
+			<param name="illegalwares" value="$order.$illegalwares"/>
+			<param name="shipbuildingwares" value="$order.$shipbuildingwares"/>
+			<param name="stationbuildingwares" value="$order.$stationbuildingwares"/>
+			<param name="hightechwares" value="$order.$hightechwares"/>
+			<param name="refinedwares" value="$order.$refinedwares"/>
+			<param name="biowares" value="$order.$biowares"/>
+			<param name="largelegalwares" value="$order.$largelegalwares"/>
+			<param name="mediumlegalwares" value="$order.$mediumlegalwares"/>
+			<param name="smalllegalwares" value="$order.$smalllegalwares"/>
+			<param name="excludedsectors" value="$order.$excludedsectors"/>
+			<param name="includedsectors" value="$order.$includedsectors"/>
+			<param name="enablebans" value="$order.$enablebans"/>
+			<param name="playerban" value="$order.$playerban"/>
+			<param name="argonban" value="$order.$argonban"/>
+			<param name="antigoneban" value="$order.$antigoneban"/>
+			<param name="teladiban" value="$order.$teladiban"/>
+			<param name="ministryban" value="$order.$ministryban"/>
+			<param name="paranidban" value="$order.$paranidban"/>
+			<param name="holyorderban" value="$order.$holyorderban"/>
+			<param name="allianceban" value="$order.$allianceban"/>
+			<param name="trinityban" value="$order.$trinityban"/>
+			<param name="splitban" value="$order.$splitban"/>
+			<param name="freesplitban" value="$order.$freesplitban"/>
+			<param name="courtban" value="$order.$courtban"/>
+			<param name="buccaneersban" value="$order.$buccaneersban"/>
+			<param name="fallensplitban" value="$order.$fallensplitban"/>
+			<param name="hatikvahban" value="$order.$hatikvahban"/>
+			<param name="scaleplateban" value="$order.$scaleplateban"/>
+			<param name="scanspeed" value="$order.$scanspeed"/>
+		</run_script>
+	</do_if>
+</add>
+</diff>
