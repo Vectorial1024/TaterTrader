@@ -48,5 +48,7 @@
  <t id="209">Comercial de la Estación: Comprando %1 %2 desde %3 al precio de %4. El beneficio esperado es de %5 Cr.</t>
 <!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
  <t id="210">Comercial de la Estación: Obteniendo %1 %2 para %3 desde %4.</t>
+<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
+ <t id="211">Failed to find a trade %1 times. Request assistance.</t>
 </page>
 </language>

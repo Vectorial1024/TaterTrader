@@ -48,5 +48,7 @@
  <t id="209">Торговец станции: Покупка %1 %2 для %3 по цене %4. Ожидаемая стоимость %5.</t>
 <!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
  <t id="210">Торговец станции: Поиск %1 %2 для %3 из %4.</t>
+<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
+ <t id="211">Failed to find a trade %1 times. Request assistance.</t>
 </page>
 </language>
