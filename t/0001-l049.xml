@@ -50,5 +50,8 @@
  <t id="210">Stationshändler: Besorge %1 %2 für je %3 Cr von %4.</t>
 <!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
  <t id="211">Failed to find a trade %1 times. Request assistance.</t>
+ <t id="127">Ignore Buy Trade Restrictions</t>
+ <t id="128">Ignore Sell Trade Restrictions</t>
+ <t id="129">Enable Logbook Messages</t>
 </page>
 </language>

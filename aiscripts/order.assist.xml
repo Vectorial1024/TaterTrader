@@ -51,6 +51,7 @@
 			<param name="hatikvahban" value="$order.$hatikvahban"/>
 			<param name="scaleplateban" value="$order.$scaleplateban"/>
 			<param name="scanspeed" value="$order.$scanspeed"/>
+			<param name="enablelogbook" value="$order.$enablelogbook"/>
 		</run_script>
 	</do_if>
 </add>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- TaterTrade Ai, Created by Ludsoe. Version 4-->
 <!-- Maintained by DeadAir. Version 5+-->
-<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="10">
+<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="11">
 	<order id="TaterTrade" name="TaterTrade" description="Advanced Trader Logic" category="trade" infinite="true" allowinloop="false">
 		<params>
 			<!-- Define where the trader will base itself -->
@@ -113,6 +113,8 @@
 				<input_param name="max" value="15"/>
 				<input_param name="step" value="1"/>
 			</param>
+			<param name="enablelogbook" type="bool" default="true" text="{3282837,129}" comment="Enable logbook messages?"/>
+			<!-- Can't get faction selection window working ffs menu_map.lua 2347-->
 		</params>
 		<skill min="20"/>
 		<!-- Not any hotshot can be a tatertrader, theres standards ye know? -->
@@ -291,6 +293,11 @@
 			<remove_object_account object="this.assignedcontrolled" transfer="true"/>
 		</do_if>
 	</patch>
+	<patch sinceversion="10">
+		<do_if value="$enablelogbook == null">
+			<set_value name="$enablelogbook" exact="true"/>
+		</do_if>
+	</patch>
 	<!-- Lets code the actual trade logic here. -->
 	<attention min="unknown">
 		<actions>
@@ -323,6 +330,10 @@
 					<do_if value="@ware.cheltmeat.id">
 						<append_list_elements name="$allwareslist" other="[ware.cheltmeat,ware.scruffinfruits]"/>
 					</do_if>
+					<!-- CoH -->
+					<do_if value="@ware.computronicsubstrate.id">
+						<append_list_elements name="$allwareslist" other="[ware.computronicsubstrate,ware.metallicmicrolattice,ware.proteinpaste,ware.siliconcarbide,ware.terranmre]"/>
+					</do_if>
 					<resume label="addtowarelist"/>
 				</do_if>
 				<do_else>
@@ -339,43 +350,79 @@
 						<do_if value="@ware.cheltmeat.id">
 							<append_list_elements name="$legalwareslist" other="[ware.cheltmeat,ware.scruffinfruits]"/>
 						</do_if>
+						<!-- CoH -->
+						<do_if value="@ware.computronicsubstrate.id">
+							<append_list_elements name="$legalwareslist" other="[ware.computronicsubstrate,ware.metallicmicrolattice,ware.proteinpaste,ware.siliconcarbide,ware.terranmre]"/>
+						</do_if>
 					</do_if>
 					<do_if value="$illegalwares">
 						<set_value name="$illegalwareslist" exact="[ware.spacefuel,ware.spaceweed,ware.majadust]"/>
+						<!-- CoH -->
+						<do_if value="@ware.computronicsubstrate.id">
+							<append_list_elements name="$illegalwareslist" other="[ware.stimulants]"/>
+						</do_if>
 					</do_if>
 					<do_if value="$shipbuildingwares">
 						<set_value name="$shipbuildingwareslist" exact="[ware.advancedelectronics,ware.antimatterconverters,ware.engineparts,ware.hullparts,ware.smartchips,ware.weaponcomponents]"/>
+						<!-- CoH -->
+						<do_if value="@ware.computronicsubstrate.id">
+							<append_list_elements name="$shipbuildingwareslist" other="[ware.computronicsubstrate,ware.metallicmicrolattice]"/>
+						</do_if>
 					</do_if>
 					<do_if value="$stationbuildingwares">
 						<set_value name="$stationbuildingwareslist" exact="[ware.claytronics,ware.energycells,ware.hullparts]"/>
+						<!-- CoH -->
+						<do_if value="@ware.computronicsubstrate.id">
+							<append_list_elements name="$stationbuildingwareslist" other="[ware.computronicsubstrate,ware.siliconcarbide]"/>
+						</do_if>
 					</do_if>
 					<do_if value="$hightechwares">
 						<set_value name="$hightechwareslist" exact="[ware.advancedcomposites,ware.advancedelectronics,ware.antimatterconverters,ware.dronecomponents,ware.engineparts,
-					ware.fieldcoils,ware.hullparts,ware.microchips,ware.missilecomponents,ware.plasmaconductors,ware.quantumtubes,ware.scanningarrays,ware.shieldcomponents,
-					ware.smartchips,ware.turretcomponents,ware.weaponcomponents]"/>
+						ware.fieldcoils,ware.hullparts,ware.microchips,ware.missilecomponents,ware.plasmaconductors,ware.quantumtubes,ware.scanningarrays,ware.shieldcomponents,
+						ware.smartchips,ware.turretcomponents,ware.weaponcomponents]"/>
+						<!-- CoH -->
+						<do_if value="@ware.computronicsubstrate.id">
+							<append_list_elements name="$hightechwareslist" other="[ware.computronicsubstrate,ware.metallicmicrolattice,ware.siliconcarbide]"/>
+						</do_if>
 					</do_if>
 					<do_if value="$refinedwares">
 						<set_value name="$refinedwareslist" exact="[ware.antimattercells,ware.energycells,ware.graphene,ware.superfluidcoolant,ware.refinedmetals,ware.siliconwafers,ware.teladianium]"/>
 					</do_if>
 					<do_if value="$biowares">
 						<set_value name="$biowareslist" exact="[ware.spices,ware.meat,ware.wheat,ware.sojabeans,ware.majasnails,ware.sunriseflowers,ware.swampplant,ware.foodrations,ware.medicalsupplies,
-					ware.sojahusk,ware.nostropoil,ware.water]"/>
+						ware.sojahusk,ware.nostropoil,ware.water]"/>
 						<!-- lets make this compatible for DLC and non DLC DA-->
 						<do_if value="@ware.cheltmeat.id">
 							<append_list_elements name="$biowareslist" other="[ware.cheltmeat,ware.scruffinfruits]"/>
 						</do_if>
+						<!-- CoH -->
+						<do_if value="@ware.computronicsubstrate.id">
+							<append_list_elements name="$biowareslist" other="[ware.proteinpaste,ware.terranmre]"/>
+						</do_if>
 					</do_if>
 					<do_if value="$largelegalwares">
 						<set_value name="$largelegalwareslist" exact="[ware.scanningarrays,ware.plasmaconductors,ware.advancedcomposites,ware.dronecomponents,ware.advancedelectronics,
-					ware.claytronics,ware.quantumtubes,ware.microchips,ware.weaponcomponents,ware.turretcomponents]"/>
+						ware.claytronics,ware.quantumtubes,ware.microchips,ware.weaponcomponents,ware.turretcomponents]"/>
+						<!-- CoH -->
+						<do_if value="@ware.computronicsubstrate.id">
+							<append_list_elements name="$largelegalwareslist" other="[ware.computronicsubstrate,ware.siliconcarbide]"/>
+						</do_if>
 					</do_if>
 					<do_if value="$mediumlegalwares">
 						<set_value name="$mediumlegalwareslist" exact="[ware.siliconwafers,ware.antimattercells,ware.teladianium,ware.superfluidcoolant,ware.engineparts,ware.fieldcoils,
-					ware.refinedmetals,ware.hullparts,ware.antimatterconverters,ware.shieldcomponents]"/>
+						ware.refinedmetals,ware.hullparts,ware.antimatterconverters,ware.shieldcomponents]"/>
 					</do_if>
 					<do_if value="$smalllegalwares">
 						<set_value name="$smalllegalwareslist" exact="[ware.majasnails,ware.water,ware.swampplant,ware.meat,ware.sunriseflowers,ware.sojabeans,ware.wheat,ware.spices,
-					ware.missilecomponents,ware.medicalsupplies,ware.smartchips,ware.sojahusk,ware.energycells,ware.nostropoil,ware.foodrations]"/>
+						ware.missilecomponents,ware.medicalsupplies,ware.smartchips,ware.sojahusk,ware.energycells,ware.nostropoil,ware.foodrations]"/>
+						<!-- Split -->
+						<do_if value="@ware.cheltmeat.id">
+							<append_list_elements name="$smalllegalwareslist" other="[ware.cheltmeat,ware.scruffinfruits]"/>
+						</do_if>
+						<!-- CoH -->
+						<do_if value="@ware.computronicsubstrate.id">
+							<append_list_elements name="$smalllegalwareslist" other="[ware.metallicmicrolattice,ware.proteinpaste,ware.terranmre]"/>
+						</do_if>
 					</do_if>
 				</do_else>
 			</do_if>
@@ -926,7 +973,7 @@
 					<do_if value="$GrofitFound">
 						<do_if value="$GrofferBuy">
 							<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Selling '+$Gromount+' '+$GrofferBuy.ware+' for '+$GrofferBuy.unitprice/100+' at '+$GrofferBuy.buyer.knownname+' DealAvailiability: '+$GrofferBuy.available" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-							<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$GrofferBuy.unitprice" text="{3282837,201}.[$Gromount,$GrofferBuy.ware,$GrofferBuy.unitprice/100,$Gromount*$GrofferBuy.unitprice/100]"/>
+							<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$GrofferBuy.unitprice" text="{3282837,201}.[$Gromount,$GrofferBuy.ware,$GrofferBuy.unitprice/100,$Gromount*$GrofferBuy.unitprice/100]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 							<create_trade_order name="$GrofferBuy" object="this.object" tradeoffer="$GrofferBuy" amount="$Gromount" immediate="false"/>
 							<resume label="afterdealsetup"/>
 							<!-- Why does this trade offer have to be be so hard to setup -->
@@ -1549,17 +1596,17 @@
 						<do_if value="$GrofitFound">
 							<do_if value="($GrofferBuy.buyer.owner == this.ship.owner) or ($GrofferSell.seller.owner == this.ship.owner)">
 								<do_if value="($GrofferBuy.buyer.owner == this.ship.owner) and not ($GrofferSell.seller.owner == this.ship.owner)">
-									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" text="{3282837,202}.[$Gromount,$GrofferSell.ware,$itemcostsell,$GrofferBuy.buyer.knownname]"/>
+									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" text="{3282837,202}.[$Gromount,$GrofferSell.ware,$itemcostsell,$GrofferBuy.buyer.knownname]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								</do_if>
 								<do_if value="($GrofferSell.seller.owner == this.ship.owner) and not ($GrofferBuy.buyer.owner == this.ship.owner)">
-									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="{3282837,203}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$itemcostbuy,$Gromount*$itemcostbuy]"/>
+									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="{3282837,203}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$itemcostbuy,$Gromount*$itemcostbuy]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								</do_if>
 								<do_if value="($GrofferSell.seller.owner == this.ship.owner) and ($GrofferBuy.buyer.owner == this.ship.owner)">
-									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,204}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$GrofferBuy.buyer.knownname]"/>
+									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,204}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$GrofferBuy.buyer.knownname]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								</do_if>
 							</do_if>
 							<do_else>
-								<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]"/>
+								<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 							</do_else>
 						</do_if>
 						<do_if value="$StationTrade">
@@ -1569,14 +1616,14 @@
 								<do_if value="$GrofferSell.seller.owner == this.ship.owner">
 									<!-- Are We selling to a player station? -->
 									<do_if value="$GrofferBuy.buyer.owner == this.ship.owner">
-										<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,207}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$GrofferBuy.buyer.knownname]"/>
+										<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,207}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$GrofferBuy.buyer.knownname]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 									</do_if>
 									<do_else>
-										<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="{3282837,208}.[$Gromount,$GrofferSell.ware,$itemcostbuy,$Gromount*$itemcostbuy]"/>
+										<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="{3282837,208}.[$Gromount,$GrofferSell.ware,$itemcostbuy,$Gromount*$itemcostbuy]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 									</do_else>
 								</do_if>
 								<do_else>
-									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]"/>
+									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								</do_else>
 							</do_if>
 							<!-- Buying wares for the station. -->
@@ -1584,14 +1631,14 @@
 								<do_if value="$GrofferBuy.buyer.owner == this.ship.owner">
 									<!-- Are We buying from a player station? -->
 									<do_if value="not ($GrofferSell.seller.owner == this.ship.owner)">
-										<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostbuy*100" text="{3282837,209}.[$Gromount,$GrofferSell.ware,$GrofferBuy.buyer.knownname,$itemcostbuy,$Gromount*$itemcostbuy]"/>
+										<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostbuy*100" text="{3282837,209}.[$Gromount,$GrofferSell.ware,$GrofferBuy.buyer.knownname,$itemcostbuy,$Gromount*$itemcostbuy]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 									</do_if>
 									<do_else>
-										<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,210}.[$Gromount,$GrofferSell.ware,$GrofferBuy.buyer.knownname,$GrofferSell.seller.knownname]"/>
+										<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,210}.[$Gromount,$GrofferSell.ware,$GrofferBuy.buyer.knownname,$GrofferSell.seller.knownname]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 									</do_else>
 								</do_if>
 								<do_else>
-									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]"/>
+									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								</do_else>
 							</do_if>
 						</do_if>
