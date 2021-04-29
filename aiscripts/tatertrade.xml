@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- TaterTrade Ai, Created by Ludsoe. Version 4-->
 <!-- Maintained by DeadAir. Version 5+-->
-<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="11">
+<aiscript name="tatertrade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="12">
 	<order id="TaterTrade" name="TaterTrade" description="Advanced Trader Logic" category="trade" infinite="true" allowinloop="false">
 		<params>
 			<!-- Define where the trader will base itself -->
@@ -106,6 +106,9 @@
 			<param name="fallensplitban" type="bool" default="false" text="{20203,1701}" comment="Ban faction from trade lists?"/>
 			<param name="hatikvahban" type="bool" default="false" text="{20203,901}" comment="Ban faction from trade lists?"/>
 			<param name="scaleplateban" type="bool" default="false" text="{20203,1001}" comment="Ban faction from trade lists?"/>
+			<!-- Terran -->
+			<param name="pioneersban" type="bool" default="false" text="{20203,2901}" comment="Ban faction from trade lists?"/>
+			<param name="terranban" type="bool" default="false" text="{20203,3001}" comment="Ban faction from trade lists?"/>
 			<!-- If your looking into tweaking this, be aware that high space speeds may cause performance issues. -->
 			<param name="scanspeed" default="5" type="number" text="Scan Speed" comment="How fast do we calculate?">
 				<input_param name="startvalue" value="5"/>
@@ -195,6 +198,12 @@
 			</do_if>
 			<do_if value="$fallensplitban">
 				<append_to_list name="$bannedfactions" exact="faction.fallensplit"/>
+			</do_if>
+			<do_if value="$pioneersban">
+				<append_to_list name="$bannedfactions" exact="faction.pioneers"/>
+			</do_if>
+			<do_if value="$terranban">
+				<append_to_list name="$bannedfactions" exact="faction.terran"/>
 			</do_if>
 		</do_if>
 	</init>

@@ -52,6 +52,8 @@
 			<param name="scaleplateban" value="$order.$scaleplateban"/>
 			<param name="scanspeed" value="$order.$scanspeed"/>
 			<param name="enablelogbook" value="$order.$enablelogbook"/>
+			<param name="pioneersban" value="$order.$pioneersban"/>
+			<param name="terranban" value="$order.$terranban"/>
 		</run_script>
 	</do_if>
 </add>
