@@ -8,26 +8,16 @@
 			<param name="home" default="this.sector" type="object" text="{3282837,101}" comment="Home Sector/Station">
 				<input_param name="class" value="[class.sector,class.station]"/>
 			</param>
-			<param name="returnhome" type="bool" default="false" text="{3282837,102}" comment="Return Home after completing a trade?"/>
+			<param name="returnhome" type="internal" default="false" text="{3282837,102}" comment="Return Home after completing a trade?"/>
 			<!-- Some Range configurations -->
-			<param name="minbuy" default="0" type="number" advanced="true" text="{1041, 10066}" comment="Min gate distance to buy. Buy range supported if $minbuy and $maxbuy are provided">
-				<input_param name="startvalue" value="0"/>
-				<input_param name="min" value="0"/>
-				<input_param name="max" value="[@this.ship.commander.tradenpc.skill.management, @this.ship.pilot.skill.piloting].max * 2"/>
-				<input_param name="step" value="1"/>
-			</param>
+			<param name="minbuy" default="0" type="internal" text="{1041, 10066}" comment="Min gate distance to buy. Buy range supported if $minbuy and $maxbuy are provided"/>
 			<param name="maxbuy" default="0" type="number" text="{1041, 10054}" comment="Max gate distance to buy. Buy range supported if $minbuy and $maxbuy are provided">
 				<input_param name="startvalue" value="0"/>
 				<input_param name="min" value="0"/>
 				<input_param name="max" value="[@this.ship.commander.tradenpc.skill.management, @this.ship.pilot.skill.piloting].max * 2"/>
 				<input_param name="step" value="1"/>
 			</param>
-			<param name="minsell" default="0" type="number" advanced="true" text="{1041, 10068}" comment="Min gate distance to sell. Sell range supported if $minsell and $maxsell are provided">
-				<input_param name="startvalue" value="0"/>
-				<input_param name="min" value="0"/>
-				<input_param name="max" value="[@this.ship.commander.tradenpc.skill.management, @this.ship.pilot.skill.piloting].max * 2"/>
-				<input_param name="step" value="1"/>
-			</param>
+			<param name="minsell" default="0" type="internal" text="{1041, 10068}" comment="Min gate distance to sell. Sell range supported if $minsell and $maxsell are provided"/>
 			<param name="maxsell" default="0" type="number" text="{1041, 10057}" comment="Max gate distance to sell. Sell range supported if $minsell and $maxsell are provided">
 				<input_param name="startvalue" value="0"/>
 				<input_param name="min" value="0"/>

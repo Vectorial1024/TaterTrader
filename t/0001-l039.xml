@@ -53,5 +53,17 @@
  <t id="127">Ignore Buy Trade Restrictions</t>
  <t id="128">Ignore Sell Trade Restrictions</t>
  <t id="129">Enable Logbook Messages</t>
+ <!-- Dead Tater -->
+ <t id="500">Dead Tater</t>
+ <t id="501">{3282837,103}</t>
+ <t id="502">{3282837,104}</t>
+ <t id="503">My Faction First</t>
+ <t id="504">Ignore trade rules</t>
+ <t id="505">Auto Wares</t>
+ <t id="506">Allow illegal wares</t>
+ <t id="507">Enable minimum volume</t>
+ <t id="508">Minimum volume %</t>
+ <t id="509">{3282837,129}</t>
+ <t id="510">Dead Tater</t>
 </page>
 </language>
