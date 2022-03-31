@@ -487,12 +487,8 @@
 					<set_value name="$Grofit" exact="0"/>
 					<set_value name="$GrofitFound" exact="false"/>
 					<sort_list list="$buyoffers" sortbyvalue="loop.element.relativeprice" sortdescending="true"/>
-					<sort_list list="$selloffers" sortbyvalue="loop.element.relativeprice" sortdescending="false"/>
 					<do_if value="$buyoffers.count gt 5">
 						<resize_list list="$buyoffers" count="5"/>
-					</do_if>
-					<do_if value="$selloffers.count gt 5">
-						<resize_list list="$selloffers" count="5"/>
 					</do_if>
 					<!-- Checking 5 best offers -->
 					<do_all exact="$buyoffers.count" counter="$buy">
@@ -671,47 +667,49 @@
 					</do_all>
 				</do_all>
 				<create_list name="$selloffers"/>
-				<do_all exact="$buyspaces.count" counter="$sector">
-					<!-- sector is policed, ware is illegal to policefaction, my faction is not police faction, $illegalwares is false -->
-					<do_if value="(not (($buyspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$buyspaces.{$sector}.policefaction}.{this.trueowner}) and ($buyspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
-						<do_if value="$minfill">
-							<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
-								<set_value name="$currentminfill" exact="$minfillcontainer"/>
+				<do_if value="$buyoffers.count">
+					<do_all exact="$buyspaces.count" counter="$sector">
+						<!-- sector is policed, ware is illegal to policefaction, my faction is not police faction, $illegalwares is false -->
+						<do_if value="(not (($buyspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$buyspaces.{$sector}.policefaction}.{this.trueowner}) and ($buyspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
+							<do_if value="$minfill">
+								<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
+									<set_value name="$currentminfill" exact="$minfillcontainer"/>
+								</do_if>
+								<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.solid">
+									<set_value name="$currentminfill" exact="$minfillsolid"/>
+								</do_elseif>
+								<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.liquid">
+									<set_value name="$currentminfill" exact="$minfillliquid"/>
+								</do_elseif>
+								<find_sell_offer tradepartner="this.assignedcontrolled" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$usedwarebasket.{$ware}">
+									<offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/>
+									<match_seller owner="this.trueowner">
+										<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
+										<match tradesknownto="this.owner"/>
+										<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
+									</match_seller>
+								</find_sell_offer>
 							</do_if>
-							<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.solid">
-								<set_value name="$currentminfill" exact="$minfillsolid"/>
-							</do_elseif>
-							<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.liquid">
-								<set_value name="$currentminfill" exact="$minfillliquid"/>
-							</do_elseif>
-							<find_sell_offer tradepartner="this.assignedcontrolled" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$usedwarebasket.{$ware}">
-								<offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/>
-								<match_seller owner="this.trueowner">
-									<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
-									<match tradesknownto="this.owner"/>
-									<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
-								</match_seller>
-							</find_sell_offer>
+							<do_else>
+								<find_sell_offer tradepartner="this.assignedcontrolled" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$usedwarebasket.{$ware}">
+									<match_seller owner="this.trueowner">
+										<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
+										<match tradesknownto="this.owner"/>
+										<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
+									</match_seller>
+								</find_sell_offer>
+							</do_else>
 						</do_if>
-						<do_else>
-							<find_sell_offer tradepartner="this.assignedcontrolled" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$usedwarebasket.{$ware}">
-								<match_seller owner="this.trueowner">
-									<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
-									<match tradesknownto="this.owner"/>
-									<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
-								</match_seller>
-							</find_sell_offer>
-						</do_else>
-					</do_if>
-					<set_value name="$scantick" exact="$scantick+1"/>
-					<do_if value="$scantick gt $scantickrate">
-						<set_value name="$scantick" exact="0"/>
-						<wait exact="1ms"/>
-					</do_if>
-					<do_all exact="$sellers.count" counter="$sell">
-						<append_to_list name="$selloffers" exact="$sellers.{$sell}"/>
+						<set_value name="$scantick" exact="$scantick+1"/>
+						<do_if value="$scantick gt $scantickrate">
+							<set_value name="$scantick" exact="0"/>
+							<wait exact="1ms"/>
+						</do_if>
+						<do_all exact="$sellers.count" counter="$sell">
+							<append_to_list name="$selloffers" exact="$sellers.{$sell}"/>
+						</do_all>
 					</do_all>
-				</do_all>
+				</do_if>
 				<!-- Clear out the best sell variable if it has something in it. -->
 				<set_value name="$bestrating" exact="0"/>
 				<set_value name="$bestsell" exact="0"/>
@@ -1155,7 +1153,6 @@
 						<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- '+player.age+' -- Creating Trade Offer after '+(player.age-$starttime)s+'s.'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 						<create_trade_order name="$GrofferBuy" object="this.object" tradeoffer="$GrofferBuy" amount="$Gromount" immediate="true"/>
 						<create_trade_order name="$GrofferSell" object="this.object" tradeoffer="$GrofferSell" amount="$Gromount" immediate="true"/>
-						
 						<wait exact="1ms"/>
 					</do_if>
 					<do_else>
@@ -1174,7 +1171,7 @@
 					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
 					<wait exact="10s"/>
-					<resume label="verystart"/>
+					<resume label="beginning"/>
 				</do_if>
 				<do_elseif value="(@$SearchFailed le 5) and (@$SearchFailed ge 1)">
 					<set_value name="$SearchFailed" exact="$SearchFailed + 1"/>
@@ -1183,7 +1180,7 @@
 					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
 					<wait exact="10s * $SearchFailed"/>
-					<resume label="verystart"/>
+					<resume label="beginning"/>
 				</do_elseif>
 				<do_elseif value="@$SearchFailed ge 6">
 					<set_value name="$SearchFailed" exact="$SearchFailed + 1"/>
@@ -1193,6 +1190,7 @@
 					<set_command_action commandaction="commandaction.standingby"/>
 					<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" text="{3282837,211}.[$SearchFailed]" highlighted="true"/>
 					<wait exact="20s * $SearchFailed"/>
+					<resume label="beginning"/>
 				</do_elseif>
 			</do_elseif>
 			<do_else>
