@@ -133,7 +133,7 @@
 		<set_value name="$debugchance" exact="0"/>
 		<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Starting Log File Version: 10'" output="false" append="false" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 		<set_order_syncpoint_reached order="this.ship.order"/>
-		<set_command command="command.searchtrades" />
+		<set_command command="command.searchtrades"/>
 		<set_command_action commandaction="commandaction.searchingtrades"/>
 		<include_interrupt_actions ref="GetBlacklistgroup"/>
 		<!-- <set_value name="$object" exact="[]" />  -->
@@ -475,7 +475,7 @@
 				</do_if>
 			</do_else>
 			<label name="start"/>
-			<set_command command="command.searchtrades" />
+			<set_command command="command.searchtrades"/>
 			<set_command_action commandaction="commandaction.searchingtrades"/>
 			<!-- fixing clearing out of manual warebasket items thanks to maritz -->
 			<!-- this would likely result in $warebasket being added to $usedwarebasket constantly, creating ever expanding workload from duplicates unless create_list clears it out FIXED-->
@@ -1683,7 +1683,7 @@
 					<set_value name="$SearchFailed" exact="1"/>
 					<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Order: '+this.ship.order.id+' Failed to find a trade ' + $SearchFailed + ' times. Waiting before checking again.'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 					<debug_text text="'MOD: TaterTrader -- %1 -- Ship: %2 -- Trades Failed: %3'.[player.age,this.ship.idcode,$SearchFailed]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-					<set_command command="command.wait" />
+					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
 					<wait exact="10s" sinceversion="10"/>
 					<resume label="verystart"/>
@@ -1692,7 +1692,7 @@
 					<set_value name="$SearchFailed" exact="$SearchFailed + 1"/>
 					<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Order: '+this.ship.order.id+' Failed to find a trade ' + $SearchFailed + ' times. Waiting before checking again.'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 					<debug_text text="'MOD: TaterTrader -- %1 -- Ship: %2 -- Trades Failed: %3'.[player.age,this.ship.idcode,$SearchFailed]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-					<set_command command="command.wait" />
+					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
 					<wait exact="10s * $SearchFailed" sinceversion="10"/>
 					<resume label="verystart"/>
@@ -1701,7 +1701,7 @@
 					<set_value name="$SearchFailed" exact="$SearchFailed + 1"/>
 					<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Order: '+this.ship.order.id+' Failed to find a trade ' + $SearchFailed + ' times. Notifying player.'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 					<debug_text text="'MOD: TaterTrader -- %1 -- Ship: %2 -- Trades Failed: %3'.[player.age,this.ship.idcode,$SearchFailed]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-					<set_command command="command.wait" />
+					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
 					<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" text="{3282837,211}.[$SearchFailed]" highlighted="true"/>
 					<wait exact="20s * $SearchFailed" sinceversion="10"/>

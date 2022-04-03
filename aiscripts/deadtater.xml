@@ -114,6 +114,9 @@
 			<remove_value name="$containercapacity"/>
 			<remove_value name="$solidcapacity"/>
 			<remove_value name="$liquidcapacity"/>
+			<remove_value name="$minfillcontainer"/>
+			<remove_value name="$minfillsolid"/>
+			<remove_value name="$minfillliquid"/>
 		</do_if>
 		<!-- SHOW SEARCHING FOR TRADES -->
 		<set_command_action commandaction="commandaction.calculating"/>
@@ -468,6 +471,9 @@
 					<do_all exact="$Cargo.count" counter="$ware">
 						<find_buy_offer tradepartner="this.assignedcontrolled" space="$sellspaces.{$sector}" result="$buyers" wares="$Cargo.{$ware}" multiple="true">
 							<match_buyer>
+								<match_content checkoperational="true">
+									<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+								</match_content>
 								<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 								<match tradesknownto="this.owner"/>
 								<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
@@ -630,17 +636,29 @@
 					<do_if value="(not (($sellspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$sellspaces.{$sector}.policefaction}.{this.trueowner}) and ($sellspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
 						<do_if value="$minfill">
 							<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
-								<set_value name="$currentminfill" exact="$minfillcontainer"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal"/>
 							</do_if>
 							<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.solid">
-								<set_value name="$currentminfill" exact="$minfillsolid"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.solid + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.solid + this.assignedcontrolled.cargo.free.universal"/>
 							</do_elseif>
 							<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.liquid">
-								<set_value name="$currentminfill" exact="$minfillliquid"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.liquid + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.liquid + this.assignedcontrolled.cargo.free.universal"/>
 							</do_elseif>
+							<do_else>
+								<!-- Should never reach here -->
+								<set_value name="$currentminfill" exact="1"/>
+							</do_else>
 							<find_buy_offer tradepartner="this.assignedcontrolled" space="$sellspaces.{$sector}" result="$buyers" multiple="true" wares="$usedwarebasket.{$ware}">
-								<offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/>
+								<!-- <offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/> -->
+								<totalvolume min="$currentminfill"/>
+								<mintotalvolume max="$currentmaxfill"/>
 								<match_buyer owner="this.trueowner">
+									<match_content checkoperational="true">
+										<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+									</match_content>
 									<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 									<match tradesknownto="this.owner"/>
 									<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
@@ -650,6 +668,9 @@
 						<do_else>
 							<find_buy_offer tradepartner="this.assignedcontrolled" space="$sellspaces.{$sector}" result="$buyers" multiple="true" wares="$usedwarebasket.{$ware}">
 								<match_buyer owner="this.trueowner">
+									<match_content checkoperational="true">
+										<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+									</match_content>
 									<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 									<match tradesknownto="this.owner"/>
 									<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
@@ -673,17 +694,29 @@
 						<do_if value="(not (($buyspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$buyspaces.{$sector}.policefaction}.{this.trueowner}) and ($buyspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
 							<do_if value="$minfill">
 								<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
-									<set_value name="$currentminfill" exact="$minfillcontainer"/>
+									<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+									<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal"/>
 								</do_if>
 								<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.solid">
-									<set_value name="$currentminfill" exact="$minfillsolid"/>
+									<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.solid + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+									<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.solid + this.assignedcontrolled.cargo.free.universal"/>
 								</do_elseif>
 								<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.liquid">
-									<set_value name="$currentminfill" exact="$minfillliquid"/>
+									<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.liquid + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+									<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.liquid + this.assignedcontrolled.cargo.free.universal"/>
 								</do_elseif>
+								<do_else>
+									<!-- Should never reach here -->
+									<set_value name="$currentminfill" exact="1"/>
+								</do_else>
 								<find_sell_offer tradepartner="this.assignedcontrolled" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$usedwarebasket.{$ware}">
-									<offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/>
+									<!-- <offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/> -->
+									<totalvolume min="$currentminfill"/>
+									<mintotalvolume max="$currentmaxfill"/>
 									<match_seller owner="this.trueowner">
+										<match_content checkoperational="true">
+											<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+										</match_content>
 										<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 										<match tradesknownto="this.owner"/>
 										<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
@@ -693,6 +726,9 @@
 							<do_else>
 								<find_sell_offer tradepartner="this.assignedcontrolled" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$usedwarebasket.{$ware}">
 									<match_seller owner="this.trueowner">
+										<match_content checkoperational="true">
+											<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+										</match_content>
 										<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 										<match tradesknownto="this.owner"/>
 										<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
@@ -869,17 +905,29 @@
 					<do_if value="(not (($sellspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$sellspaces.{$sector}.policefaction}.{this.trueowner}) and ($sellspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
 						<do_if value="$minfill">
 							<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
-								<set_value name="$currentminfill" exact="$minfillcontainer"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal"/>
 							</do_if>
 							<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.solid">
-								<set_value name="$currentminfill" exact="$minfillsolid"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.solid + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.solid + this.assignedcontrolled.cargo.free.universal"/>
 							</do_elseif>
 							<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.liquid">
-								<set_value name="$currentminfill" exact="$minfillliquid"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.liquid + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.liquid + this.assignedcontrolled.cargo.free.universal"/>
 							</do_elseif>
+							<do_else>
+								<!-- Should never reach here -->
+								<set_value name="$currentminfill" exact="1"/>
+							</do_else>
 							<find_buy_offer tradepartner="this.assignedcontrolled" space="$sellspaces.{$sector}" result="$buyers" multiple="true" wares="$usedwarebasket.{$ware}">
-								<offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/>
+								<!-- <offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/> wasn't blocking trades below required amount correctly-->
+								<totalvolume min="$currentminfill"/>
+								<mintotalvolume max="$currentmaxfill"/>
 								<match_buyer>
+									<match_content checkoperational="true">
+										<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+									</match_content>
 									<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 									<match tradesknownto="this.owner"/>
 									<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
@@ -889,6 +937,9 @@
 						<do_else>
 							<find_buy_offer tradepartner="this.assignedcontrolled" space="$sellspaces.{$sector}" result="$buyers" multiple="true" wares="$usedwarebasket.{$ware}">
 								<match_buyer>
+									<match_content checkoperational="true">
+										<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+									</match_content>
 									<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 									<match tradesknownto="this.owner"/>
 									<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
@@ -911,17 +962,29 @@
 					<do_if value="(not (($buyspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$buyspaces.{$sector}.policefaction}.{this.trueowner}) and ($buyspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
 						<do_if value="$minfill">
 							<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
-								<set_value name="$currentminfill" exact="$minfillcontainer"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal"/>
 							</do_if>
 							<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.solid">
-								<set_value name="$currentminfill" exact="$minfillsolid"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.solid + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.solid + this.assignedcontrolled.cargo.free.universal"/>
 							</do_elseif>
 							<do_elseif value="$usedwarebasket.{$ware}.waretransport == waretransport.liquid">
-								<set_value name="$currentminfill" exact="$minfillliquid"/>
+								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.liquid + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
+								<set_value name="$currentmaxfill" exact="this.assignedcontrolled.cargo.free.liquid + this.assignedcontrolled.cargo.free.universal"/>
 							</do_elseif>
+							<do_else>
+								<!-- Should never reach here -->
+								<set_value name="$currentminfill" exact="1"/>
+							</do_else>
 							<find_sell_offer tradepartner="this.assignedcontrolled" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$usedwarebasket.{$ware}">
-								<offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/>
+								<!-- <offervolume min="$currentminfill" tradepartner="this.assignedcontrolled"/> -->
+								<totalvolume min="$currentminfill"/>
+								<mintotalvolume max="$currentmaxfill"/>
 								<match_seller>
+									<match_content checkoperational="true">
+										<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+									</match_content>
 									<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 									<match tradesknownto="this.owner"/>
 									<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
@@ -931,6 +994,9 @@
 						<do_else>
 							<find_sell_offer tradepartner="this.assignedcontrolled" space="$buyspaces.{$sector}" result="$sellers" multiple="true" wares="$usedwarebasket.{$ware}">
 								<match_seller>
+									<match_content checkoperational="true">
+										<match_dock size="this.assignedcontrolled.docksize" trading="true"/>
+									</match_content>
 									<match_relation_to object="this.assignedcontrolled" relation="dock" comparison="ge"/>
 									<match tradesknownto="this.owner"/>
 									<match_use_blacklist group="$blacklistgroup" type="blacklisttype.objectactivity" object="this.assignedcontrolled"/>
