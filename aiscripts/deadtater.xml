@@ -624,7 +624,7 @@
 				<resume label="freetrade"/>
 			</do_if>
 			<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- '+player.age+' -- Searching for my faction trade deals'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-			<set_value name="$Grofit" exact="100"/>
+			<set_value name="$Grofit" exact="0"/>
 			<set_value name="$GrofitFound" exact="false"/>
 			<wait exact="1ms"/>
 			<do_all exact="$usedwarebasket.count" counter="$ware">
@@ -753,11 +753,14 @@
 				<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- '+player.age+' -- I found these offers nearby, Buy: '+$buyoffers.count+' Sell: '+$selloffers.count" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 				<do_if value="$buyoffers.count and $selloffers.count">
 					<!-- Now we compare the offers and try to get a decent deal -->
-					<sort_list list="$buyoffers" sortbyvalue="loop.element.relativeprice" sortdescending="true"/>
+					<sort_list list="$buyoffers" sortbyvalue="loop.element.relativeprice" sortdescending="true" comment="highest relative price to lowest"/>
 					<do_if value="$buyoffers.count gt 5">
 						<resize_list list="$buyoffers" count="5"/>
 					</do_if>
-					<!-- highest relative price to lowest -->
+					<sort_list list="$selloffers" sortbyvalue="loop.element.relativeprice" sortdescending="false" comment="lowest relative price to highest"/>
+					<do_if value="$selloffers.count gt 5">
+						<resize_list list="$selloffers" count="5"/>
+					</do_if>
 					<do_all exact="$buyoffers.count" counter="$buy">
 						<set_value name="$buyoffer" exact="$buyoffers.{$buy}"/>
 						<do_if value="$buyoffer.available">
@@ -766,27 +769,13 @@
 								<set_value name="$buycost" exact="$buyoffer.unitprice/100"/>
 							</do_if>
 							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'	MOD: DeadTater -- '+player.age+' -- Scanning buy offer for ('+$buyoffer.ware+') at ('+$buyoffer.buyer.knownname+') Price: '+$buycost+' Faction: '+$buyoffer.buyer.owner+' Restriction: '+$buyoffer.restriction.factions.count+' Raw OfferPrice: '+$buyoffer.unitprice/100+' Relation: '+$buyoffer.buyer.relationto.{this.assignedcontrolled.owner}+' Gate Distance: '+this.assignedcontrolled.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+this.assignedcontrolled.distanceto.{$buyoffer.buyer}" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-							<sort_list list="$selloffers" sortbyvalue="loop.element.relativeprice" sortdescending="false"/>
-							<do_if value="$selloffers.count gt 5">
-								<resize_list list="$selloffers" count="5"/>
-							</do_if>
 							<do_all exact="$selloffers.count" counter="$sell">
 								<set_value name="$selloffer" exact="$selloffers.{$sell}"/>
 								<do_if value="$selloffer.available">
 									<set_value name="$sellcost" exact="$selloffer.unitprice/100"/>
-									<do_if value="$selloffer.seller.owner == this.assignedcontrolled.owner">
-										<set_value name="$sellcost" exact="$selloffer.unitprice/100"/>
-									</do_if>
-									<do_if value="$sellcost gt 0">
-										<set_value name="$Amount" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$buyoffer.amount,$selloffer.amount].min"/>
-										<set_value name="$Ratio" exact="$selloffer.ware.averageprice*100/$selloffer.unitprice"/>
-										<set_value name="$Rating" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$selloffer.amount].min*$Ratio"/>
-									</do_if>
-									<do_else>
-										<set_value name="$Amount" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$buyoffer.amount,$selloffer.amount].min"/>
-										<set_value name="$Ratio" exact="$selloffer.ware.averageprice*100/$selloffer.unitprice"/>
-										<set_value name="$Rating" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$selloffer.amount].min*$Ratio"/>
-									</do_else>
+									<set_value name="$Amount" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$buyoffer.amount,$selloffer.amount].min"/>
+									<set_value name="$Ratio" exact="$selloffer.ware.averageprice*100/$selloffer.unitprice"/>
+									<set_value name="$Rating" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$selloffer.amount].min*$Ratio"/>
 									<set_value name="$CheckGrofit" exact="false"/>
 									<do_if value="(not $ignoretraderules) and (($selloffer.seller.trueowner == this.assignedcontrolled.trueowner) or ($buyoffer.buyer.trueowner == this.assignedcontrolled.trueowner)) and ($playerowned) and (not ($selloffer.seller.trueowner == $buyoffer.buyer.trueowner))">
 										<!-- We're dealing with one of our owners stations, take special care here. -->
@@ -893,7 +882,7 @@
 			<!-- Free Trader mode -->
 			<!-- Find trade deals we can run. -->
 			<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- '+player.age+' -- Searching for trade deals'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-			<set_value name="$Grofit" exact="100"/>
+			<set_value name="$Grofit" exact="1"/>
 			<set_value name="$GrofitFound" exact="false"/>
 			<wait exact="1ms"/>
 			<do_all exact="$usedwarebasket.count" counter="$ware">
@@ -1020,11 +1009,14 @@
 				<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- '+player.age+' -- I found these offers nearby, Buy: '+$buyoffers.count+' Sell: '+$selloffers.count" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 				<do_if value="$buyoffers.count and $selloffers.count">
 					<!-- Now we compare the offers and try to get a decent deal -->
-					<sort_list list="$buyoffers" sortbyvalue="loop.element.relativeprice" sortdescending="true"/>
+					<sort_list list="$buyoffers" sortbyvalue="loop.element.relativeprice" sortdescending="true" comment="highest relative price to lowest"/>
 					<do_if value="$buyoffers.count gt 5">
 						<resize_list list="$buyoffers" count="5"/>
 					</do_if>
-					<!-- highest relative price to lowest -->
+					<sort_list list="$selloffers" sortbyvalue="loop.element.relativeprice" sortdescending="false" comment="lowest relative price to highest"/>
+					<do_if value="$selloffers.count gt 5">
+						<resize_list list="$selloffers" count="5"/>
+					</do_if>
 					<do_all exact="$buyoffers.count" counter="$buy">
 						<set_value name="$buyoffer" exact="$buyoffers.{$buy}"/>
 						<do_if value="$buyoffer.available">
@@ -1033,17 +1025,10 @@
 								<set_value name="$buycost" exact="$buyoffer.unitprice/100"/>
 							</do_if>
 							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="' MOD: DeadTater -- '+player.age+' -- Scanning buy offer for ('+$buyoffer.ware+') at ('+$buyoffer.buyer.knownname+') Price: '+$buycost+' Faction: '+$buyoffer.buyer.owner+' Restriction: '+$buyoffer.restriction.factions.count+' Raw OfferPrice: '+$buyoffer.unitprice/100+' Relation: '+$buyoffer.buyer.relationto.{this.assignedcontrolled.owner}+' Gate Distance: '+this.assignedcontrolled.gatedistance.{$buyoffer.buyer}.{$blacklistgroup}.{this.assignedcontrolled}+' Distance Raw: '+this.assignedcontrolled.distanceto.{$buyoffer.buyer}" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-							<sort_list list="$selloffers" sortbyvalue="loop.element.relativeprice" sortdescending="false"/>
-							<do_if value="$selloffers.count gt 5">
-								<resize_list list="$selloffers" count="5"/>
-							</do_if>
 							<do_all exact="$selloffers.count" counter="$sell">
 								<set_value name="$selloffer" exact="$selloffers.{$sell}"/>
 								<do_if value="$selloffer.available">
 									<set_value name="$sellcost" exact="$selloffer.unitprice/100"/>
-									<do_if value="$selloffer.seller.owner == this.assignedcontrolled.owner">
-										<set_value name="$sellcost" exact="$selloffer.unitprice/100"/>
-									</do_if>
 									<set_value name="$spendablemoney" exact="player.money/100"/>
 									<do_if value="this.assignedcontrolled.commander">
 										<!-- Code from AqlaSolutions(this.assignedcontrolled.commander.hasownaccount) and (this.assignedcontrolled.commander.defaultorder == null or this.assignedcontrolled.commander.defaultorder.id != 'DeadTater') and (this.assignedcontrolled.commander.money gt 0)-->
