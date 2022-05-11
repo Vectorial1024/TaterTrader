@@ -175,7 +175,7 @@
 			</do_all>
 			<!-- Super lengthy logic for checking if any part of the route to destination is hostile -->
 			<do_all exact="$buyspaceswithbanned.count" counter="$a">
-				<wait exact="1ms"/>
+				<wait min="1ms + (15 - this.assignedcontrolled.pilot.skill.piloting)ms" max="5ms + (30 - this.assignedcontrolled.pilot.skill.piloting)ms" profile="bell"/>
 				<!-- This loop starts with QueenIWantToBreakFree false -->
 				<set_value name="$QueenIWantToBreakFree" exact="false"/>
 				<do_if value="($buyspaceswithbanned.{$a}.isclass.cluster or $buyspaceswithbanned.{$a}.isclass.sector)">
@@ -312,7 +312,7 @@
 			</do_all>
 			<!--time for sellspaces -->
 			<do_all exact="$sellspaceswithbanned.count" counter="$a">
-				<wait exact="1ms"/>
+				<wait min="1ms + (15 - this.assignedcontrolled.pilot.skill.piloting)ms" max="5ms + (30 - this.assignedcontrolled.pilot.skill.piloting)ms" profile="bell"/>
 				<!-- This loop starts with QueenIWantToBreakFree false -->
 				<set_value name="$QueenIWantToBreakFree" exact="false"/>
 				<do_if value="($sellspaceswithbanned.{$a}.isclass.cluster or $sellspaceswithbanned.{$a}.isclass.sector) and ($sellspaceswithbanned.{$a} != $range)">
@@ -633,7 +633,7 @@
 				<create_list name="$buyoffers"/>
 				<do_all exact="$sellspaces.count" counter="$sector">
 					<!-- sector is policed, ware is illegal to policefaction, my faction is not police faction, $illegalwares is false -->
-					<do_if value="(not (($sellspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$sellspaces.{$sector}.policefaction}.{this.trueowner}) and ($sellspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
+					<do_if value="((not (($sellspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$sellspaces.{$sector}.policefaction}.{this.trueowner}) and ($sellspaces.{$sector}.policefaction != this.trueowner))) and (not $usedwarebasket.{$ware}.illegalto.{this.trueowner}.{null})) or $illegalwares">
 						<do_if value="$minfill">
 							<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
 								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
@@ -691,7 +691,7 @@
 				<do_if value="$buyoffers.count">
 					<do_all exact="$buyspaces.count" counter="$sector">
 						<!-- sector is policed, ware is illegal to policefaction, my faction is not police faction, $illegalwares is false -->
-						<do_if value="(not (($buyspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$buyspaces.{$sector}.policefaction}.{this.trueowner}) and ($buyspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
+						<do_if value="((not (($buyspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$buyspaces.{$sector}.policefaction}.{this.trueowner}) and ($buyspaces.{$sector}.policefaction != this.trueowner))) and (not $usedwarebasket.{$ware}.illegalto.{this.trueowner}.{null})) or $illegalwares">
 							<do_if value="$minfill">
 								<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
 									<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
@@ -891,7 +891,7 @@
 				<create_list name="$buyoffers"/>
 				<do_all exact="$sellspaces.count" counter="$sector">
 					<!-- sector is policed, ware is illegal to policefaction, my faction is not police faction, $illegalwares is false -->
-					<do_if value="(not (($sellspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$sellspaces.{$sector}.policefaction}.{this.trueowner}) and ($sellspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
+					<do_if value="((not (($sellspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$sellspaces.{$sector}.policefaction}.{this.trueowner}) and ($sellspaces.{$sector}.policefaction != this.trueowner))) and (not $usedwarebasket.{$ware}.illegalto.{this.trueowner}.{null})) or $illegalwares">
 						<do_if value="$minfill">
 							<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
 								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
@@ -948,7 +948,7 @@
 				<create_list name="$selloffers"/>
 				<do_all exact="$buyspaces.count" counter="$sector">
 					<!-- sector is policed, ware is illegal to policefaction, my faction is not police faction, $illegalwares is false -->
-					<do_if value="(not (($buyspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$buyspaces.{$sector}.policefaction}.{this.trueowner}) and ($buyspaces.{$sector}.policefaction != this.trueowner))) or $illegalwares">
+					<do_if value="((not (($buyspaces.{$sector}.policefaction) and ($usedwarebasket.{$ware}.illegalto.{$buyspaces.{$sector}.policefaction}.{this.trueowner}) and ($buyspaces.{$sector}.policefaction != this.trueowner))) and (not $usedwarebasket.{$ware}.illegalto.{this.trueowner}.{null})) or $illegalwares">
 						<do_if value="$minfill">
 							<do_if value="$usedwarebasket.{$ware}.waretransport == waretransport.container">
 								<set_value name="$currentminfill" exact="((this.assignedcontrolled.cargo.free.container + this.assignedcontrolled.cargo.free.universal) * ($minfillpercent / 100.0))i"/>
@@ -1182,18 +1182,31 @@
 						</do_if>
 						<do_if value="$GrofitFound">
 							<do_if value="($GrofferBuy.buyer.owner == this.assignedcontrolled.owner) or ($GrofferSell.seller.owner == this.assignedcontrolled.owner)">
-								<do_if value="($GrofferBuy.buyer.owner == this.assignedcontrolled.owner) and not ($GrofferSell.seller.owner == this.assignedcontrolled.owner)">
+								<do_if value="($GrofferBuy.buyer.owner == this.assignedcontrolled.owner) and ($GrofferSell.seller.owner != this.assignedcontrolled.owner)">
 									<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" money="-$Gromount*$itemcostsell*100" text="{3282837,202}.[$Gromount,$GrofferSell.ware,$itemcostsell,$GrofferBuy.buyer.knownname]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								</do_if>
-								<do_if value="($GrofferSell.seller.owner == this.assignedcontrolled.owner) and not ($GrofferBuy.buyer.owner == this.assignedcontrolled.owner)">
+								<do_elseif value="($GrofferSell.seller.owner == this.assignedcontrolled.owner) and ($GrofferBuy.buyer.owner != this.assignedcontrolled.owner)">
 									<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" money="$Gromount*$itemcostbuy*100" text="{3282837,203}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$itemcostbuy,$Gromount*$itemcostbuy]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
-								</do_if>
-								<do_if value="($GrofferSell.seller.owner == this.assignedcontrolled.owner) and ($GrofferBuy.buyer.owner == this.assignedcontrolled.owner)">
+								</do_elseif>
+								<do_elseif value="($GrofferSell.seller.owner == this.assignedcontrolled.owner) and ($GrofferBuy.buyer.owner == this.assignedcontrolled.owner)">
 									<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" text="{3282837,204}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$GrofferBuy.buyer.knownname]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
-								</do_if>
+								</do_elseif>
 							</do_if>
 							<do_else>
-								<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
+								<set_value name="$ThisShip" exact="this.assignedcontrolled"/>
+								<do_if value="global.$DALifetimeGrofit.{$ThisShip}?">
+									<set_value name="global.$DALifetimeGrofit.{$ThisShip}" exact="$Gromount*($itemcostbuy-$itemcostsell)*100" operation="add"/>
+									<debug_text text="'MOD: DeadTater -- %1 -- Ship: %2 -- global.$DALifetimeGrofit? %3'.[player.age,this.assignedcontrolled.idcode,global.$DALifetimeGrofit.{$ThisShip}]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								</do_if>
+								<do_else>
+									<set_value name="global.$DALifetimeGrofit.{$ThisShip}" exact="$Gromount*($itemcostbuy-$itemcostsell)*100"/>
+									<debug_text text="'MOD: DeadTater -- %1 -- Ship: %2 -- global.$DALifetimeGrofit? %3'.[player.age,this.assignedcontrolled.idcode,global.$DALifetimeGrofit.{$ThisShip}]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								</do_else>
+								<set_value name="$Message" exact="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]"/>
+								<set_value name="$Message" exact="{3282837,212}.[if global.$DALifetimeGrofit.{$ThisShip} then (global.$DALifetimeGrofit.{$ThisShip}).formatted.{'%3s %Cr'} else {1001,9002}]" operation="add"/>
+								<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="$Message" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
+								<remove_value name="$Message"/>
+								<remove_value name="$ThisShip"/>
 							</do_else>
 						</do_if>
 						<!-- ORDER SYNCPOINT -->
@@ -1221,7 +1234,8 @@
 					<debug_text text="'MOD: DeadTater -- %1 -- Ship: %2 -- Trades Failed: %3'.[player.age,this.assignedcontrolled.idcode,$SearchFailed]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
-					<wait exact="10s"/>
+					<!-- (10s - 11.5s) to (11.5s - 13s) -->
+					<wait min="10s + (1500 - this.assignedcontrolled.pilot.skill.piloting * 100)ms" max="10s + (3000 - this.assignedcontrolled.pilot.skill.piloting * 100)ms" profile="bell"/>
 					<resume label="beginning"/>
 				</do_if>
 				<do_elseif value="(@$SearchFailed le 5) and (@$SearchFailed ge 1)">
@@ -1230,7 +1244,8 @@
 					<debug_text text="'MOD: DeadTater -- %1 -- Ship: %2 -- Trades Failed: %3'.[player.age,this.assignedcontrolled.idcode,$SearchFailed]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
-					<wait exact="10s * $SearchFailed"/>
+					<!-- (20s - 57.5s) to (23s - 65s) -->
+					<wait min="(10s * $SearchFailed)s + ((1500 - this.assignedcontrolled.pilot.skill.piloting * 100) * $SearchFailed)ms" max="(10s * $SearchFailed)s + ((3000 - this.assignedcontrolled.pilot.skill.piloting * 100) * $SearchFailed)ms" profile="bell"/>
 					<resume label="beginning"/>
 				</do_elseif>
 				<do_elseif value="@$SearchFailed ge 6">
@@ -1240,7 +1255,7 @@
 					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
 					<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" text="{3282837,211}.[$SearchFailed]" highlighted="true"/>
-					<wait exact="20s * $SearchFailed"/>
+					<wait min="(20s * $SearchFailed)s + ((1500 - this.assignedcontrolled.pilot.skill.piloting * 100) * $SearchFailed)ms" max="(20s * $SearchFailed)s + ((3000 - this.assignedcontrolled.pilot.skill.piloting * 100) * $SearchFailed)ms" profile="bell"/>
 					<resume label="beginning"/>
 				</do_elseif>
 			</do_elseif>

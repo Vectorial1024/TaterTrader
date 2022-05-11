@@ -1595,10 +1595,10 @@
 						<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Buying '+$Gromount+' '+$GrofferSell.ware+' for '+$itemcostsell+' at '+$GrofferSell.seller.knownname+' then '+'Selling '+$Gromount+' '+$GrofferBuy.ware+' for '+$itemcostbuy+' at '+$GrofferBuy.buyer.knownname" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 						<do_if value="$GrofitFound">
 							<do_if value="($GrofferBuy.buyer.owner == this.ship.owner) or ($GrofferSell.seller.owner == this.ship.owner)">
-								<do_if value="($GrofferBuy.buyer.owner == this.ship.owner) and not ($GrofferSell.seller.owner == this.ship.owner)">
+								<do_if value="($GrofferBuy.buyer.owner == this.ship.owner) and ($GrofferSell.seller.owner != this.ship.owner)">
 									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" text="{3282837,202}.[$Gromount,$GrofferSell.ware,$itemcostsell,$GrofferBuy.buyer.knownname]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								</do_if>
-								<do_if value="($GrofferSell.seller.owner == this.ship.owner) and not ($GrofferBuy.buyer.owner == this.ship.owner)">
+								<do_if value="($GrofferSell.seller.owner == this.ship.owner) and ($GrofferBuy.buyer.owner != this.ship.owner)">
 									<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="$Gromount*$itemcostbuy*100" text="{3282837,203}.[$Gromount,$GrofferSell.ware,$GrofferSell.seller.knownname,$itemcostbuy,$Gromount*$itemcostbuy]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								</do_if>
 								<do_if value="($GrofferSell.seller.owner == this.ship.owner) and ($GrofferBuy.buyer.owner == this.ship.owner)">
@@ -1606,7 +1606,20 @@
 								</do_if>
 							</do_if>
 							<do_else>
-								<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
+								<set_value name="$ThisShip" exact="this.assignedcontrolled"/>
+								<do_if value="global.$DALifetimeGrofit.{$ThisShip}?">
+									<set_value name="global.$DALifetimeGrofit.{$ThisShip}" exact="$Gromount*($itemcostbuy-$itemcostsell)*100" operation="add"/>
+									<debug_text text="'MOD: TaterTrader -- %1 -- Ship: %2 -- global.$DALifetimeGrofit? %3'.[player.age,this.assignedcontrolled.idcode,global.$DALifetimeGrofit.{$ThisShip}]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								</do_if>
+								<do_else>
+									<set_value name="global.$DALifetimeGrofit.{$ThisShip}" exact="$Gromount*($itemcostbuy-$itemcostsell)*100"/>
+									<debug_text text="'MOD: TaterTrader -- %1 -- Ship: %2 -- global.$DALifetimeGrofit? %3'.[player.age,this.assignedcontrolled.idcode,global.$DALifetimeGrofit.{$ThisShip}]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								</do_else>
+								<set_value name="$Message" exact="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]"/>
+								<set_value name="$Message" exact="{3282837,212}.[if global.$DALifetimeGrofit.{$ThisShip} then (global.$DALifetimeGrofit.{$ThisShip}).formatted.{'%.k %Cr'} else {1001,9002}]" operation="add"/>
+								<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="$Message" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
+								<remove_value name="$Message"/>
+								<remove_value name="$ThisShip"/>
 							</do_else>
 						</do_if>
 						<do_if value="$StationTrade">

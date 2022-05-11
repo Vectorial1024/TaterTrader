@@ -49,6 +49,8 @@
 		<t id="210">Commerçant de station: Je vais chercher %1 %2 pour %3 de %4.</t>
 		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
 		<t id="211">Failed to find a trade %1 times. Request assistance.</t>
+		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
+		<t id="212">\nTotal lifetime estimated profit: %1.</t>
 		<t id="127">Ignore Buy Trade Restrictions</t>
 		<t id="128">Ignore Sell Trade Restrictions</t>
 		<t id="129">Enable Logbook Messages</t>
