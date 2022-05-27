@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- DeadTater Ai, Created by DeadAir, Inspired by and some code from Ludsoe. -->
-<aiscript name="deadtater" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="1">
+<aiscript name="deadtater" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="2">
 	<order id="DeadTater" name="{3282837,500}" description="Advanced Trader Logic" category="trade" infinite="true" allowinloop="false">
 		<params>
 			<!-- Define where the trader will base itself -->
@@ -175,7 +175,7 @@
 			</do_all>
 			<!-- Super lengthy logic for checking if any part of the route to destination is hostile -->
 			<do_all exact="$buyspaceswithbanned.count" counter="$a">
-				<wait min="1ms + (15 - this.assignedcontrolled.pilot.skill.piloting)ms" max="5ms + (30 - this.assignedcontrolled.pilot.skill.piloting)ms" profile="bell"/>
+				<wait min="1ms + (150 - this.assignedcontrolled.pilot.skill.piloting * 10)ms" max="5ms + (300 - this.assignedcontrolled.pilot.skill.piloting * 10)ms" profile="bell"/>
 				<!-- This loop starts with QueenIWantToBreakFree false -->
 				<set_value name="$QueenIWantToBreakFree" exact="false"/>
 				<do_if value="($buyspaceswithbanned.{$a}.isclass.cluster or $buyspaceswithbanned.{$a}.isclass.sector)">
@@ -456,6 +456,8 @@
 			<remove_value name="$sectors"/>
 			<remove_value name="$sector"/>
 			<debug_to_file name="this.ship.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %1 -- Sectors in Range -- Buy: %2 -- Sell: %3'.[player.age,$buyspaces.count,$sellspaces.count]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+			<!-- Maxskill == 1s - 2s ; 9skill == 2.2s - 4.4s ; Minskill == 4s - 8s -->
+			<wait min="1.0s + ((30.0 - this.assignedcontrolled.pilot.skill.piloting * 2) / 10.0)s" max="2.0s + ((60.0 - this.assignedcontrolled.pilot.skill.piloting * 4) / 10.0)s" profile="bell" sinceversion="2"/>
 			<!-- Clean out our cargo -->
 			<label name="sellcargo"/>
 			<!-- What wares do we currently have, lets try to sell them to the highest bidder. -->
@@ -1234,8 +1236,8 @@
 					<debug_text text="'MOD: DeadTater -- %1 -- Ship: %2 -- Trades Failed: %3'.[player.age,this.assignedcontrolled.idcode,$SearchFailed]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
-					<!-- (10s - 11.5s) to (11.5s - 13s) -->
-					<wait min="10s + (1500 - this.assignedcontrolled.pilot.skill.piloting * 100)ms" max="10s + (3000 - this.assignedcontrolled.pilot.skill.piloting * 100)ms" profile="bell"/>
+					<!-- Maxskill == 10s - 12s ; 9skill == 11.2s - 18s ; Minskill == 13s - 27s -->
+					<wait min="10.0s + ((30.0 - this.assignedcontrolled.pilot.skill.piloting * 2) / 10.0)s" max="12.0s + ((150.0 - this.assignedcontrolled.pilot.skill.piloting * 10) / 10.0)s" profile="bell"/>
 					<resume label="beginning"/>
 				</do_if>
 				<do_elseif value="(@$SearchFailed le 5) and (@$SearchFailed ge 1)">
@@ -1244,8 +1246,8 @@
 					<debug_text text="'MOD: DeadTater -- %1 -- Ship: %2 -- Trades Failed: %3'.[player.age,this.assignedcontrolled.idcode,$SearchFailed]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
-					<!-- (20s - 57.5s) to (23s - 65s) -->
-					<wait min="(10s * $SearchFailed)s + ((1500 - this.assignedcontrolled.pilot.skill.piloting * 100) * $SearchFailed)ms" max="(10s * $SearchFailed)s + ((3000 - this.assignedcontrolled.pilot.skill.piloting * 100) * $SearchFailed)ms" profile="bell"/>
+					<!-- Maxskill == (10s - 15s) * $SearchFailed ; 9skill == (11.2s - 18.6s) * $SearchFailed ; Minskill == (13s - 24s) * $SearchFailed -->
+					<wait min="(10.0s * $SearchFailed)s + (((30.0 - this.assignedcontrolled.pilot.skill.piloting * 2) / 10.0)*$SearchFailed)s" max="(12.0s * $SearchFailed)s + (((150.0 - this.assignedcontrolled.pilot.skill.piloting * 10) / 10.0)*$SearchFailed)s" profile="bell"/>
 					<resume label="beginning"/>
 				</do_elseif>
 				<do_elseif value="@$SearchFailed ge 6">
@@ -1255,7 +1257,8 @@
 					<set_command command="command.wait"/>
 					<set_command_action commandaction="commandaction.standingby"/>
 					<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" text="{3282837,211}.[$SearchFailed]" highlighted="true"/>
-					<wait min="(20s * $SearchFailed)s + ((1500 - this.assignedcontrolled.pilot.skill.piloting * 100) * $SearchFailed)ms" max="(20s * $SearchFailed)s + ((3000 - this.assignedcontrolled.pilot.skill.piloting * 100) * $SearchFailed)ms" profile="bell"/>
+					<!-- Maxskill == (20s - 24s) * $SearchFailed ; 9skill == (21.2s - 30s) * $SearchFailed ; Minskill == (23s - 39s) * $SearchFailed -->
+					<wait min="(20.0s * $SearchFailed)s + (((30.0 - this.assignedcontrolled.pilot.skill.piloting * 2) / 10.0)*$SearchFailed)s" max="(24.0s * $SearchFailed)s + (((150.0 - this.assignedcontrolled.pilot.skill.piloting * 10) / 10.0)*$SearchFailed)s" profile="bell"/>
 					<resume label="beginning"/>
 				</do_elseif>
 			</do_elseif>
