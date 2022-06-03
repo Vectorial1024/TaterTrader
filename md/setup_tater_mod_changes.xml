@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mdscript name="Setup_Tater_Mod_Changes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
+	<cues>
+		<cue name="Init">
+			<actions/>
+			<cues>
+				<cue name="Game_Started" instantiate="false">
+					<actions>
+						<include_actions ref="Set_up_grofit_tracking"/>
+					</actions>
+				</cue>
+				<library name="Set_up_grofit_tracking">
+					<actions>
+						<do_if value="not global.$DALifetimeGrofit?">
+							<set_value name="global.$DALifetimeGrofit" exact="table[]"/>
+						</do_if>
+						<debug_text text="'MOD: TaterTrader -- %1 -- global.$DALifetimeGrofit? %2'.[player.age,global.$DALifetimeGrofit?]" context="false" filter="scripts"/>
+					</actions>
+				</library>
+				<cue name="Remove_Killed" instantiate="true">
+					<conditions>
+						<event_player_owned_destroyed/>
+						<check_value value="event.param.isclass.defensible and not event.param.ismasstraffic and not event.param.isunit and not event.param.isdeployable and not event.param.isclass.ship_xs"/>
+						<check_value value="event.param3 != killmethod.collected"/>
+						<check_value value="event.param3 != killmethod.removed" comment="spacesuit is removed"/>
+					</conditions>
+					<actions>
+						<set_value name="$KeyList" exact="global.$DALifetimeGrofit.keys.list"/>
+						<do_if value="$KeyList.indexof.{event.param}">
+							<debug_text text="'MOD: TaterTrader -- %1 -- Removing %2 from global.$DALifetimeGrofit'.[player.age,event.param.idcode]" context="false" filter="scripts"/>
+							<remove_value name="global.$DALifetimeGrofit.{event.param}"/>
+						</do_if>
+						<remove_value name="$KeyList"/>
+					</actions>
+				</cue>
+				<cue name="TimedCheck" instantiate="true" checkinterval="30min" checktime="player.age + 30min">
+					<conditions>
+						<check_value value="global.$DALifetimeGrofit?"/>
+						<check_value value="global.$DALifetimeGrofit.keys.count"/>
+					</conditions>
+					<actions>
+						<find_ship_by_true_owner name="$PlayerShips" faction="faction.player" space="player.galaxy" multiple="true"/>
+						<do_for_each in="global.$DALifetimeGrofit.keys.list" name="$Key">
+							<do_if value="($PlayerShips.count) and (not $PlayerShips.indexof.{$Key})">
+								<debug_text text="'MOD: TaterTrader -- %1 -- Found error! %2 in global.$DALifetimeGrofit.keys.list'.[player.age,$Key]" context="false" filter="scripts"/>
+								<remove_value name="global.$DALifetimeGrofit.{$Key}"/>
+							</do_if>
+						</do_for_each>
+						<remove_value name="$PlayerShips"/>
+					</actions>
+				</cue>
+			</cues>
+		</cue>
+	</cues>
+</mdscript>

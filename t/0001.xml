@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language>
+	<page id="3282837" title="DeadAir Tatertrader T Files" descr="names used in DeadAir Tatertrader mod" voice="no">
+		<t id="100">Parameters</t>
+		<t id="101">Trader Home</t>
+		<t id="102">Home Bound</t>
+		<t id="103">Enable Distance Penalty</t>
+		<t id="104">% Penalty per Jump</t>
+		<t id="105">Owned Station Buy Mod</t>
+		<t id="106">Owned Station Sell Mod</t>
+		<t id="107">Free Trade</t>
+		<t id="108">Fast Trade</t>
+		<t id="109">Station Trader</t>
+		<t id="110">Station Smuggler</t>
+		<t id="111">Copy Presets</t>
+		<t id="112">All Wares</t>
+		<t id="113">Legal Wares</t>
+		<t id="114">Illegal Wares</t>
+		<t id="115">Ship Building Wares</t>
+		<t id="116">Station Building Wares</t>
+		<t id="117">HighTech Wares</t>
+		<t id="118">Refined Wares</t>
+		<t id="119">Biological Wares</t>
+		<t id="120">Excluded Sector</t>
+		<t id="121">Included Sector</t>
+		<t id="122">Enable Trade Bans</t>
+		<t id="123">Scan Speed</t>
+		<t id="124">Large legal wares</t>
+		<t id="125">Medium legal wares</t>
+		<t id="126">Small legal wares</t>
+		<t id="200">Logbook Messages (complete line in comment above entry)</t>
+		<!--'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'-->
+		<t id="201">Selling %1 %2 from cargo at %3. I should earn %4 in profit.</t>
+		<!--'Queuing up Supply Run for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to supply '+$GrofferBuy.buyer.knownname-->
+		<t id="202">Queuing up supply run for %1 %2. Buying at %3 to supply %4.</t>
+		<!--'Queuing up Station Ware Sale for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*$itemcostbuy+' in profit.'-->
+		<t id="203">Queuing up station ware sale for %1 %2 from %3 to sell at %4. I should earn %5 in profit.</t>
+		<!--'Queuing up Cargo Transport Run for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname-->
+		<t id="204">Queuing up cargo transport run for %1 %2 from %3 to %4.</t>
+		<!--'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'-->
+		<t id="205">Queuing up trade order for %1 %2. Buying at %3 to sell at %4. I should earn %5 in profit.</t>
+		<!--'Station Trader: Supplying '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname-->
+		<t id="207">Station Trader: Supplying %1 %2 from %3 to %4.</t>
+		<!--'Station Trader: Selling '+$Gromount+' '+$GrofferSell.ware+' at the price of '+$itemcostbuy+' Expected Profit is '+$Gromount*$itemcostbuy-->
+		<t id="208">Station Trader: Selling %1 %2 at the price of %3. Expected profit is %4.</t>
+		<!--'Station Trader: Buying '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' at the price of '+$itemcostbuy+' Expected Cost is '+$Gromount*$itemcostbuy-->
+		<t id="209">Station Trader: Buying %1 %2 for %3 at the price of %4. Expected cost is %5.</t>
+		<!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
+		<t id="210">Station Trader: Fetching %1 %2 for %3 from %4.</t>
+		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
+		<t id="211">Failed to find a trade %1 times. Request assistance.</t>
+		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
+		<t id="212">\nTotal lifetime estimated profit: %1.</t>
+		<t id="127">Ignore Buy Trade Restrictions</t>
+		<t id="128">Ignore Sell Trade Restrictions</t>
+		<t id="129">Enable Logbook Messages</t>
+		<!-- Dead Tater -->
+		<t id="500">Dead Tater</t>
+		<t id="501">{3282837,103}</t>
+		<t id="502">{3282837,104}</t>
+		<t id="503">My Faction First</t>
+		<t id="504">Ignore trade rules</t>
+		<t id="505">Auto Wares</t>
+		<t id="506">Allow illegal wares</t>
+		<t id="507">Enable minimum volume</t>
+		<t id="508">Minimum volume %</t>
+		<t id="509">{3282837,129}</t>
+		<t id="510">Dead Tater</t>
+	</page>
+</language>

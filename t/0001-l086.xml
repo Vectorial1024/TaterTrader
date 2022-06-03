@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="86">
+	<page id="3282837" title="DeadAir Tatertrader T Files" descr="names used in DeadAir Tatertrader mod" voice="no">
+		<t id="100">参数</t>
+		<t id="101">交易者基地</t>
+		<t id="102">绑定基地</t>
+		<t id="103">启动距离惩罚</t>
+		<t id="104">每跳减益百分比</t>
+		<t id="105">玩家空间站购买模式</t>
+		<t id="106">玩家空间站销售模式</t>
+		<t id="107">自由交易</t>
+		<t id="108">快速交易</t>
+		<t id="109">贸易空间站</t>
+		<t id="110">海盗空间站</t>
+		<t id="111">复制预设</t>
+		<t id="112">所有商品</t>
+		<t id="113">合法</t>
+		<t id="114">非法</t>
+		<t id="115">造船</t>
+		<t id="116">建材</t>
+		<t id="117">高科技</t>
+		<t id="118">精炼</t>
+		<t id="119">生物</t>
+		<t id="120">黑名单星区</t>
+		<t id="121">白名单星区</t>
+		<t id="122">启用贸易禁令</t>
+		<t id="123">扫描订单速度</t>
+		<t id="124">大型合法商品</t>
+		<t id="125">中型合法商品</t>
+		<t id="126">小型合法商品</t>
+		<t id="200">日志信息 (complete line in comment above entry)</t>
+		<!--'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'-->
+		<t id="201">销售 %1 个 %2 单价为 %3. 我预计可以赚到 %4 的利润.</t>
+		<!--'Queuing up Supply Run for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to supply '+$GrofferBuy.buyer.knownname-->
+		<t id="202">建立采购订单:购买 %1 个 %2 单价为 %3.供应单价为%4.</t>
+		<!--'Queuing up Station Ware Sale for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*$itemcostbuy+' in profit.'-->
+		<t id="203">建立销售订单:从 %3 进货 %1 个 %2 单价为 %4. 我预计可以赚到 %5 的利润.</t>
+		<!--'Queuing up Cargo Transport Run for '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname-->
+		<t id="204">建立运输订单:将 %1 个 %2 从 %3 运输到 %4.</t>
+		<!--'Queuing up Trade order for '+$Gromount+' '+$GrofferSell.ware+' Buying at '+$itemcostsell+' to sell at '+$itemcostbuy+' I should earn '+$Gromount*($itemcostbuy-$itemcostsell)+' in profit.'-->
+		<t id="205">建立贸易订单:购买 %1 个 %2 单价为 %3.销售价格为 %4. 我预计可以赚到 %5 的利润.</t>
+		<!--'Station Trader: Supplying '+$Gromount+' '+$GrofferSell.ware+' from '+$GrofferSell.seller.knownname+' to '+$GrofferBuy.buyer.knownname-->
+		<t id="207">空间站交易员: 供应 %1 个 %2 从 %3 到 %4.</t>
+		<!--'Station Trader: Selling '+$Gromount+' '+$GrofferSell.ware+' at the price of '+$itemcostbuy+' Expected Profit is '+$Gromount*$itemcostbuy-->
+		<t id="208">空间站交易员: 销售 %1 个 %2 单价为 %3. 预期利润为 %4.</t>
+		<!--'Station Trader: Buying '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' at the price of '+$itemcostbuy+' Expected Cost is '+$Gromount*$itemcostbuy-->
+		<t id="209">空间站交易员:为 %3 购买 %1 个 %2 单价为 %4. 预期成本是 %5.</t>
+		<!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
+		<t id="210">空间站交易员:从 %4 取货 %1 个 %2 送到 %3.</t>
+		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
+		<t id="211">我找不到交易订单持续了%1. 请求协助.</t>
+		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
+		<t id="212">\nTotal lifetime estimated profit: %1.</t>
+		<t id="127">忽略购买贸易限制</t>
+		<t id="128">忽略销售贸易限制</t>
+		<t id="129">启用日志信息</t>
+		<!-- Dead Tater -->
+		<t id="500">Dead Tater</t>
+		<t id="501">{3282837,103}</t>
+		<t id="502">{3282837,104}</t>
+		<t id="503">优先玩家势力</t>
+		<t id="504">忽略贸易规则</t>
+		<t id="505">自动选择商品</t>
+		<t id="506">允许非法商品</t>
+		<t id="507">启用最低装载</t>
+		<t id="508">最低装载 %</t>
+		<t id="509">{3282837,129}</t>
+		<t id="510">Dead Tater</t>
+	</page>
+</language>
