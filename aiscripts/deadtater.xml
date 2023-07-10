@@ -1222,15 +1222,10 @@
 							<do_else>
 								<set_value name="$ThisShip" exact="this.assignedcontrolled"/>
 								<do_if value="global.$DALifetimeGrofit.{$ThisShip}?">
-									<set_value name="global.$DALifetimeGrofit.{$ThisShip}" exact="$Gromount*($itemcostbuy-$itemcostsell)*100" operation="add"/>
 									<debug_text text="'MOD: DeadTater -- %1 -- Ship: %2 -- global.$DALifetimeGrofit? %3'.[player.age,this.assignedcontrolled.idcode,global.$DALifetimeGrofit.{$ThisShip}]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 								</do_if>
-								<do_else>
-									<set_value name="global.$DALifetimeGrofit.{$ThisShip}" exact="$Gromount*($itemcostbuy-$itemcostsell)*100"/>
-									<debug_text text="'MOD: DeadTater -- %1 -- Ship: %2 -- global.$DALifetimeGrofit? %3'.[player.age,this.assignedcontrolled.idcode,global.$DALifetimeGrofit.{$ThisShip}]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-								</do_else>
 								<set_value name="$Message" exact="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]"/>
-								<set_value name="$Message" exact="{3282837,212}.[if global.$DALifetimeGrofit.{$ThisShip} then (global.$DALifetimeGrofit.{$ThisShip}).formatted.{'%3s %Cr'} else {1001,9002}]" operation="add"/>
+								<set_value name="$Message" exact="{3282837,212}.[if global.$DALifetimeGrofit.{$ThisShip} then (global.$DALifetimeGrofit.{$ThisShip}).formatted.{'%3s %Cr'} else {1001,9002}]" operation="add" chance="(global.$DALifetimeGrofit.{$ThisShip}?) * 100"/>
 								<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="$Message" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								<remove_value name="$Message"/>
 								<remove_value name="$ThisShip"/>

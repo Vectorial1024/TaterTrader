@@ -49,6 +49,37 @@
 						<remove_value name="$PlayerShips"/>
 					</actions>
 				</cue>
+				<cue name="TrackProfit" instantiate="true">
+					<conditions>
+						<event_player_trade_completed/>
+					</conditions>
+					<actions>
+						<set_value name="$Trade" exact="event.param"/>
+						<set_value name="$Buyer" exact="$Trade.buyer"/>
+						<set_value name="$Seller" exact="$Trade.seller"/>
+						<set_value name="$Price" exact="$Trade.unitprice * $Trade.transferredamount"/>
+						<do_if value="$Buyer.isoperational and $Buyer.trueowner == faction.player and $Seller.trueowner != faction.player and $Buyer.isclass.ship and $Buyer.defaultorder? and ((['TaterTrader','DeadTater'].indexof.{$Buyer.defaultorder.id}) or (($Buyer.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{$Buyer.commander.defaultorder.id})))">
+							<do_if value="global.$DALifetimeGrofit.{$Buyer}?">
+								<set_value name="global.$DALifetimeGrofit.{$Buyer}" exact="$Price" operation="subtract"/>
+								<debug_text text="'MOD: TaterTrader -- %s -- Updated global.$DALifetimeGrofit.{%s (%s)} to %s'.[player.age,$Buyer.name,$Buyer.idcode,global.$DALifetimeGrofit.{$Buyer}]" context="false" filter="scripts"/>
+							</do_if>
+							<do_elseif value="global.$DALifetimeGrofit?">
+								<set_value name="global.$DALifetimeGrofit.{$Buyer}" exact="$Price * -1"/>
+								<debug_text text="'MOD: TaterTrader -- %s -- Set global.$DALifetimeGrofit.{%s (%s)} to %s'.[player.age,$Buyer.name,$Buyer.idcode,global.$DALifetimeGrofit.{$Buyer}]" context="false" filter="scripts"/>
+							</do_elseif>
+						</do_if>
+						<do_elseif value="$Seller.isoperational and $Seller.trueowner == faction.player and $Buyer.trueowner != faction.player and $Seller.isclass.ship and $Seller.defaultorder? and ((['TaterTrader','DeadTater'].indexof.{$Seller.defaultorder.id}) or (($Seller.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{$Seller.commander.defaultorder.id})))">
+							<do_if value="global.$DALifetimeGrofit.{$Seller}?">
+								<set_value name="global.$DALifetimeGrofit.{$Seller}" exact="$Price" operation="add"/>
+								<debug_text text="'MOD: TaterTrader -- %s -- Updated global.$DALifetimeGrofit.{%s (%s)} to %s'.[player.age,$Seller.name,$Seller.idcode,global.$DALifetimeGrofit.{$Seller}]" context="false" filter="scripts"/>
+							</do_if>
+							<do_elseif value="global.$DALifetimeGrofit?">
+								<set_value name="global.$DALifetimeGrofit.{$Seller}" exact="$Price"/>
+								<debug_text text="'MOD: TaterTrader -- %s -- Set global.$DALifetimeGrofit.{%s (%s)} to %s'.[player.age,$Seller.name,$Seller.idcode,global.$DALifetimeGrofit.{$Seller}]" context="false" filter="scripts"/>
+							</do_elseif>
+						</do_elseif>
+					</actions>
+				</cue>
 			</cues>
 		</cue>
 	</cues>

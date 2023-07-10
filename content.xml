@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<content id="TaterTrade" name="TaterTrade" description="Automated Trader Script" author="Ludsoe and DeadAir" version="600" date="2023-05-18" save="0">
+<?xml version="1.0" encoding="utf-8"?>
+<content id="TaterTrade" name="TaterTrade" description="Automated Trader Script" author="Ludsoe and DeadAir" version="601" date="2023-07-10" save="0">
 	<text language="7" name="TaterTrade" description="TaterTrade" author="Ludsoe"/>
 	<text language="33" name="TaterTrade" description="TaterTrade" author="Ludsoe"/>
 	<text language="34" name="TaterTrade" description="TaterTrade" author="Ludsoe"/>
