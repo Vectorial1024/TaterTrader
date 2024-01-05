@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mdscript name="Tater_Central_Queue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
+	<cues>
+		<cue name="Init">
+			<actions>
+				<set_value name="global.$DATaterQueue" exact="table[]" chance="(not global.$DATaterQueue?) * 100"/>
+				<set_value name="global.$DATaterFactionQueue" exact="[]" chance="(not global.$DATaterFactionQueue?) * 100"/>
+				<debug_text text="'MOD: TaterTrader -- %s -- global.$DATaterQueue? %s -- global.$DATaterFactionQueue? %s'.[player.age,global.$DATaterQueue?,global.$DATaterFactionQueue?]" context="false" filter="scripts"/>
+				<!-- global.$DATaterQueue.{Faction}.{ship} -->
+			</actions>
+			<cues>
+				<cue name="Game_Started" instantiate="false">
+					<actions>
+						<set_value name="$TaterDebugChance" exact="false"/>
+						<include_actions ref="Set_up_Queue_Factions"/>
+					</actions>
+				</cue>
+				<cue name="Game_Loaded" namespace="this" instantiate="true">
+					<conditions>
+						<event_game_loaded/>
+					</conditions>
+					<actions>
+						<set_value name="$TaterDebugChance" exact="false"/>
+						<include_actions ref="Set_up_Queue_Factions"/>
+					</actions>
+				</cue>
+				<library name="Set_up_Queue_Factions">
+					<actions>
+						<do_if value="not global.$DATaterQueue?">
+							<set_value name="global.$DATaterQueue" exact="table[]"/>
+						</do_if>
+						<do_if value="global.$DATaterQueue">
+							<get_factions_by_tag tag="tag.claimspace" result="$FactionList"/>
+							<get_factions_by_tag tag="tag.economic" result="$EconomicList"/>
+							<get_factions_by_tag tag="tag.visitor" result="$VisitorList"/>
+							<get_factions_by_tag tag="tag.hidden" result="$HiddenList"/>
+							<get_factions_by_tag tag="tag.notradeoffer" result="$NoTradeList"/>
+							<remove_from_list name="$EconomicList" list="$FactionList" multiple="true"/>
+							<append_list_elements name="$FactionList" other="$EconomicList"/>
+							<remove_from_list name="$FactionList" list="$VisitorList" multiple="true"/>
+							<remove_from_list name="$FactionList" list="$HiddenList" multiple="true"/>
+							<remove_from_list name="$FactionList" list="$NoTradeList" multiple="true"/>
+							<remove_value name="$VisitorList"/>
+							<remove_value name="$HiddenList"/>
+							<remove_value name="$NoTradeList"/>
+							<remove_value name="$EconomicList"/>
+							<do_for_each name="$Faction" in="$FactionList">
+								<do_if value="not global.$DATaterQueue.{$Faction}?">
+									<create_list name="global.$DATaterQueue.{$Faction}"/>
+								</do_if>
+								<do_if value="typeof global.$DATaterQueue.{$Faction} != datatype.list">
+									<debug_text text="'MOD: TaterTrader -- %s -- ERROR: global.$DATaterQueue.{%s} is type of list %s'.[player.age,$Faction,typeof global.$DATaterQueue.{$Faction} == datatype.list]" context="false" filter="error"/>
+								</do_if>
+							</do_for_each>
+							<remove_value name="$FactionList"/>
+						</do_if>
+						<debug_text text="'MOD: TaterTrader -- %s -- global.$DATaterQueue.keys.count %s'.[player.age,global.$DATaterQueue.keys.count]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+					</actions>
+				</library>
+				<cue name="CheckFactionQueue" instantiate="true" checkinterval="5s">
+					<conditions>
+						<check_value value="global.$DATaterFactionQueue.count"/>
+					</conditions>
+					<actions>
+						<debug_text text="'MOD: TaterTrader -- %s -- Processing Tater Faction queue -- Factions in queue: %s'.[player.age,global.$DATaterFactionQueue.count]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+					</actions>
+					<cues>
+						<cue name="ProcessFactionQueue">
+							<actions>
+								<do_if value="global.$DATaterFactionQueue.count">
+									<do_for_each name="$Faction" in="global.$DATaterFactionQueue">
+										<do_if value="not global.$DATaterQueue.{$Faction}?">
+											<set_value name="global.$DATaterQueue.{$Faction}" exact="[]"/>
+											<debug_text text="'MOD: TaterTrader -- %s -- Added %s to global.$DATaterQueue -- Verification: %s'.[player.age,$Faction,global.$DATaterQueue.{$Faction}?]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+										</do_if>
+										<do_if value="global.$DATaterQueue.{$Faction}? and global.$DATaterQueue.{$Faction}.count">
+											<set_value name="$Ship" exact="global.$DATaterQueue.{$Faction}.{1}"/>
+											<!-- signal Ship -->
+											<signal_objects object="$Ship" param="'Proceed'"/>
+											<debug_text text="'MOD: TaterTrader -- %s -- Ship: %s(%s) -- Signalled to proceed'.[player.age,$Ship.name,$Ship.idcode]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+											<!-- remove the Ship from table list -->
+											<remove_from_list name="global.$DATaterQueue.{$Faction}" exact="$Ship" multiple="true"/>
+											<!-- remove Faction from list if no other ships -->
+											<do_if value="not global.$DATaterQueue.{$Faction}.count">
+												<remove_from_list name="global.$DATaterFactionQueue" exact="$Faction" multiple="true"/>
+											</do_if>
+											<do_else>
+												<debug_text text="'MOD: TaterTrader -- %s -- Faction: %s -- More ships in queue %s'.[player.age,$Faction,global.$DATaterQueue.{$Faction}.count]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+											</do_else>
+											<remove_value name="$Ship"/>
+										</do_if>
+										<do_else>
+											<remove_from_list name="global.$DATaterFactionQueue" exact="$Faction" multiple="true"/>
+										</do_else>
+									</do_for_each>
+								</do_if>
+							</actions>
+						</cue>
+					</cues>
+				</cue>
+			</cues>
+		</cue>
+	</cues>
+</mdscript>

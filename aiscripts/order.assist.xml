@@ -72,6 +72,7 @@
 				<param name="illegalwares" value="$order.$illegalwares"/>
 				<param name="minfill" value="$order.$minfill"/>
 				<param name="minfillpercent" value="$order.$minfillpercent"/>
+				<param name="ignoreshipbuyers" value="$order.$ignoreshipbuyers"/>
 				<param name="enablelogbook" value="$order.$enablelogbook"/>
 				<param name="warebasket" value="$order.$warebasket"/>
 			</run_script>
