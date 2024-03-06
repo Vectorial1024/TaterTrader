@@ -454,7 +454,7 @@
 						</do_if>
 						<do_if value="@$buyers.count">
 							<do_all exact="$buyers.count" counter="$buy">
-								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and ($buyers.{$buy}.type != shiptype.resupplier) and ($buyers.{$buy}.type != shiptype.carrier))">
+								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$buyers.{$buy}.type != shiptype.resupplier) and (@$buyers.{$buy}.type != shiptype.carrier))">
 									<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
 								</do_if>
 							</do_all>
@@ -622,7 +622,7 @@
 			<wait>
 				<interrupt>
 					<conditions>
-						<event_object_signalled object="this.assignedcontrolled" param="'Proceed'"/>
+						<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
 					</conditions>
 					<actions>
 						<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- Received signal to proceed'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode]" context="false" filter="scripts" chance="0"/>
@@ -690,7 +690,7 @@
 					</do_if>
 					<do_if value="@$buyers.count">
 						<do_all exact="$buyers.count" counter="$buy">
-							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and ($buyers.{$buy}.type != shiptype.resupplier) and ($buyers.{$buy}.type != shiptype.carrier))">
+							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$buyers.{$buy}.type != shiptype.resupplier) and (@$buyers.{$buy}.type != shiptype.carrier))">
 								<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
 							</do_if>
 						</do_all>
@@ -918,7 +918,7 @@
 			<wait>
 				<interrupt>
 					<conditions>
-						<event_object_signalled object="this.assignedcontrolled" param="'Proceed'"/>
+						<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
 					</conditions>
 					<actions>
 						<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- Received signal to proceed'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode]" context="false" filter="scripts" chance="0"/>

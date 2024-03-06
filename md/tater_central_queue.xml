@@ -76,7 +76,7 @@
 										<do_if value="global.$DATaterQueue.{$Faction}? and global.$DATaterQueue.{$Faction}.count">
 											<set_value name="$Ship" exact="global.$DATaterQueue.{$Faction}.{1}"/>
 											<!-- signal Ship -->
-											<signal_objects object="$Ship" param="'Proceed'"/>
+											<signal_objects object="$Ship" param="'DeadTaterProceed'"/>
 											<debug_text text="'MOD: TaterTrader -- %s -- Ship: %s(%s) -- Signalled to proceed'.[player.age,$Ship.name,$Ship.idcode]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 											<!-- remove the Ship from table list -->
 											<remove_from_list name="global.$DATaterQueue.{$Faction}" exact="$Ship" multiple="true"/>
