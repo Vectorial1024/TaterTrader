@@ -67,6 +67,8 @@
 				<param name="distancecheck" value="$order.$distancecheck"/>
 				<param name="distancecheckpercent" value="$order.$distancecheckpercent"/>
 				<param name="preferownfaction" value="$order.$preferownfaction"/>
+				<param name="preferownfactionsell" value="$order.$preferownfactionsell"/>
+				<param name="preferownfactionbuy" value="$order.$preferownfactionbuy"/>
 				<param name="ignoretraderules" value="$order.$ignoretraderules"/>
 				<param name="autowares" value="$order.$autowares"/>
 				<param name="illegalwares" value="$order.$illegalwares"/>

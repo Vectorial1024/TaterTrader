@@ -2,7 +2,9 @@
 <mdscript name="Setup_Tater_Mod_Changes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
 	<cues>
 		<cue name="Init">
-			<actions/>
+			<actions>
+				<set_value name="$ProfitDebug" exact="false"/>
+			</actions>
 			<cues>
 				<cue name="Game_Started" instantiate="false">
 					<actions>
@@ -14,7 +16,7 @@
 						<do_if value="not global.$DALifetimeGrofit?">
 							<set_value name="global.$DALifetimeGrofit" exact="table[]"/>
 						</do_if>
-						<debug_text text="'MOD: TaterTrader -- %1 -- global.$DALifetimeGrofit? %2'.[player.age,global.$DALifetimeGrofit?]" context="false" filter="scripts"/>
+						<debug_text text="'MOD: TaterTrader -- global.$DALifetimeGrofit? %s'.[global.$DALifetimeGrofit?]" context="false" filter="scripts"/>
 					</actions>
 				</library>
 				<cue name="Remove_Killed" instantiate="true">
@@ -27,7 +29,7 @@
 					<actions>
 						<set_value name="$KeyList" exact="global.$DALifetimeGrofit.keys.list"/>
 						<do_if value="$KeyList.indexof.{event.param}">
-							<debug_text text="'MOD: TaterTrader -- %1 -- Removing %2 from global.$DALifetimeGrofit'.[player.age,event.param.idcode]" context="false" filter="scripts"/>
+							<debug_text text="'MOD: TaterTrader -- Removing %s from global.$DALifetimeGrofit'.[event.param.idcode]" context="false" filter="scripts" chance="@$ProfitDebug * 100"/>
 							<remove_value name="global.$DALifetimeGrofit.{event.param}"/>
 						</do_if>
 						<remove_value name="$KeyList"/>
@@ -42,7 +44,7 @@
 						<find_ship_by_true_owner name="$PlayerShips" faction="faction.player" space="player.galaxy" multiple="true"/>
 						<do_for_each in="global.$DALifetimeGrofit.keys.list" name="$Key">
 							<do_if value="($PlayerShips.count) and (not $PlayerShips.indexof.{$Key})">
-								<debug_text text="'MOD: TaterTrader -- %1 -- Found error! %2 in global.$DALifetimeGrofit.keys.list'.[player.age,$Key]" context="false" filter="scripts"/>
+								<debug_text text="'MOD: TaterTrader -- ERROR! %s in global.$DALifetimeGrofit.keys.list'.[$Key]" context="false" filter="error"/>
 								<remove_value name="global.$DALifetimeGrofit.{$Key}"/>
 							</do_if>
 						</do_for_each>
@@ -61,21 +63,21 @@
 						<do_if value="$Buyer.isoperational and $Buyer.trueowner == faction.player and $Seller.trueowner != faction.player and $Buyer.isclass.ship and $Buyer.defaultorder? and ((['TaterTrader','DeadTater'].indexof.{$Buyer.defaultorder.id}) or (($Buyer.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{$Buyer.commander.defaultorder.id})))">
 							<do_if value="global.$DALifetimeGrofit.{$Buyer}?">
 								<set_value name="global.$DALifetimeGrofit.{$Buyer}" exact="$Price" operation="subtract"/>
-								<debug_text text="'MOD: TaterTrader -- %s -- Updated global.$DALifetimeGrofit.{%s (%s)} to %s'.[player.age,$Buyer.name,$Buyer.idcode,global.$DALifetimeGrofit.{$Buyer}]" context="false" filter="scripts"/>
+								<debug_text text="'MOD: TaterTrader -- Updated global.$DALifetimeGrofit.{%s (%s)} to %s'.[$Buyer.name,$Buyer.idcode,global.$DALifetimeGrofit.{$Buyer}]" context="false" filter="scripts" chance="@$ProfitDebug * 100"/>
 							</do_if>
 							<do_elseif value="global.$DALifetimeGrofit?">
 								<set_value name="global.$DALifetimeGrofit.{$Buyer}" exact="$Price * -1"/>
-								<debug_text text="'MOD: TaterTrader -- %s -- Set global.$DALifetimeGrofit.{%s (%s)} to %s'.[player.age,$Buyer.name,$Buyer.idcode,global.$DALifetimeGrofit.{$Buyer}]" context="false" filter="scripts"/>
+								<debug_text text="'MOD: TaterTrader -- Set global.$DALifetimeGrofit.{%s (%s)} to %s'.[$Buyer.name,$Buyer.idcode,global.$DALifetimeGrofit.{$Buyer}]" context="false" filter="scripts" chance="@$ProfitDebug * 100"/>
 							</do_elseif>
 						</do_if>
 						<do_elseif value="$Seller.isoperational and $Seller.trueowner == faction.player and $Buyer.trueowner != faction.player and $Seller.isclass.ship and $Seller.defaultorder? and ((['TaterTrader','DeadTater'].indexof.{$Seller.defaultorder.id}) or (($Seller.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{$Seller.commander.defaultorder.id})))">
 							<do_if value="global.$DALifetimeGrofit.{$Seller}?">
 								<set_value name="global.$DALifetimeGrofit.{$Seller}" exact="$Price" operation="add"/>
-								<debug_text text="'MOD: TaterTrader -- %s -- Updated global.$DALifetimeGrofit.{%s (%s)} to %s'.[player.age,$Seller.name,$Seller.idcode,global.$DALifetimeGrofit.{$Seller}]" context="false" filter="scripts"/>
+								<debug_text text="'MOD: TaterTrader -- Updated global.$DALifetimeGrofit.{%s (%s)} to %s'.[$Seller.name,$Seller.idcode,global.$DALifetimeGrofit.{$Seller}]" context="false" filter="scripts" chance="@$ProfitDebug * 100"/>
 							</do_if>
 							<do_elseif value="global.$DALifetimeGrofit?">
 								<set_value name="global.$DALifetimeGrofit.{$Seller}" exact="$Price"/>
-								<debug_text text="'MOD: TaterTrader -- %s -- Set global.$DALifetimeGrofit.{%s (%s)} to %s'.[player.age,$Seller.name,$Seller.idcode,global.$DALifetimeGrofit.{$Seller}]" context="false" filter="scripts"/>
+								<debug_text text="'MOD: TaterTrader -- Set global.$DALifetimeGrofit.{%s (%s)} to %s'.[$Seller.name,$Seller.idcode,global.$DALifetimeGrofit.{$Seller}]" context="false" filter="scripts" chance="@$ProfitDebug * 100"/>
 							</do_elseif>
 						</do_elseif>
 					</actions>
