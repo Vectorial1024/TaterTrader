@@ -1,83 +1,233 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<diff xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="aiscripts.xsd">
-	<add sel="//do_if[@value='not $order.requiredskill or (this.combinedskill ge $order.requiredskill)']">
-		<do_if value="$order.id == 'TaterTrade'">
-			<set_value name="$added"/>
-			<run_script name="$scriptname">
-				<param name="home" value="$order.$home"/>
-				<param name="returnhome" value="$order.$returnhome"/>
-				<param name="minbuy" value="$order.$minbuy"/>
-				<param name="maxbuy" value="$order.$maxbuy"/>
-				<param name="minsell" value="$order.$minsell"/>
-				<param name="maxsell" value="$order.$maxsell"/>
-				<param name="distancecheck" value="$order.$distancecheck"/>
-				<param name="distancecheckpercent" value="$order.$distancecheckpercent"/>
-				<param name="discount" value="$order.$discount"/>
-				<param name="discount2" value="$order.$discount2"/>
-				<param name="bypass" value="$order.$bypass"/>
-				<param name="fasttrade" value="$order.$fasttrade"/>
-				<param name="stationmode" value="$order.$stationmode"/>
-				<param name="blackmarket" value="$order.$blackmarket"/>
-				<param name="warebasket" value="$order.$warebasket"/>
-				<param name="usepresets" value="$order.$usepresets"/>
-				<param name="allwares" value="$order.$allwares"/>
-				<param name="legalwares" value="$order.$legalwares"/>
-				<param name="illegalwares" value="$order.$illegalwares"/>
-				<param name="shipbuildingwares" value="$order.$shipbuildingwares"/>
-				<param name="stationbuildingwares" value="$order.$stationbuildingwares"/>
-				<param name="hightechwares" value="$order.$hightechwares"/>
-				<param name="refinedwares" value="$order.$refinedwares"/>
-				<param name="biowares" value="$order.$biowares"/>
-				<param name="largelegalwares" value="$order.$largelegalwares"/>
-				<param name="mediumlegalwares" value="$order.$mediumlegalwares"/>
-				<param name="smalllegalwares" value="$order.$smalllegalwares"/>
-				<param name="excludedsectors" value="$order.$excludedsectors"/>
-				<param name="includedsectors" value="$order.$includedsectors"/>
-				<param name="enablebans" value="$order.$enablebans"/>
-				<param name="playerban" value="$order.$playerban"/>
-				<param name="argonban" value="$order.$argonban"/>
-				<param name="antigoneban" value="$order.$antigoneban"/>
-				<param name="teladiban" value="$order.$teladiban"/>
-				<param name="ministryban" value="$order.$ministryban"/>
-				<param name="paranidban" value="$order.$paranidban"/>
-				<param name="holyorderban" value="$order.$holyorderban"/>
-				<param name="allianceban" value="$order.$allianceban"/>
-				<param name="trinityban" value="$order.$trinityban"/>
-				<param name="splitban" value="$order.$splitban"/>
-				<param name="freesplitban" value="$order.$freesplitban"/>
-				<param name="courtban" value="$order.$courtban"/>
-				<param name="buccaneersban" value="$order.$buccaneersban"/>
-				<param name="fallensplitban" value="$order.$fallensplitban"/>
-				<param name="hatikvahban" value="$order.$hatikvahban"/>
-				<param name="scaleplateban" value="$order.$scaleplateban"/>
-				<param name="scanspeed" value="$order.$scanspeed"/>
-				<param name="enablelogbook" value="$order.$enablelogbook"/>
-				<param name="pioneersban" value="$order.$pioneersban"/>
-				<param name="terranban" value="$order.$terranban"/>
-			</run_script>
-		</do_if>
-		<do_if value="$order.id == 'DeadTater'">
-			<set_value name="$added"/>
-			<run_script name="$scriptname">
-				<param name="range" value="$order.$range"/>
-				<param name="minbuy" value="$order.$minbuy"/>
-				<param name="maxbuy" value="$order.$maxbuy"/>
-				<param name="minsell" value="$order.$minsell"/>
-				<param name="maxsell" value="$order.$maxsell"/>
-				<param name="distancecheck" value="$order.$distancecheck"/>
-				<param name="distancecheckpercent" value="$order.$distancecheckpercent"/>
-				<param name="preferownfaction" value="$order.$preferownfaction"/>
-				<param name="preferownfactionsell" value="$order.$preferownfactionsell"/>
-				<param name="preferownfactionbuy" value="$order.$preferownfactionbuy"/>
-				<param name="ignoretraderules" value="$order.$ignoretraderules"/>
-				<param name="autowares" value="$order.$autowares"/>
-				<param name="illegalwares" value="$order.$illegalwares"/>
-				<param name="minfill" value="$order.$minfill"/>
-				<param name="minfillpercent" value="$order.$minfillpercent"/>
-				<param name="ignoreshipbuyers" value="$order.$ignoreshipbuyers"/>
-				<param name="enablelogbook" value="$order.$enablelogbook"/>
-				<param name="warebasket" value="$order.$warebasket"/>
-			</run_script>
-		</do_if>
-	</add>
+<?xml version='1.0' encoding='utf-8'?>
+<diff>
+  <add sel="/aiscript/attention/actions/do_if[@value='$order.exists or (@$orderdef and $createdefaultorder?)']/do_if[@value='(@$orderdef and $createdefaultorder?) or not $order.requiredskill or (this.combinedskill ge $order.requiredskill)']">
+    <do_elseif value="($orderdef.$id == 'TaterTrade') or ($orderdef.$id == 'DeadTater')">
+      <do_if value="$orderdef.$id == 'TaterTrade'">
+        <set_value name="$added"/>
+        <do_if value="$createdefaultorder?">
+          <create_order id="$orderdef.$id" object="this.assignedcontrolled" default="true">
+            <param name="home" value="$orderdef.$home"/>
+            <param name="returnhome" value="$orderdef.$returnhome"/>
+            <param name="minbuy" value="$orderdef.$minbuy"/>
+            <param name="maxbuy" value="$orderdef.$maxbuy"/>
+            <param name="minsell" value="$orderdef.$minsell"/>
+            <param name="maxsell" value="$orderdef.$maxsell"/>
+            <param name="distancecheck" value="$orderdef.$distancecheck"/>
+            <param name="distancecheckpercent" value="$orderdef.$distancecheckpercent"/>
+            <param name="discount" value="$orderdef.$discount"/>
+            <param name="discount2" value="$orderdef.$discount2"/>
+            <param name="bypass" value="$orderdef.$bypass"/>
+            <param name="fasttrade" value="$orderdef.$fasttrade"/>
+            <param name="stationmode" value="$orderdef.$stationmode"/>
+            <param name="blackmarket" value="$orderdef.$blackmarket"/>
+            <param name="warebasket" value="$orderdef.$warebasket"/>
+            <param name="usepresets" value="$orderdef.$usepresets"/>
+            <param name="allwares" value="$orderdef.$allwares"/>
+            <param name="legalwares" value="$orderdef.$legalwares"/>
+            <param name="illegalwares" value="$orderdef.$illegalwares"/>
+            <param name="shipbuildingwares" value="$orderdef.$shipbuildingwares"/>
+            <param name="stationbuildingwares" value="$orderdef.$stationbuildingwares"/>
+            <param name="hightechwares" value="$orderdef.$hightechwares"/>
+            <param name="refinedwares" value="$orderdef.$refinedwares"/>
+            <param name="biowares" value="$orderdef.$biowares"/>
+            <param name="largelegalwares" value="$orderdef.$largelegalwares"/>
+            <param name="mediumlegalwares" value="$orderdef.$mediumlegalwares"/>
+            <param name="smalllegalwares" value="$orderdef.$smalllegalwares"/>
+            <param name="excludedsectors" value="$orderdef.$excludedsectors"/>
+            <param name="includedsectors" value="$orderdef.$includedsectors"/>
+            <param name="enablebans" value="$orderdef.$enablebans"/>
+            <param name="playerban" value="$orderdef.$playerban"/>
+            <param name="argonban" value="$orderdef.$argonban"/>
+            <param name="antigoneban" value="$orderdef.$antigoneban"/>
+            <param name="teladiban" value="$orderdef.$teladiban"/>
+            <param name="ministryban" value="$orderdef.$ministryban"/>
+            <param name="paranidban" value="$orderdef.$paranidban"/>
+            <param name="holyorderban" value="$orderdef.$holyorderban"/>
+            <param name="allianceban" value="$orderdef.$allianceban"/>
+            <param name="trinityban" value="$orderdef.$trinityban"/>
+            <param name="splitban" value="$orderdef.$splitban"/>
+            <param name="freesplitban" value="$orderdef.$freesplitban"/>
+            <param name="courtban" value="$orderdef.$courtban"/>
+            <param name="buccaneersban" value="$orderdef.$buccaneersban"/>
+            <param name="fallensplitban" value="$orderdef.$fallensplitban"/>
+            <param name="hatikvahban" value="$orderdef.$hatikvahban"/>
+            <param name="scaleplateban" value="$orderdef.$scaleplateban"/>
+            <param name="scanspeed" value="$orderdef.$scanspeed"/>
+            <param name="enablelogbook" value="$orderdef.$enablelogbook"/>
+            <param name="pioneersban" value="$orderdef.$pioneersban"/>
+            <param name="terranban" value="$orderdef.$terranban"/>
+          </create_order>
+        </do_if>
+        <do_else>
+          <set_value name="$orderdef.$home" exact="$order.$home"/>
+          <set_value name="$orderdef.$returnhome" exact="$order.$returnhome"/>
+          <set_value name="$orderdef.$minbuy" exact="$order.$minbuy"/>
+          <set_value name="$orderdef.$maxbuy" exact="$order.$maxbuy"/>
+          <set_value name="$orderdef.$minsell" exact="$order.$minsell"/>
+          <set_value name="$orderdef.$maxsell" exact="$order.$maxsell"/>
+          <set_value name="$orderdef.$distancecheck" exact="$order.$distancecheck"/>
+          <set_value name="$orderdef.$distancecheckpercent" exact="$order.$distancecheckpercent"/>
+          <set_value name="$orderdef.$discount" exact="$order.$discount"/>
+          <set_value name="$orderdef.$discount2" exact="$order.$discount2"/>
+          <set_value name="$orderdef.$bypass" exact="$order.$bypass"/>
+          <set_value name="$orderdef.$fasttrade" exact="$order.$fasttrade"/>
+          <set_value name="$orderdef.$stationmode" exact="$order.$stationmode"/>
+          <set_value name="$orderdef.$blackmarket" exact="$order.$blackmarket"/>
+          <set_value name="$orderdef.$warebasket" exact="$order.$warebasket"/>
+          <set_value name="$orderdef.$usepresets" exact="$order.$usepresets"/>
+          <set_value name="$orderdef.$allwares" exact="$order.$allwares"/>
+          <set_value name="$orderdef.$legalwares" exact="$order.$legalwares"/>
+          <set_value name="$orderdef.$illegalwares" exact="$order.$illegalwares"/>
+          <set_value name="$orderdef.$shipbuildingwares" exact="$order.$shipbuildingwares"/>
+          <set_value name="$orderdef.$stationbuildingwares" exact="$order.$stationbuildingwares"/>
+          <set_value name="$orderdef.$hightechwares" exact="$order.$hightechwares"/>
+          <set_value name="$orderdef.$refinedwares" exact="$order.$refinedwares"/>
+          <set_value name="$orderdef.$biowares" exact="$order.$biowares"/>
+          <set_value name="$orderdef.$largelegalwares" exact="$order.$largelegalwares"/>
+          <set_value name="$orderdef.$mediumlegalwares" exact="$order.$mediumlegalwares"/>
+          <set_value name="$orderdef.$smalllegalwares" exact="$order.$smalllegalwares"/>
+          <set_value name="$orderdef.$excludedsectors" exact="$order.$excludedsectors"/>
+          <set_value name="$orderdef.$includedsectors" exact="$order.$includedsectors"/>
+          <set_value name="$orderdef.$enablebans" exact="$order.$enablebans"/>
+          <set_value name="$orderdef.$playerban" exact="$order.$playerban"/>
+          <set_value name="$orderdef.$argonban" exact="$order.$argonban"/>
+          <set_value name="$orderdef.$antigoneban" exact="$order.$antigoneban"/>
+          <set_value name="$orderdef.$teladiban" exact="$order.$teladiban"/>
+          <set_value name="$orderdef.$ministryban" exact="$order.$ministryban"/>
+          <set_value name="$orderdef.$paranidban" exact="$order.$paranidban"/>
+          <set_value name="$orderdef.$holyorderban" exact="$order.$holyorderban"/>
+          <set_value name="$orderdef.$allianceban" exact="$order.$allianceban"/>
+          <set_value name="$orderdef.$trinityban" exact="$order.$trinityban"/>
+          <set_value name="$orderdef.$splitban" exact="$order.$splitban"/>
+          <set_value name="$orderdef.$freesplitban" exact="$order.$freesplitban"/>
+          <set_value name="$orderdef.$courtban" exact="$order.$courtban"/>
+          <set_value name="$orderdef.$buccaneersban" exact="$order.$buccaneersban"/>
+          <set_value name="$orderdef.$fallensplitban" exact="$order.$fallensplitban"/>
+          <set_value name="$orderdef.$hatikvahban" exact="$order.$hatikvahban"/>
+          <set_value name="$orderdef.$scaleplateban" exact="$order.$scaleplateban"/>
+          <set_value name="$orderdef.$scanspeed" exact="$order.$scanspeed"/>
+          <set_value name="$orderdef.$enablelogbook" exact="$order.$enablelogbook"/>
+          <set_value name="$orderdef.$pioneersban" exact="$order.$pioneersban"/>
+          <set_value name="$orderdef.$terranban" exact="$order.$terranban"/>
+          <run_script name="$scriptname">
+            <param name="home" value="$order.$home"/>
+            <param name="returnhome" value="$order.$returnhome"/>
+            <param name="minbuy" value="$order.$minbuy"/>
+            <param name="maxbuy" value="$order.$maxbuy"/>
+            <param name="minsell" value="$order.$minsell"/>
+            <param name="maxsell" value="$order.$maxsell"/>
+            <param name="distancecheck" value="$order.$distancecheck"/>
+            <param name="distancecheckpercent" value="$order.$distancecheckpercent"/>
+            <param name="discount" value="$order.$discount"/>
+            <param name="discount2" value="$order.$discount2"/>
+            <param name="bypass" value="$order.$bypass"/>
+            <param name="fasttrade" value="$order.$fasttrade"/>
+            <param name="stationmode" value="$order.$stationmode"/>
+            <param name="blackmarket" value="$order.$blackmarket"/>
+            <param name="warebasket" value="$order.$warebasket"/>
+            <param name="usepresets" value="$order.$usepresets"/>
+            <param name="allwares" value="$order.$allwares"/>
+            <param name="legalwares" value="$order.$legalwares"/>
+            <param name="illegalwares" value="$order.$illegalwares"/>
+            <param name="shipbuildingwares" value="$order.$shipbuildingwares"/>
+            <param name="stationbuildingwares" value="$order.$stationbuildingwares"/>
+            <param name="hightechwares" value="$order.$hightechwares"/>
+            <param name="refinedwares" value="$order.$refinedwares"/>
+            <param name="biowares" value="$order.$biowares"/>
+            <param name="largelegalwares" value="$order.$largelegalwares"/>
+            <param name="mediumlegalwares" value="$order.$mediumlegalwares"/>
+            <param name="smalllegalwares" value="$order.$smalllegalwares"/>
+            <param name="excludedsectors" value="$order.$excludedsectors"/>
+            <param name="includedsectors" value="$order.$includedsectors"/>
+            <param name="enablebans" value="$order.$enablebans"/>
+            <param name="playerban" value="$order.$playerban"/>
+            <param name="argonban" value="$order.$argonban"/>
+            <param name="antigoneban" value="$order.$antigoneban"/>
+            <param name="teladiban" value="$order.$teladiban"/>
+            <param name="ministryban" value="$order.$ministryban"/>
+            <param name="paranidban" value="$order.$paranidban"/>
+            <param name="holyorderban" value="$order.$holyorderban"/>
+            <param name="allianceban" value="$order.$allianceban"/>
+            <param name="trinityban" value="$order.$trinityban"/>
+            <param name="splitban" value="$order.$splitban"/>
+            <param name="freesplitban" value="$order.$freesplitban"/>
+            <param name="courtban" value="$order.$courtban"/>
+            <param name="buccaneersban" value="$order.$buccaneersban"/>
+            <param name="fallensplitban" value="$order.$fallensplitban"/>
+            <param name="hatikvahban" value="$order.$hatikvahban"/>
+            <param name="scaleplateban" value="$order.$scaleplateban"/>
+            <param name="scanspeed" value="$order.$scanspeed"/>
+            <param name="enablelogbook" value="$order.$enablelogbook"/>
+            <param name="pioneersban" value="$order.$pioneersban"/>
+            <param name="terranban" value="$order.$terranban"/>
+          </run_script>
+        </do_else>
+      </do_if>
+      <do_elseif value="$orderdef.$id == 'DeadTater'">
+        <set_value name="$added"/>
+        <do_if value="$createdefaultorder?">
+          <create_order id="$orderdef.$id" object="this.assignedcontrolled" default="true">
+            <param name="range" value="$orderdef.$range"/>
+            <param name="minbuy" value="$orderdef.$minbuy"/>
+            <param name="maxbuy" value="$orderdef.$maxbuy"/>
+            <param name="minsell" value="$orderdef.$minsell"/>
+            <param name="maxsell" value="$orderdef.$maxsell"/>
+            <param name="distancecheck" value="$orderdef.$distancecheck"/>
+            <param name="distancecheckpercent" value="$orderdef.$distancecheckpercent"/>
+            <param name="preferownfaction" value="$orderdef.$preferownfaction"/>
+            <param name="preferownfactionsell" value="$orderdef.$preferownfactionsell"/>
+            <param name="preferownfactionbuy" value="$orderdef.$preferownfactionbuy"/>
+            <param name="ignoretraderules" value="$orderdef.$ignoretraderules"/>
+            <param name="autowares" value="$orderdef.$autowares"/>
+            <param name="illegalwares" value="$orderdef.$illegalwares"/>
+            <param name="minfill" value="$orderdef.$minfill"/>
+            <param name="minfillpercent" value="$orderdef.$minfillpercent"/>
+            <param name="ignoreshipbuyers" value="$orderdef.$ignoreshipbuyers"/>
+            <param name="enablelogbook" value="$orderdef.$enablelogbook"/>
+            <param name="warebasket" value="$orderdef.$warebasket"/>
+          </create_order>
+        </do_if>
+        <do_else>
+          <set_value name="$orderdef.$range" exact="$order.$range"/>
+          <set_value name="$orderdef.$minbuy" exact="$order.$minbuy"/>
+          <set_value name="$orderdef.$maxbuy" exact="$order.$maxbuy"/>
+          <set_value name="$orderdef.$minsell" exact="$order.$minsell"/>
+          <set_value name="$orderdef.$maxsell" exact="$order.$maxsell"/>
+          <set_value name="$orderdef.$distancecheck" exact="$order.$distancecheck"/>
+          <set_value name="$orderdef.$distancecheckpercent" exact="$order.$distancecheckpercent"/>
+          <set_value name="$orderdef.$preferownfaction" exact="$order.$preferownfaction"/>
+          <set_value name="$orderdef.$preferownfactionsell" exact="$order.$preferownfactionsell"/>
+          <set_value name="$orderdef.$preferownfactionbuy" exact="$order.$preferownfactionbuy"/>
+          <set_value name="$orderdef.$ignoretraderules" exact="$order.$ignoretraderules"/>
+          <set_value name="$orderdef.$autowares" exact="$order.$autowares"/>
+          <set_value name="$orderdef.$illegalwares" exact="$order.$illegalwares"/>
+          <set_value name="$orderdef.$minfill" exact="$order.$minfill"/>
+          <set_value name="$orderdef.$minfillpercent" exact="$order.$minfillpercent"/>
+          <set_value name="$orderdef.$ignoreshipbuyers" exact="$order.$ignoreshipbuyers"/>
+          <set_value name="$orderdef.$enablelogbook" exact="$order.$enablelogbook"/>
+          <set_value name="$orderdef.$warebasket" exact="$order.$warebasket"/>
+          <run_script name="$scriptname">
+            <param name="range" value="$order.$range"/>
+            <param name="minbuy" value="$order.$minbuy"/>
+            <param name="maxbuy" value="$order.$maxbuy"/>
+            <param name="minsell" value="$order.$minsell"/>
+            <param name="maxsell" value="$order.$maxsell"/>
+            <param name="distancecheck" value="$order.$distancecheck"/>
+            <param name="distancecheckpercent" value="$order.$distancecheckpercent"/>
+            <param name="preferownfaction" value="$order.$preferownfaction"/>
+            <param name="preferownfactionsell" value="$order.$preferownfactionsell"/>
+            <param name="preferownfactionbuy" value="$order.$preferownfactionbuy"/>
+            <param name="ignoretraderules" value="$order.$ignoretraderules"/>
+            <param name="autowares" value="$order.$autowares"/>
+            <param name="illegalwares" value="$order.$illegalwares"/>
+            <param name="minfill" value="$order.$minfill"/>
+            <param name="minfillpercent" value="$order.$minfillpercent"/>
+            <param name="ignoreshipbuyers" value="$order.$ignoreshipbuyers"/>
+            <param name="enablelogbook" value="$order.$enablelogbook"/>
+            <param name="warebasket" value="$order.$warebasket"/>
+          </run_script>
+        </do_else>
+      </do_elseif>
+    </do_elseif>
+  </add>
 </diff>
