@@ -1969,7 +1969,7 @@
 						<clamp_trade_amount trade="$GrofferBuy" amount="$Gromount" buyer="this.assignedcontrolled" seller="$GrofferSell.seller" result="$ClampedAmount" reason="$ClampedReason"/>
 						<do_if value="$ClampedAmount != $Gromount">
 							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- $GrofferBuy -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s.'.[player.age,$GrofferBuy.ware,$Gromount,$ClampedAmount,$ClampedReason]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-							<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- $GrofferBuy -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s.'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferBuy.ware,$Gromount,$ClampedAmount,$ClampedReason]" context="false" filter="error"/>
+							<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- $GrofferBuy -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s -- Seller: %s(%s) in %s'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferBuy.ware,$Gromount,$ClampedAmount,$ClampedReason,$GrofferSell.seller.knownname,$GrofferSell.seller.idcode,$GrofferSell.seller.sector.knownname]" context="false" filter="error"/>
 							<!-- 20240423 Abandoning trade if reduced, this has been catching errors but not enforcing restart -->
 							<do_if value="$ClampedAmount lt $Gromount">
 								<remove_value name="$ClampedAmount"/>
@@ -1993,7 +1993,7 @@
 						<clamp_trade_amount trade="$GrofferSell" amount="$Gromount" buyer="$GrofferBuy.buyer" result="$ClampedAmount" reason="$ClampedReason"/>
 						<do_if value="$ClampedAmount != $Gromount">
 							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- $GrofferSell -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s.'.[player.age,$GrofferSell.ware,$Gromount,$ClampedAmount,$ClampedReason]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-							<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- $GrofferSell -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s.'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferSell.ware,$Gromount,$ClampedAmount,$ClampedReason]" context="false" filter="error"/>
+							<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- $GrofferSell -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s -- Buyer: %s(%s) in %s'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferSell.ware,$Gromount,$ClampedAmount,$ClampedReason,$GrofferBuy.buyer.knownname,$GrofferBuy.buyer.idcode,$GrofferBuy.buyer.sector.knownname]" context="false" filter="error"/>
 							<!-- 20240423 Abandoning trade if reduced, this has been catching errors but not enforcing restart -->
 							<do_if value="$ClampedAmount lt $Gromount">
 								<remove_value name="$ClampedAmount"/>
@@ -2030,7 +2030,7 @@
 								<set_value name="$ThisShip" exact="this.assignedcontrolled"/>
 								<!-- 20231209 printing out lifetime profit handled by md script -->
 								<set_value name="$Message" exact="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]"/>
-								<set_value name="$Message" exact="{3282837,212}.[if global.$DALifetimeGrofit.{$ThisShip} then (global.$DALifetimeGrofit.{$ThisShip}).formatted.{'%3s %Cr'} else {1001,9002}]" operation="add" chance="(global.$DALifetimeGrofit.{$ThisShip}?) * 100"/>
+								<set_value name="$Message" exact="{3282837,212}.[if global.$DALifetimeGrofit.{$ThisShip}? then (global.$DALifetimeGrofit.{$ThisShip}).formatted.default else {1001,9002}]" operation="add"/>
 								<write_to_logbook category="upkeep" title="'DeadTater: '+this.assignedcontrolled.knownname+' ( '+this.assignedcontrolled.idcode+' )'" interaction="showonmap" object="this.assignedcontrolled" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="$Message" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								<remove_value name="$Message"/>
 								<remove_value name="$ThisShip"/>

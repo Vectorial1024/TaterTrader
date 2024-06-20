@@ -50,7 +50,7 @@
 		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
 		<t id="211">Es konnte kein Handel gefunden werden %1 mal. Fordern Sie Hilfe an.</t>
 		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
-		<t id="212">\nGeschätzter Gesamtgewinn über die gesamte Lebensdauer: %1.</t>
+		<t id="212">\nGeschätzter Gesamtgewinn auf Lebenszeit vor diesem Handel: %1.</t>
 		<t id="127">Ignorieren Sie Kaufhandelsbeschränkungen</t>
 		<t id="128">Ignorieren Sie Verkaufsbeschränkungen</t>
 		<t id="129">{1001,8986}(Enable) {1001,5700}(Logbook) {1001,7730}(Messages)</t>
