@@ -87,7 +87,7 @@
 						<set_value name="$Seller" exact="$Trade.seller"/>
 						<set_value name="$Price" exact="$Trade.unitprice * $Trade.transferredamount"/>
 						<do_if value="$Buyer.isoperational and $Buyer.trueowner == faction.player and $Buyer.isclass.ship and $Buyer.defaultorder?">
-							<do_if value="((['TaterTrader','DeadTater'].indexof.{$Buyer.defaultorder.id}) or (($Buyer.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{$Buyer.commander.defaultorder.id})))">
+							<do_if value="((['TaterTrader','DeadTater'].indexof.{@$Buyer.defaultorder.id}) or ((@$Buyer.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{@$Buyer.commander.defaultorder.id})))">
 								<do_if value="global.$DALifetimeGrofit.{$Buyer}?">
 									<set_value name="global.$DALifetimeGrofit.{$Buyer}" exact="$Price" operation="subtract"/>
 								</do_if>
@@ -100,7 +100,7 @@
 							</do_if>
 						</do_if>
 						<do_elseif value="$Seller.isoperational and $Seller.trueowner == faction.player and $Seller.isclass.ship and $Seller.defaultorder?">
-							<do_if value="((['TaterTrader','DeadTater'].indexof.{$Seller.defaultorder.id}) or (($Seller.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{$Seller.commander.defaultorder.id})))">
+							<do_if value="((['TaterTrader','DeadTater'].indexof.{@$Seller.defaultorder.id}) or ((@$Seller.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{@$Seller.commander.defaultorder.id})))">
 								<do_if value="global.$DALifetimeGrofit.{$Seller}?">
 									<set_value name="global.$DALifetimeGrofit.{$Seller}" exact="$Price" operation="add"/>
 								</do_if>
