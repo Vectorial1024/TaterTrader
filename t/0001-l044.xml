@@ -69,5 +69,7 @@
 		<t id="511">{1002,15902}(Ignore) {20221,5001}(Carrier)/{20221,5011}(Auxiliary)</t>
 		<t id="512">Prefer My Buy Offers</t>
 		<t id="513">Prefer My Sell Offers</t>
+		<t id="514">Pay for my Faction Wares</t>
+		<t id="515">Use Spreading Queue</t>
 	</page>
 </language>

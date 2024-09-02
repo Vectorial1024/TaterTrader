@@ -45,10 +45,10 @@
 			<!-- Minimum fill -->
 			<param name="minfill" type="bool" default="false" text="{3282837,507}" comment="Apply minimum fill percent"/>
 			<!-- Minimum fill amount -->
-			<param name="minfillpercent" default="5" type="number" text="{3282837,508}" comment="(capacity * $minfillpercent) / 100">
+			<param name="minfillpercent" default="25" type="number" text="{3282837,508}" comment="(capacity * $minfillpercent) / 100">
 				<input_param name="startvalue" value="5"/>
 				<input_param name="min" value="5"/>
-				<input_param name="max" value="50"/>
+				<input_param name="max" value="95"/>
 				<input_param name="step" value="5"/>
 			</param>
 			<!-- Ignore carrier/auxiliary buyers -->
@@ -60,6 +60,8 @@
 				<input_param name="type" value="'ware'"/>
 				<input_param name="cancarry" value="this.assignedcontrolled"/>
 			</param>
+			<param name="transfercreditoption" type="bool" default="false" text="{3282837,514}" comment="Transfer credits when buying from owned stations."/>
+			<param name="usequeue" type="bool" default="true" text="{3282837,515}" comment="Have ships use queue system for trades."/>
 			<!-- If your looking into tweaking this, be aware that high space speeds may cause performance issues
 			<param name="scanspeed" default="5" type="number" text="Scan Speed" comment="How fast do we calculate?">
 				<input_param name="startvalue" value="5"/>
@@ -144,30 +146,31 @@
 			<label name="checksectorsinrange"/>
 			<!-- 20231209 Track time taken for check buyspaces, check sellspaces, and the entire queen code section. -->
 			<set_value name="$CheckSectorsStartTime" exact="player.age"/>
-			<!-- 20240421 // QUEUE // Check Sectors -->
-			<do_if value="global.$DATaterQueue.{this.assignedcontrolled.trueowner}?">
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
+			<do_if value="(not $usequeue?) or @$usequeue">
+				<!-- 20240708 // CHECKSPACE QUEUE // Check Sectors -->
+				<do_if value="global.$DATaterQueueTable.$CheckSpaceQueue.{this.assignedcontrolled.trueowner}?">
+					<append_to_list name="global.$DATaterQueueTable.$CheckSpaceQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true"/>
+				</do_if>
+				<do_else>
+					<append_to_list name="global.$DATaterQueueTable.$CheckSpaceQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true" create="true"/>
+				</do_else>
+				<do_if value="not global.$DATaterQueueTable.$FactionCheckSpaceQueue.indexof.{this.assignedcontrolled.trueowner}">
+					<append_to_list name="global.$DATaterQueueTable.$FactionCheckSpaceQueue" exact="this.assignedcontrolled.trueowner" unique="true"/>
+				</do_if>
+				<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueueTable.$CheckSpaceQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueueTable.$CheckSpaceQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+				<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueueTable.$CheckSpaceQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled} * 3)s,60s].max"/>
+				<wait sinceversion="5">
+					<interrupt>
+						<conditions>
+							<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
+						</conditions>
+						<actions>
+							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+						</actions>
+					</interrupt>
+					<interrupt_after_time time="$ExpectedDelay"/>
+				</wait>
 			</do_if>
-			<do_else>
-				<create_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}"/>
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
-			</do_else>
-			<do_if value="not global.$DATaterFactionQueue.indexof.{this.assignedcontrolled.trueowner}">
-				<append_to_list name="global.$DATaterFactionQueue" exact="this.assignedcontrolled.trueowner"/>
-			</do_if>
-			<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-			<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count * 6)s,60s].max"/>
-			<wait sinceversion="5">
-				<interrupt>
-					<conditions>
-						<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
-					</conditions>
-					<actions>
-						<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-					</actions>
-				</interrupt>
-				<interrupt_after_time time="$ExpectedDelay"/>
-			</wait>
 			<set_value name="$TotalQueueTime" exact="player.age - $CheckSectorsStartTime"/>
 			<remove_value name="$ExpectedDelay"/>
 			<!-- 20240421 // QUEUE END // Check Sectors -->
@@ -212,6 +215,10 @@
 			<!--No more simultaneous trades please-->
 			<!-- 20231212 I previously asked nicely, now it's time for Central Tater queue system -->
 			<set_value name="$DeadTaterDelay" exact="5ms"/>
+			<!-- 20240713 Some people want chaos and no queue -->
+			<do_if value="$usequeue? and (@$usequeue == false)">
+				<set_value name="$DeadTaterDelay" min="50ms" max="200ms" seed="this.assignedcontrolled"/>
+			</do_if>
 			<!-- 20231209 check buyspaces time start -->
 			<set_value name="$CheckBuySpacesStartTime" exact="player.age"/>
 			<!-- Super lengthy logic for checking if any part of the route to destination is hostile -->
@@ -474,30 +481,31 @@
 				<set_command_action commandaction="commandaction.searchingtrades"/>
 				<!-- 20231209 track time to sell cargo -->
 				<set_value name="$SellCargoStartTime" exact="player.age"/>
-				<!-- 20240421 // QUEUE // sellcargo -->
-				<do_if value="global.$DATaterQueue.{this.assignedcontrolled.trueowner}?">
-					<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
+				<do_if value="(not $usequeue?) or @$usequeue">
+					<!-- 20240708 // TRADELOGIC QUEUE // sellcargo -->
+					<do_if value="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}?">
+						<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true"/>
+					</do_if>
+					<do_else>
+						<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true" create="true"/>
+					</do_else>
+					<do_if value="not global.$DATaterQueueTable.$FactionTradeLogicQueue.indexof.{this.assignedcontrolled.trueowner}">
+						<append_to_list name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="this.assignedcontrolled.trueowner" unique="true"/>
+					</do_if>
+					<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+					<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled} * 6)s,60s].max"/>
+					<wait sinceversion="5">
+						<interrupt>
+							<conditions>
+								<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
+							</conditions>
+							<actions>
+								<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+							</actions>
+						</interrupt>
+						<interrupt_after_time time="$ExpectedDelay"/>
+					</wait>
 				</do_if>
-				<do_else>
-					<create_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}"/>
-					<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
-				</do_else>
-				<do_if value="not global.$DATaterFactionQueue.indexof.{this.assignedcontrolled.trueowner}">
-					<append_to_list name="global.$DATaterFactionQueue" exact="this.assignedcontrolled.trueowner"/>
-				</do_if>
-				<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-				<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count * 6)s,60s].max"/>
-				<wait sinceversion="5">
-					<interrupt>
-						<conditions>
-							<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
-						</conditions>
-						<actions>
-							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-						</actions>
-					</interrupt>
-					<interrupt_after_time time="$ExpectedDelay"/>
-				</wait>
 				<set_value name="$TotalQueueTime" exact="player.age - $SellCargoStartTime"/>
 				<remove_value name="$ExpectedDelay"/>
 				<!-- 20240421 // QUEUE END // sellcargo -->
@@ -681,30 +689,31 @@
 			<set_value name="$Grofit" exact="0"/>
 			<set_value name="$GrofitFound" exact="false"/>
 			<wait exact="1ms"/>
-			<!-- 20240421 // QUEUE // preferownfaction -->
-			<do_if value="global.$DATaterQueue.{this.assignedcontrolled.trueowner}?">
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
+			<do_if value="(not $usequeue?) or @$usequeue">
+				<!-- 20240708 // TRADELOGIC QUEUE // preferownfaction -->
+				<do_if value="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}?">
+					<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true"/>
+				</do_if>
+				<do_else>
+					<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true" create="true"/>
+				</do_else>
+				<do_if value="not global.$DATaterQueueTable.$FactionTradeLogicQueue.indexof.{this.assignedcontrolled.trueowner}">
+					<append_to_list name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="this.assignedcontrolled.trueowner" unique="true"/>
+				</do_if>
+				<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+				<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled} * 6)s,60s].max"/>
+				<wait>
+					<interrupt>
+						<conditions>
+							<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
+						</conditions>
+						<actions>
+							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+						</actions>
+					</interrupt>
+					<interrupt_after_time time="$ExpectedDelay"/>
+				</wait>
 			</do_if>
-			<do_else>
-				<create_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}"/>
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
-			</do_else>
-			<do_if value="not global.$DATaterFactionQueue.indexof.{this.assignedcontrolled.trueowner}">
-				<append_to_list name="global.$DATaterFactionQueue" exact="this.assignedcontrolled.trueowner"/>
-			</do_if>
-			<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-			<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count * 6)s,60s].max"/>
-			<wait>
-				<interrupt>
-					<conditions>
-						<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
-					</conditions>
-					<actions>
-						<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-					</actions>
-				</interrupt>
-				<interrupt_after_time time="$ExpectedDelay"/>
-			</wait>
 			<set_value name="$TotalQueueTime" exact="player.age - $PreferOwnFactionStartTime"/>
 			<remove_value name="$ExpectedDelay"/>
 			<!-- 20240421 // QUEUE END // preferownfaction -->
@@ -869,7 +878,7 @@
 							<do_all exact="$selloffers.count" counter="$sell">
 								<set_value name="$selloffer" exact="$selloffers.{$sell}"/>
 								<do_if value="$selloffer.available">
-									<set_value name="$sellcost" exact="$selloffer.unitprice/100"/>
+									<set_value name="$sellcost" exact="$selloffer.unitprice / 100"/>
 									<set_value name="$Amount" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$buyoffer.amount,$selloffer.amount].min"/>
 									<!-- 20240422 Buying from our own station means we can ignore the 50% spending limit -->
 									<!-- 20240422 Removing old $spendablemoney since the value is unnecessary -->
@@ -1000,30 +1009,31 @@
 			<set_value name="$Grofit" exact="0"/>
 			<set_value name="$GrofitFound" exact="false"/>
 			<wait exact="1ms"/>
-			<!-- 20240421 // QUEUE // preferownsell -->
-			<do_if value="global.$DATaterQueue.{this.assignedcontrolled.trueowner}?">
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
+			<do_if value="(not $usequeue?) or @$usequeue">
+				<!-- 20240708 // TRADELOGIC QUEUE // preferownsell -->
+				<do_if value="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}?">
+					<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true"/>
+				</do_if>
+				<do_else>
+					<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true" create="true"/>
+				</do_else>
+				<do_if value="not global.$DATaterQueueTable.$FactionTradeLogicQueue.indexof.{this.assignedcontrolled.trueowner}">
+					<append_to_list name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="this.assignedcontrolled.trueowner" unique="true"/>
+				</do_if>
+				<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+				<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled} * 6)s,60s].max"/>
+				<wait>
+					<interrupt>
+						<conditions>
+							<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
+						</conditions>
+						<actions>
+							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+						</actions>
+					</interrupt>
+					<interrupt_after_time time="$ExpectedDelay"/>
+				</wait>
 			</do_if>
-			<do_else>
-				<create_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}"/>
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
-			</do_else>
-			<do_if value="not global.$DATaterFactionQueue.indexof.{this.assignedcontrolled.trueowner}">
-				<append_to_list name="global.$DATaterFactionQueue" exact="this.assignedcontrolled.trueowner"/>
-			</do_if>
-			<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-			<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count * 6)s,60s].max"/>
-			<wait>
-				<interrupt>
-					<conditions>
-						<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
-					</conditions>
-					<actions>
-						<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-					</actions>
-				</interrupt>
-				<interrupt_after_time time="$ExpectedDelay"/>
-			</wait>
 			<set_value name="$TotalQueueTime" exact="player.age - $PreferOwnFactionSellStartTime"/>
 			<remove_value name="$ExpectedDelay"/>
 			<!-- 20240421 // QUEUE END // preferownsell -->
@@ -1188,7 +1198,7 @@
 							<do_all exact="$selloffers.count" counter="$sell">
 								<set_value name="$selloffer" exact="$selloffers.{$sell}"/>
 								<do_if value="$selloffer.available">
-									<set_value name="$sellcost" exact="$selloffer.unitprice/100"/>
+									<set_value name="$sellcost" exact="$selloffer.unitprice / 100"/>
 									<set_value name="$Amount" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$buyoffer.amount,$selloffer.amount].min"/>
 									<do_if value="$playerowned">
 										<set_value name="$spendablemoney" exact="player.money / 100"/>
@@ -1323,30 +1333,31 @@
 			<set_value name="$Grofit" exact="0"/>
 			<set_value name="$GrofitFound" exact="false"/>
 			<wait exact="1ms"/>
-			<!-- 20240421 // QUEUE // preferownbuy -->
-			<do_if value="global.$DATaterQueue.{this.assignedcontrolled.trueowner}?">
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
+			<do_if value="(not $usequeue?) or @$usequeue">
+				<!-- 20240708 // TRADELOGIC QUEUE // preferownbuy -->
+				<do_if value="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}?">
+					<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true"/>
+				</do_if>
+				<do_else>
+					<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true" create="true"/>
+				</do_else>
+				<do_if value="not global.$DATaterQueueTable.$FactionTradeLogicQueue.indexof.{this.assignedcontrolled.trueowner}">
+					<append_to_list name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="this.assignedcontrolled.trueowner" unique="true"/>
+				</do_if>
+				<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+				<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled} * 6)s,60s].max"/>
+				<wait>
+					<interrupt>
+						<conditions>
+							<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
+						</conditions>
+						<actions>
+							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+						</actions>
+					</interrupt>
+					<interrupt_after_time time="$ExpectedDelay"/>
+				</wait>
 			</do_if>
-			<do_else>
-				<create_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}"/>
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
-			</do_else>
-			<do_if value="not global.$DATaterFactionQueue.indexof.{this.assignedcontrolled.trueowner}">
-				<append_to_list name="global.$DATaterFactionQueue" exact="this.assignedcontrolled.trueowner"/>
-			</do_if>
-			<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-			<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count * 6)s,60s].max"/>
-			<wait>
-				<interrupt>
-					<conditions>
-						<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
-					</conditions>
-					<actions>
-						<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-					</actions>
-				</interrupt>
-				<interrupt_after_time time="$ExpectedDelay"/>
-			</wait>
 			<set_value name="$TotalQueueTime" exact="player.age - $PreferOwnFactionBuyStartTime"/>
 			<remove_value name="$ExpectedDelay"/>
 			<!-- 20240421 // QUEUE END // preferownbuy -->
@@ -1510,7 +1521,7 @@
 							<do_all exact="$selloffers.count" counter="$sell">
 								<set_value name="$selloffer" exact="$selloffers.{$sell}"/>
 								<do_if value="$selloffer.available">
-									<set_value name="$sellcost" exact="$selloffer.unitprice/100"/>
+									<set_value name="$sellcost" exact="$selloffer.unitprice / 100"/>
 									<set_value name="$Amount" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$buyoffer.amount,$selloffer.amount].min"/>
 									<!-- 20240422 Buying from our own station means we can ignore the 50% spending limit -->
 									<!-- 20240422 Removing old $spendablemoney since the value is unnecessary -->
@@ -1640,30 +1651,31 @@
 			<set_value name="$Grofit" exact="1"/>
 			<set_value name="$GrofitFound" exact="false"/>
 			<wait exact="1ms"/>
-			<!-- 20240421 // QUEUE // freetrade -->
-			<do_if value="global.$DATaterQueue.{this.assignedcontrolled.trueowner}?">
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
+			<do_if value="(not $usequeue?) or @$usequeue">
+				<!-- 20240708 // TRADELOGIC QUEUE // freetrade -->
+				<do_if value="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}?">
+					<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true"/>
+				</do_if>
+				<do_else>
+					<append_to_list name="global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled" unique="true" create="true"/>
+				</do_else>
+				<do_if value="not global.$DATaterQueueTable.$FactionTradeLogicQueue.indexof.{this.assignedcontrolled.trueowner}">
+					<append_to_list name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="this.assignedcontrolled.trueowner" unique="true"/>
+				</do_if>
+				<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+				<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueueTable.$TradeLogicQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled} * 6)s,60s].max"/>
+				<wait>
+					<interrupt>
+						<conditions>
+							<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
+						</conditions>
+						<actions>
+							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+						</actions>
+					</interrupt>
+					<interrupt_after_time time="$ExpectedDelay"/>
+				</wait>
 			</do_if>
-			<do_else>
-				<create_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}"/>
-				<append_to_list name="global.$DATaterQueue.{this.assignedcontrolled.trueowner}" exact="this.assignedcontrolled"/>
-			</do_else>
-			<do_if value="not global.$DATaterFactionQueue.indexof.{this.assignedcontrolled.trueowner}">
-				<append_to_list name="global.$DATaterFactionQueue" exact="this.assignedcontrolled.trueowner"/>
-			</do_if>
-			<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Queued up for trade -- Spot in queue %s / %s'.[player.age,global.$DATaterQueue.{this.assignedcontrolled.trueowner}.indexof.{this.assignedcontrolled},global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-			<set_value name="$ExpectedDelay" exact="[(global.$DATaterQueue.{this.assignedcontrolled.trueowner}.count * 6)s,60s].max"/>
-			<wait>
-				<interrupt>
-					<conditions>
-						<event_object_signalled object="this.assignedcontrolled" param="'DeadTaterProceed'"/>
-					</conditions>
-					<actions>
-						<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Received signal to proceed'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-					</actions>
-				</interrupt>
-				<interrupt_after_time time="$ExpectedDelay"/>
-			</wait>
 			<set_value name="$TotalQueueTime" exact="player.age - $FreeTradeStartTime"/>
 			<remove_value name="$ExpectedDelay"/>
 			<!-- 20240421 // QUEUE END // freetrade -->
@@ -1829,7 +1841,7 @@
 							<do_all exact="$selloffers.count" counter="$sell">
 								<set_value name="$selloffer" exact="$selloffers.{$sell}"/>
 								<do_if value="$selloffer.available">
-									<set_value name="$sellcost" exact="$selloffer.unitprice/100"/>
+									<set_value name="$sellcost" exact="$selloffer.unitprice / 100"/>
 									<set_value name="$Amount" exact="[this.assignedcontrolled.cargo.{$buyoffer.ware}.free,$buyoffer.amount,$selloffer.amount].min"/>
 									<do_if value="$playerowned">
 										<set_value name="$spendablemoney" exact="player.money / 100"/>
@@ -2041,6 +2053,14 @@
 							</do_if>
 							<!-- Attempting to access the trade offers after the order is created spits out errors, so lets set up the orders last. -->
 							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Creating Trade Offer after %s.'.[player.age,(player.age-$starttime)s]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+							<!-- 20240703 New logic for handling of credit transfer. Does not work to prevent the reasoncode 32 error but is potentially a future feature for preventing stations from going broke. -->
+							<do_if value="@$transfercreditoption and $GrofferSell.available and ($GrofferSell.seller.trueowner == this.assignedcontrolled.trueowner) and (@$Gromount gt 0) and ($GrofferSell.unitprice gt 0)">
+								<set_value name="$CrTransferAmount" exact="($Gromount * $GrofferSell.unitprice) / 100" comment="Cr"/>
+								<do_if value="$CrTransferAmount gt 0">
+									<transfer_money from="this.assignedcontrolled.trueowner" to="$GrofferSell.seller" amount="($CrTransferAmount)Cr" result="$CrTransferred"/>
+									<debug_text text="'MOD: DeadTater -- Ship: %s(%s) -- Credit Transfer Logic -- Ware: %s -- Seller: %s(%s) -- Buyer: %s(%s)\n Unitprice(ct): %s -- CrTransferAmount(Cr): %s -- Rounded CrTransferred(Cr): %s -- Actual CrTransferred(ct): %s'.[this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferBuy.ware,$GrofferSell.seller.knownname,$GrofferSell.seller.idcode,$GrofferBuy.buyer.knownname,$GrofferBuy.buyer.idcode,$GrofferSell.unitprice,$CrTransferAmount,($CrTransferred / 100),$CrTransferred]" context="false" filter="scripts" chance="@$TaterDebugChance * 100"/>
+								</do_if>
+							</do_if>
 							<create_trade_order name="$GrofferBuy" object="this.object" tradeoffer="$GrofferBuy" amount="$Gromount" immediate="true"/>
 							<create_trade_order name="$GrofferSell" object="this.object" tradeoffer="$GrofferSell" amount="$Gromount" immediate="true"/>
 						</do_if>
@@ -2048,12 +2068,12 @@
 							<do_if value="this.assignedcontrolled.order.id == 'DeadTater'">
 								<set_order_syncpoint_reached order="this.assignedcontrolled.order"/>
 							</do_if>
-							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Looks like the trade were looking at is no longer available.'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Looks like the trade we were looking at is no longer available.'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
 						</do_else>
 						<wait exact="1ms"/>
 					</do_if>
 					<do_else>
-						<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Looks like the trade were looking at is no longer available.'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
+						<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- Looks like the trade we were looking at is no longer available.'.[player.age]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
 					</do_else>
 				</do_if>
 				<do_else>

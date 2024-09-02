@@ -1244,9 +1244,9 @@
 									</do_all>
 								</do_if>
 								<do_if value="$checkdeal">
-									<set_value name="$wareprice" exact="$foundselloffer.unitprice/100"/>
+									<set_value name="$wareprice" exact="$foundselloffer.unitprice / 100.0"/>
 									<do_if value="$foundselloffer.seller.owner == this.ship.owner">
-										<set_value name="$wareprice" exact="$foundselloffer.unitprice/100*$discount/100"/>
+										<set_value name="$wareprice" exact="($foundselloffer.unitprice / 100.0) * ($discount / 100.0)"/>
 									</do_if>
 									<set_value name="$spendablemoney" exact="player.money/100"/>
 									<do_if value="this.ship.commander">
@@ -1264,7 +1264,7 @@
 									</do_else>
 									<!--<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'SpaceLeft: '+this.ship.cargo.{$stationbuyoffer.ware}.free+' BuyAmount: '+$stationbuyoffer.amount+' SellAmount: '+$foundselloffer.amount+' AmountAfforded: '+$spendablemoney/(2*$wareprice)" output="false" append="true" /> -->
 									<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning sell offer for ( '+$Amount+' '+$stationbuyoffer.ware+' ) at ('+$foundselloffer.seller.knownname+') Price: '+$wareprice+' Faction: '+$foundselloffer.seller.owner+' Restriction: '+$foundselloffer.restriction.factions.count+' Raw OfferPrice: '+$foundselloffer.unitprice/100+' BuyAmount: '+$stationbuyoffer.amount+' SellAmount: '+$foundselloffer.amount" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-									<do_if value="$wareprice lt $stationbuyoffer.unitprice/100">
+									<do_if value="$wareprice lt ($stationbuyoffer.unitprice / 100.0)">
 										<!-- Is the station selling it cheaper then we are asking? -->
 										<do_if value="($wareprice lt $bestprice) or ($Amount gt $bestamount)">
 											<!-- Is it better then the previus best deal? -->
@@ -1283,9 +1283,9 @@
 							</do_all>
 							<do_if value="not ($bestdeal == 0)">
 								<set_value name="$WareCapacity" exact="this.ship.cargo.{$bestdeal.ware}.free"/>
-								<set_value name="$offerpriority" exact="$offerpriority+($bestamount/$WareCapacity)*25"/>
-								<set_value name="$costdiff" exact="$stationbuyoffer.unitprice/100-$bestprice"/>
-								<set_value name="$offerpriority" exact="$offerpriority+($costdiff/2)"/>
+								<set_value name="$offerpriority" exact="($bestamount / $WareCapacity) * 25.0" operation="add"/>
+								<set_value name="$costdiff" exact="($stationbuyoffer.unitprice / 100.0) - $bestprice"/>
+								<set_value name="$offerpriority" exact="($costdiff)f / 2.0" operation="add"/>
 								<do_if value="$distancecheck">
 									<set_value name="$distance" exact="$home.gatedistance.{$bestdeal.seller}.{$blacklistgroup}.{this.assignedcontrolled}"/>
 									<!-- Distance is -1 if there is no safe route -->
@@ -1306,7 +1306,7 @@
 										<set_value name="$StationTrade" exact="true"/>
 										<set_value name="$Gromount" exact="$bestamount"/>
 										<set_value name="$itemcostsell" exact="$bestprice"/>
-										<set_value name="$itemcostbuy" exact="$stationbuyoffer.unitprice/100"/>
+										<set_value name="$itemcostbuy" exact="$stationbuyoffer.unitprice / 100.0"/>
 									</do_if>
 								</do_if>
 								<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Buying: ('+$stationbuyoffer.ware+') Best Deal: ('+$bestdeal.seller.knownname+') Price: '+$bestprice+' Amount: ( '+$bestamount+' / '+$WareCapacity+' Max) Priority: '+$offerpriority+' GateDistance: '+$home.gatedistance.{$bestdeal.seller}.{$blacklistgroup}.{this.assignedcontrolled}+' StockLevel: '+$stationbuyoffer.stocklevel*100+'% CargoFill: '+(($bestamount)f/($WareCapacity)f)*100+'%'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>

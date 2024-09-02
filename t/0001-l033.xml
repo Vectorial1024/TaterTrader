@@ -69,5 +69,7 @@
 		<t id="511">{1002,15902}(Ignore) {20221,5001}(Carrier)/{20221,5011}(Auxiliary)</t>
 		<t id="512">Préférer mes offres d'achat</t>
 		<t id="513">Préférer mes offres de vente</t>
+		<t id="514">Payer mes marchandises de faction</t>
+		<t id="515">Utiliser la file d'attente d'étalement</t>
 	</page>
 </language>

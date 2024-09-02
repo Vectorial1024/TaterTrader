@@ -3,33 +3,59 @@
 	<cues>
 		<cue name="Init">
 			<actions>
-				<set_value name="global.$DATaterQueue" exact="table[]" chance="(not global.$DATaterQueue?) * 100"/>
-				<set_value name="global.$DATaterFactionQueue" exact="[]" chance="(not global.$DATaterFactionQueue?) * 100"/>
-				<debug_text text="'MOD: TaterTrader -- %s -- global.$DATaterQueue? %s -- global.$DATaterFactionQueue? %s'.[player.age,global.$DATaterQueue?,global.$DATaterFactionQueue?]" context="false" filter="scripts"/>
-				<!-- global.$DATaterQueue.{Faction}.{ship} -->
+				<!-- 20240708 -->
+				<set_value name="global.$DATaterQueueTable" exact="table[]"/>
+				<set_value name="global.$DATaterQueueTable.$CheckSpaceQueue" exact="table[]" comment="global.$DATaterQueueTable.$CheckSpaceQueue.{$Faction}.{$Ship}"/>
+				<set_value name="global.$DATaterQueueTable.$TradeLogicQueue" exact="table[]" comment="global.$DATaterQueueTable.$TradeLogicQueue.{$Faction}.{$Ship}"/>
+				<set_value name="global.$DATaterQueueTable.$FactionCheckSpaceQueue" exact="[]"/>
+				<set_value name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="[]"/>
+				<!-- Initial output message -->
+				<debug_text text="'MOD: TaterTrader -- global.$DATaterQueueTable? %s -- global.$DATaterQueueTable.$CheckSpaceQueue? %s -- global.$DATaterQueueTable.$TradeLogicQueue? %s -- global.$DATaterQueueTable.$FactionCheckSpaceQueue? %s -- global.$DATaterQueueTable.$FactionTradeLogicQueue? %s'.[global.$DATaterQueueTable?,global.$DATaterQueueTable.$CheckSpaceQueue?,global.$DATaterQueueTable.$TradeLogicQueue?,global.$DATaterQueueTable.$FactionCheckSpaceQueue?,global.$DATaterQueueTable.$FactionTradeLogicQueue?]" context="false" filter="scripts"/>
 			</actions>
 			<cues>
-				<cue name="Game_Started" instantiate="false">
+				<cue name="NewGame" instantiate="false">
 					<actions>
 						<set_value name="$TaterDebugChance" exact="false"/>
-						<include_actions ref="Set_up_Queue_Factions"/>
+						<include_actions ref="VariableCheck"/>
+						<include_actions ref="QueueTableSetUp"/>
 					</actions>
 				</cue>
-				<cue name="Game_Loaded" namespace="this" instantiate="true">
+				<cue name="LoadedGame" instantiate="true">
 					<conditions>
 						<event_game_loaded/>
 					</conditions>
 					<actions>
 						<set_value name="$TaterDebugChance" exact="false"/>
-						<include_actions ref="Set_up_Queue_Factions"/>
+						<include_actions ref="VariableCheck"/>
+						<include_actions ref="QueueTableSetUp"/>
 					</actions>
 				</cue>
-				<library name="Set_up_Queue_Factions">
+				<library name="VariableCheck">
 					<actions>
-						<do_if value="not global.$DATaterQueue?">
-							<set_value name="global.$DATaterQueue" exact="table[]"/>
+						<do_if value="not global.$DATaterQueueTable?">
+							<set_value name="global.$DATaterQueueTable" exact="table[]"/>
+							<set_value name="global.$DATaterQueueTable.$CheckSpaceQueue" exact="table[]"/>
+							<set_value name="global.$DATaterQueueTable.$TradeLogicQueue" exact="table[]"/>
+							<set_value name="global.$DATaterQueueTable.$FactionCheckSpaceQueue" exact="[]"/>
+							<set_value name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="[]"/>
 						</do_if>
-						<do_if value="global.$DATaterQueue">
+						<do_if value="not global.$DATaterQueueTable.$CheckSpaceQueue?">
+							<set_value name="global.$DATaterQueueTable.$CheckSpaceQueue" exact="table[]"/>
+						</do_if>
+						<do_if value="not global.$DATaterQueueTable.$TradeLogicQueue?">
+							<set_value name="global.$DATaterQueueTable.$TradeLogicQueue" exact="table[]"/>
+						</do_if>
+						<do_if value="not global.$DATaterQueueTable.$FactionCheckSpaceQueue?">
+							<set_value name="global.$DATaterQueueTable.$FactionCheckSpaceQueue" exact="[]"/>
+						</do_if>
+						<do_if value="not global.$DATaterQueueTable.$FactionTradeLogicQueue?">
+							<set_value name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="[]"/>
+						</do_if>
+					</actions>
+				</library>
+				<library name="QueueTableSetUp">
+					<actions>
+						<do_if value="global.$DATaterQueueTable?">
 							<get_factions_by_tag tag="tag.claimspace" result="$FactionList"/>
 							<get_factions_by_tag tag="tag.economic" result="$EconomicList"/>
 							<get_factions_by_tag tag="tag.visitor" result="$VisitorList"/>
@@ -45,57 +71,104 @@
 							<remove_value name="$NoTradeList"/>
 							<remove_value name="$EconomicList"/>
 							<do_for_each name="$Faction" in="$FactionList">
-								<do_if value="not global.$DATaterQueue.{$Faction}?">
-									<create_list name="global.$DATaterQueue.{$Faction}"/>
+								<do_if value="not global.$DATaterQueueTable.$CheckSpaceQueue?">
+									<set_value name="global.$DATaterQueueTable.$CheckSpaceQueue" exact="table[]"/>
 								</do_if>
-								<do_if value="typeof global.$DATaterQueue.{$Faction} != datatype.list">
-									<debug_text text="'MOD: TaterTrader -- %s -- ERROR: global.$DATaterQueue.{%s} is type of list %s'.[player.age,$Faction,typeof global.$DATaterQueue.{$Faction} == datatype.list]" context="false" filter="error"/>
+								<do_if value="global.$DATaterQueueTable.$CheckSpaceQueue?">
+									<do_if value="not global.$DATaterQueueTable.$CheckSpaceQueue.{$Faction}?">
+										<set_value name="global.$DATaterQueueTable.$CheckSpaceQueue.{$Faction}" exact="[]"/>
+									</do_if>
+								</do_if>
+								<do_if value="not global.$DATaterQueueTable.$TradeLogicQueue?">
+									<set_value name="global.$DATaterQueueTable.$TradeLogicQueue" exact="table[]"/>
+								</do_if>
+								<do_if value="global.$DATaterQueueTable.$TradeLogicQueue?">
+									<do_if value="not global.$DATaterQueueTable.$TradeLogicQueue.{$Faction}?">
+										<set_value name="global.$DATaterQueueTable.$TradeLogicQueue.{$Faction}" exact="[]"/>
+									</do_if>
 								</do_if>
 							</do_for_each>
 							<remove_value name="$FactionList"/>
 						</do_if>
 					</actions>
 				</library>
-				<cue name="CheckFactionQueue" instantiate="true" checkinterval="5s">
+				<cue name="CheckFactionsInCheckSpaceQueue" instantiate="false" namespace="this">
+					<delay exact="2s"/>
+					<actions>
+						<do_if value="global.$DATaterQueueTable.$FactionCheckSpaceQueue.count" min="1">
+							<set_value name="$LocFactionCheckSpaceQueue" exact="global.$DATaterQueueTable.$FactionCheckSpaceQueue"/>
+							<do_for_each name="$Faction" in="$LocFactionCheckSpaceQueue">
+								<do_if value="global.$DATaterQueueTable.$CheckSpaceQueue.{$Faction}? and global.$DATaterQueueTable.$CheckSpaceQueue.{$Faction}.count">
+									<set_value name="$LocShip" exact="global.$DATaterQueueTable.$CheckSpaceQueue.{$Faction}.{1}"/>
+									<signal_cue_instantly cue="ProcessShipInCheckSpaceQueue" param="$LocShip"/>
+									<remove_from_list name="global.$DATaterQueueTable.$CheckSpaceQueue.{$Faction}" exact="$LocShip" multiple="true"/>
+									<do_if value="not global.$DATaterQueueTable.$CheckSpaceQueue.{$Faction}.count">
+										<remove_from_list name="global.$DATaterQueueTable.$FactionCheckSpaceQueue" exact="$Faction"/>
+									</do_if>
+									<remove_value name="$LocShip"/>
+								</do_if>
+								<do_else>
+									<remove_from_list name="global.$DATaterQueueTable.$FactionCheckSpaceQueue" exact="$Faction"/>
+								</do_else>
+							</do_for_each>
+							<remove_value name="$LocFactionCheckSpaceQueue"/>
+							<reset_cue cue="this"/>
+						</do_if>
+						<do_else>
+							<reset_cue cue="this"/>
+						</do_else>
+					</actions>
+				</cue>
+				<cue name="ProcessShipInCheckSpaceQueue" instantiate="true" namespace="this">
 					<conditions>
-						<check_value value="global.$DATaterFactionQueue.count"/>
+						<event_cue_signalled/>
 					</conditions>
 					<actions>
-						<do_if value="@$TaterDebugChance">
-							<debug_text text="'MOD: TaterTrader -- %s -- Processing Tater Faction queue -- Factions in queue: %s'.[player.age,global.$DATaterFactionQueue.count]" context="false" filter="scripts"/>
+						<do_if value="event.param?">
+							<set_value name="$LocShip" exact="event.param"/>
+							<signal_objects object="$LocShip" param="'DeadTaterProceed'"/>
+							<remove_value name="$LocShip"/>
 						</do_if>
 					</actions>
-					<cues>
-						<cue name="ProcessFactionQueue">
-							<actions>
-								<do_if value="global.$DATaterFactionQueue.count">
-									<do_for_each name="$Faction" in="global.$DATaterFactionQueue">
-										<do_if value="not global.$DATaterQueue.{$Faction}?">
-											<set_value name="global.$DATaterQueue.{$Faction}" exact="[]"/>
-											<do_if value="@$TaterDebugChance">
-												<debug_text text="'MOD: TaterTrader -- %s -- Added %s to global.$DATaterQueue -- Verification: %s'.[player.age,$Faction,global.$DATaterQueue.{$Faction}?]" context="false" filter="scripts"/>
-											</do_if>
-										</do_if>
-										<do_if value="global.$DATaterQueue.{$Faction}? and global.$DATaterQueue.{$Faction}.count">
-											<set_value name="$Ship" exact="global.$DATaterQueue.{$Faction}.{1}"/>
-											<!-- signal Ship -->
-											<signal_objects object="$Ship" param="'DeadTaterProceed'"/>
-											<!-- remove the Ship from table list -->
-											<remove_from_list name="global.$DATaterQueue.{$Faction}" exact="$Ship" multiple="true"/>
-											<!-- remove Faction from list if no other ships -->
-											<do_if value="not global.$DATaterQueue.{$Faction}.count">
-												<remove_from_list name="global.$DATaterFactionQueue" exact="$Faction" multiple="true"/>
-											</do_if>
-											<remove_value name="$Ship"/>
-										</do_if>
-										<do_else>
-											<remove_from_list name="global.$DATaterFactionQueue" exact="$Faction" multiple="true"/>
-										</do_else>
-									</do_for_each>
+				</cue>
+				<cue name="CheckFactionsInTradeLogicQueue" instantiate="false" namespace="this">
+					<delay exact="5s"/>
+					<actions>
+						<do_if value="global.$DATaterQueueTable.$FactionTradeLogicQueue.count" min="1">
+							<set_value name="$LocFactionTradeLogicQueue" exact="global.$DATaterQueueTable.$FactionTradeLogicQueue"/>
+							<do_for_each name="$Faction" in="$LocFactionTradeLogicQueue">
+								<do_if value="global.$DATaterQueueTable.$TradeLogicQueue.{$Faction}? and global.$DATaterQueueTable.$TradeLogicQueue.{$Faction}.count">
+									<set_value name="$LocShip" exact="global.$DATaterQueueTable.$TradeLogicQueue.{$Faction}.{1}"/>
+									<signal_cue_instantly cue="ProcessShipInTradeLogicQueue" param="$LocShip"/>
+									<remove_from_list name="global.$DATaterQueueTable.$TradeLogicQueue.{$Faction}" exact="$LocShip" multiple="true"/>
+									<do_if value="not global.$DATaterQueueTable.$TradeLogicQueue.{$Faction}.count">
+										<remove_from_list name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="$Faction"/>
+									</do_if>
+									<remove_value name="$LocShip"/>
 								</do_if>
-							</actions>
-						</cue>
-					</cues>
+								<do_else>
+									<remove_from_list name="global.$DATaterQueueTable.$FactionTradeLogicQueue" exact="$Faction"/>
+								</do_else>
+							</do_for_each>
+							<remove_value name="$LocFactionTradeLogicQueue"/>
+							<reset_cue cue="this"/>
+						</do_if>
+						<do_else>
+							<reset_cue cue="this"/>
+						</do_else>
+					</actions>
+				</cue>
+				<cue name="ProcessShipInTradeLogicQueue" instantiate="true" namespace="this">
+					<conditions>
+						<event_cue_signalled/>
+					</conditions>
+					<actions>
+						<do_if value="event.param?">
+							<set_value name="$LocShip" exact="event.param"/>
+							<signal_objects object="$LocShip" param="'DeadTaterProceed'"/>
+							<remove_value name="$LocShip"/>
+						</do_if>
+					</actions>
 				</cue>
 			</cues>
 		</cue>

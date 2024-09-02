@@ -185,6 +185,8 @@
             <param name="ignoreshipbuyers" value="$orderdef.$ignoreshipbuyers"/>
             <param name="enablelogbook" value="$orderdef.$enablelogbook"/>
             <param name="warebasket" value="$orderdef.$warebasket"/>
+			<param name="transfercreditoption" value="$orderdef.$transfercreditoption"/>
+			<param name="usequeue" value="$orderdef.$usequeue"/>
           </create_order>
         </do_if>
         <do_else>
@@ -206,6 +208,8 @@
           <set_value name="$orderdef.$ignoreshipbuyers" exact="$order.$ignoreshipbuyers"/>
           <set_value name="$orderdef.$enablelogbook" exact="$order.$enablelogbook"/>
           <set_value name="$orderdef.$warebasket" exact="$order.$warebasket"/>
+		  <set_value name="$orderdef.$transfercreditoption" exact="$order.$transfercreditoption"/>
+		  <set_value name="$orderdef.$usequeue" exact="$order.$usequeue"/>
           <run_script name="$scriptname">
             <param name="range" value="$order.$range"/>
             <param name="minbuy" value="$order.$minbuy"/>
@@ -225,6 +229,8 @@
             <param name="ignoreshipbuyers" value="$order.$ignoreshipbuyers"/>
             <param name="enablelogbook" value="$order.$enablelogbook"/>
             <param name="warebasket" value="$order.$warebasket"/>
+			<param name="transfercreditoption" value="$order.$transfercreditoption"/>
+            <param name="usequeue" value="$order.$usequeue"/>
           </run_script>
         </do_else>
       </do_elseif>

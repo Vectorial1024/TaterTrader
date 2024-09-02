@@ -69,5 +69,7 @@
 		<t id="511">{1002,15902}(Ignore) {20221,5001}(Carrier)/{20221,5011}(Auxiliary)</t>
 		<t id="512">Bevorzugen Sie meine Kaufangebote</t>
 		<t id="513">Bevorzugen Sie meine Verkaufsangebote</t>
+		<t id="514">Bezahle für meine Fraktionswaren</t>
+		<t id="515">Spreading-Warteschlange verwenden</t>
 	</page>
 </language>
