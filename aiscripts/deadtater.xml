@@ -535,8 +535,15 @@
 						</do_if>
 						<do_if value="@$buyers.count">
 							<do_all exact="$buyers.count" counter="$buy">
-								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$buyers.{$buy}.type != shiptype.resupplier) and (@$buyers.{$buy}.type != shiptype.carrier))">
-									<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+								<!-- 20241002 Updating $ignoreshipbuyers code -->
+								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $buyers.{$buy}.buyer.isclass.ship))">
+									<!-- 20241002 Implementing fix for stations with no storage -->
+									<do_if value="$buyers.{$buy}.buyer.cargo.{$Cargo.{$ware}}.free">
+										<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+									</do_if>
+									<do_else>
+										<debug_text text="'MOD: DeadTater -- %s(%s) -- Skipping offer from: %s(%s) in %s -- No cargo capacity for type: %s'.[this.assignedcontrolled.name,this.assignedcontrolled.idcode,$buyers.{$buy}.buyer.knownname,$buyers.{$buy}.buyer.idcode,$buyers.{$buy}.buyer.sector.knownname,$Cargo.{$ware}.transporttag]" context="false" filter="scripts" chance="@$TaterDebugChance * 100"/>
+									</do_else>
 								</do_if>
 							</do_all>
 						</do_if>
@@ -777,8 +784,15 @@
 					</do_if>
 					<do_if value="@$buyers.count">
 						<do_all exact="$buyers.count" counter="$buy">
-							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$buyers.{$buy}.type != shiptype.resupplier) and (@$buyers.{$buy}.type != shiptype.carrier))">
-								<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+							<!-- 20241002 Updating $ignoreshipbuyers code -->
+							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $buyers.{$buy}.buyer.isclass.ship))">
+								<!-- 20241002 Implementing fix for stations with no storage -->
+								<do_if value="$buyers.{$buy}.buyer.cargo.{$usedwarebasket.{$ware}}.free">
+									<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+								</do_if>
+								<do_else>
+									<debug_text text="'MOD: DeadTater -- %s(%s) -- Skipping offer from: %s(%s) in %s -- No cargo capacity for type: %s'.[this.assignedcontrolled.name,this.assignedcontrolled.idcode,$buyers.{$buy}.buyer.knownname,$buyers.{$buy}.buyer.idcode,$buyers.{$buy}.buyer.sector.knownname,$usedwarebasket.{$ware}.transporttag]" context="false" filter="scripts" chance="@$TaterDebugChance * 100"/>
+								</do_else>
 							</do_if>
 						</do_all>
 					</do_if>
@@ -841,7 +855,8 @@
 						<do_if value="@$sellers.count">
 							<do_all exact="$sellers.count" counter="$sell">
 								<!-- 20240317 At the moment, ships cannot sell goods but this should future proof it. -->
-								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$sellers.{$sell}.type != shiptype.resupplier) and (@$sellers.{$sell}.type != shiptype.carrier))">
+								<!-- 20241002 Updating $ignoreshipbuyers code -->
+								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $sellers.{$sell}.seller.isclass.ship))">
 									<append_to_list name="$selloffers" exact="$sellers.{$sell}"/>
 								</do_if>
 							</do_all>
@@ -1097,8 +1112,15 @@
 					<do_if value="@$buyers.count">
 						<do_all exact="$buyers.count" counter="$buy">
 							<!-- 20240317 ignoreshipbuyers filtering was missing from freetrade section. FIXED -->
-							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$buyers.{$buy}.type != shiptype.resupplier) and (@$buyers.{$buy}.type != shiptype.carrier))">
-								<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+							<!-- 20241002 Updating $ignoreshipbuyers code -->
+							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $buyers.{$buy}.buyer.isclass.ship))">
+								<!-- 20241002 Implementing fix for stations with no storage -->
+								<do_if value="$buyers.{$buy}.buyer.cargo.{$usedwarebasket.{$ware}}.free">
+									<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+								</do_if>
+								<do_else>
+									<debug_text text="'MOD: DeadTater -- %s(%s) -- Skipping offer from: %s(%s) in %s -- No cargo capacity for type: %s'.[this.assignedcontrolled.name,this.assignedcontrolled.idcode,$buyers.{$buy}.buyer.knownname,$buyers.{$buy}.buyer.idcode,$buyers.{$buy}.buyer.sector.knownname,$usedwarebasket.{$ware}.transporttag]" context="false" filter="scripts" chance="@$TaterDebugChance * 100"/>
+								</do_else>
 							</do_if>
 						</do_all>
 					</do_if>
@@ -1161,7 +1183,8 @@
 						<do_if value="@$sellers.count">
 							<do_all exact="$sellers.count" counter="$sell">
 								<!-- 20240317 At the moment, ships cannot sell goods but this should future proof it. -->
-								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$sellers.{$sell}.type != shiptype.resupplier) and (@$sellers.{$sell}.type != shiptype.carrier))">
+								<!-- 20241002 Updating $ignoreshipbuyers code -->
+								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $sellers.{$sell}.seller.isclass.ship))">
 									<append_to_list name="$selloffers" exact="$sellers.{$sell}"/>
 								</do_if>
 							</do_all>
@@ -1420,8 +1443,15 @@
 					</do_if>
 					<do_if value="@$buyers.count">
 						<do_all exact="$buyers.count" counter="$buy">
-							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$buyers.{$buy}.type != shiptype.resupplier) and (@$buyers.{$buy}.type != shiptype.carrier))">
-								<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+							<!-- 20241002 Updating $ignoreshipbuyers code -->
+							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $buyers.{$buy}.buyer.isclass.ship))">
+								<!-- 20241002 Implementing fix for stations with no storage -->
+								<do_if value="$buyers.{$buy}.buyer.cargo.{$usedwarebasket.{$ware}}.free">
+									<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+								</do_if>
+								<do_else>
+									<debug_text text="'MOD: DeadTater -- %s(%s) -- Skipping offer from: %s(%s) in %s -- No cargo capacity for type: %s'.[this.assignedcontrolled.name,this.assignedcontrolled.idcode,$buyers.{$buy}.buyer.knownname,$buyers.{$buy}.buyer.idcode,$buyers.{$buy}.buyer.sector.knownname,$usedwarebasket.{$ware}.transporttag]" context="false" filter="scripts" chance="@$TaterDebugChance * 100"/>
+								</do_else>
 							</do_if>
 						</do_all>
 					</do_if>
@@ -1484,7 +1514,8 @@
 						<do_if value="@$sellers.count">
 							<do_all exact="$sellers.count" counter="$sell">
 								<!-- 20240317 At the moment, ships cannot sell goods but this should future proof it. -->
-								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$sellers.{$sell}.type != shiptype.resupplier) and (@$sellers.{$sell}.type != shiptype.carrier))">
+								<!-- 20241002 Updating $ignoreshipbuyers code -->
+								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $sellers.{$sell}.seller.isclass.ship))">
 									<append_to_list name="$selloffers" exact="$sellers.{$sell}"/>
 								</do_if>
 							</do_all>
@@ -1740,8 +1771,15 @@
 					<do_if value="@$buyers.count">
 						<do_all exact="$buyers.count" counter="$buy">
 							<!-- 20240317 ignoreshipbuyers filtering was missing from freetrade section. FIXED -->
-							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$buyers.{$buy}.type != shiptype.resupplier) and (@$buyers.{$buy}.type != shiptype.carrier))">
-								<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+							<!-- 20241002 Updating $ignoreshipbuyers code -->
+							<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $buyers.{$buy}.buyer.isclass.ship))">
+								<!-- 20241002 Implementing fix for stations with no storage -->
+								<do_if value="$buyers.{$buy}.buyer.cargo.{$usedwarebasket.{$ware}}.free">
+									<append_to_list name="$buyoffers" exact="$buyers.{$buy}"/>
+								</do_if>
+								<do_else>
+									<debug_text text="'MOD: DeadTater -- %s(%s) -- Skipping offer from: %s(%s) in %s -- No cargo capacity for type: %s'.[this.assignedcontrolled.name,this.assignedcontrolled.idcode,$buyers.{$buy}.buyer.knownname,$buyers.{$buy}.buyer.idcode,$buyers.{$buy}.buyer.sector.knownname,$usedwarebasket.{$ware}.transporttag]" context="false" filter="scripts" chance="@$TaterDebugChance * 100"/>
+								</do_else>
 							</do_if>
 						</do_all>
 					</do_if>
@@ -1804,7 +1842,8 @@
 						<do_if value="@$sellers.count">
 							<do_all exact="$sellers.count" counter="$sell">
 								<!-- 20240317 At the moment, ships cannot sell goods but this should future proof it. -->
-								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (@$sellers.{$sell}.type != shiptype.resupplier) and (@$sellers.{$sell}.type != shiptype.carrier))">
+								<!-- 20241002 Updating $ignoreshipbuyers code -->
+								<do_if value="(not $ignoreshipbuyers) or ($ignoreshipbuyers and (not $sellers.{$sell}.seller.isclass.ship))">
 									<append_to_list name="$selloffers" exact="$sellers.{$sell}"/>
 								</do_if>
 							</do_all>
@@ -1981,7 +2020,7 @@
 						<clamp_trade_amount trade="$GrofferBuy" amount="$Gromount" buyer="this.assignedcontrolled" seller="$GrofferSell.seller" result="$ClampedAmount" reason="$ClampedReason"/>
 						<do_if value="$ClampedAmount != $Gromount">
 							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- $GrofferBuy -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s.'.[player.age,$GrofferBuy.ware,$Gromount,$ClampedAmount,$ClampedReason]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-							<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- $GrofferBuy -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s -- Seller: %s(%s) in %s'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferBuy.ware,$Gromount,$ClampedAmount,$ClampedReason,$GrofferSell.seller.knownname,$GrofferSell.seller.idcode,$GrofferSell.seller.sector.knownname]" context="false" filter="error"/>
+							<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- $GrofferBuy -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s -- Seller: %s(%s) in %s -- Prevented error prone trade'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferBuy.ware,$Gromount,$ClampedAmount,$ClampedReason,$GrofferSell.seller.knownname,$GrofferSell.seller.idcode,$GrofferSell.seller.sector.knownname]" context="false" filter="scripts"/>
 							<!-- 20240423 Abandoning trade if reduced, this has been catching errors but not enforcing restart -->
 							<do_if value="$ClampedAmount lt $Gromount">
 								<remove_value name="$ClampedAmount"/>
@@ -2005,7 +2044,7 @@
 						<clamp_trade_amount trade="$GrofferSell" amount="$Gromount" buyer="$GrofferBuy.buyer" result="$ClampedAmount" reason="$ClampedReason"/>
 						<do_if value="$ClampedAmount != $Gromount">
 							<debug_to_file name="this.assignedcontrolled.idcode" directory="'DeadTater'" text="'MOD: DeadTater -- %s -- $GrofferSell -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s.'.[player.age,$GrofferSell.ware,$Gromount,$ClampedAmount,$ClampedReason]" output="false" append="true" chance="@$TaterDebugChance * 100"/>
-							<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- $GrofferSell -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s -- Buyer: %s(%s) in %s'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferSell.ware,$Gromount,$ClampedAmount,$ClampedReason,$GrofferBuy.buyer.knownname,$GrofferBuy.buyer.idcode,$GrofferBuy.buyer.sector.knownname]" context="false" filter="error"/>
+							<debug_text text="'MOD: DeadTater -- %s -- Ship: %s(%s) -- $GrofferSell -- Ware: %s -- $Gromount: %s -- $ClampedAmount: %s -- Reason: %s -- Buyer: %s(%s) in %s -- Prevented error prone trade'.[player.age,this.assignedcontrolled.name,this.assignedcontrolled.idcode,$GrofferSell.ware,$Gromount,$ClampedAmount,$ClampedReason,$GrofferBuy.buyer.knownname,$GrofferBuy.buyer.idcode,$GrofferBuy.buyer.sector.knownname]" context="false" filter="scripts"/>
 							<!-- 20240423 Abandoning trade if reduced, this has been catching errors but not enforcing restart -->
 							<do_if value="$ClampedAmount lt $Gromount">
 								<remove_value name="$ClampedAmount"/>
