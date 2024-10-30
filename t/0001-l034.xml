@@ -47,8 +47,8 @@
 		<t id="209">Comercial de la Estación: Comprando %1 %2 desde %3 al precio de %4. El beneficio esperado es de %5 Cr.</t>
 		<!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
 		<t id="210">Comercial de la Estación: Obteniendo %1 %2 para %3 desde %4.</t>
-		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
-		<t id="211">Failed to find a trade %1 times. Request assistance.</t>
+		<!--'Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.'-->
+		<t id="211">Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.</t>
 		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
 		<t id="212">\nBeneficio total estimado de por vida antes de esta operación: %1.</t>
 		<t id="127">Ignorar las restricciones comerciales de compra</t>

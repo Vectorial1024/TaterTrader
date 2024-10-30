@@ -47,8 +47,8 @@
 		<t id="209">Station Trader: Buying %1 %2 for %3 at the price of %4. Expected cost is %5.</t>
 		<!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
 		<t id="210">Station Trader: Fetching %1 %2 for %3 from %4.</t>
-		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
-		<t id="211">Failed to find a trade %1 times. Request assistance.</t>
+		<!--'Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.'-->
+		<t id="211">Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.</t>
 		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
 		<t id="212">\nTotal estimated lifetime profit before this trade: %1.</t>
 		<t id="127">Ignore Buy Trade Restrictions</t>

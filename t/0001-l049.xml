@@ -47,8 +47,8 @@
 		<t id="209">Stationshändler: Kaufe %1 %2 für %3 zum Preis von je %4 Cr. Erwartete Kosten: %5.</t>
 		<!--'Stationshändler: Besorge '+$Gromount+' '+$GrofferSell.ware+' für '+$GrofferBuy.buyer.knownname+' von '+$GrofferSell.seller.knownname-->
 		<t id="210">Stationshändler: Besorge %1 %2 für je %3 Cr von %4.</t>
-		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
-		<t id="211">Es konnte kein Handel gefunden werden %1 mal. Fordern Sie Hilfe an.</t>
+		<!--'Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.'-->
+		<t id="211">Bitte um Unterstützung. Ein Handelsplatz konnte %s-mal nicht gefunden werden. Gültige Sektoren zum Kaufen: %s. Gültige Sektoren zum Verkaufen: %s. Anzahl der durchsuchten Waren: %s.</t>
 		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
 		<t id="212">\nGeschätzter Gesamtgewinn auf Lebenszeit vor diesem Handel: %1.</t>
 		<t id="127">Ignorieren Sie Kaufhandelsbeschränkungen</t>
