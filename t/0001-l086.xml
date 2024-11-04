@@ -47,10 +47,10 @@
 		<t id="209">空间站交易员:为 %3 购买 %1 个 %2 单价为 %4. 预期成本是 %5.</t>
 		<!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
 		<t id="210">空间站交易员:从 %4 取货 %1 个 %2 送到 %3.</t>
-		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
-		<t id="211">我找不到交易订单持续了%1. 请求协助.</t>
+		<!--'Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.'-->
+		<t id="211">请求协助。 %s 次未找到交易。 可购买的有效区域：%s。 可出售的有效区域：%s。 搜索的商品数量：%s。</t>
 		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
-		<t id="212">\nTotal lifetime estimated profit: %1.</t>
+		<t id="212">\n本次交易前的预计终身利润总额: %1.</t>
 		<t id="127">忽略购买贸易限制</t>
 		<t id="128">忽略销售贸易限制</t>
 		<t id="129">启用日志信息</t>
@@ -66,5 +66,10 @@
 		<t id="508">最低装载 %</t>
 		<t id="509">{3282837,129}</t>
 		<t id="510">Dead Tater</t>
+		<t id="511">{1002,15902}(Ignore) {20221,5001}(Carrier)/{20221,5011}(Auxiliary)</t>
+		<t id="512">喜欢我的购买优惠</t>
+		<t id="513">更喜欢我的销售报价</t>
+		<t id="514">支付我的派系武器</t>
+		<t id="515">使用扩展队列</t>
 	</page>
 </language>

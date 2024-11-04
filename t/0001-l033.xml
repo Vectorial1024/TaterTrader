@@ -47,24 +47,29 @@
 		<t id="209">Commerçant de station: Achete %1 %2 de %3 Au prix de %4. Le bénéfice attendu est de %5Cr.</t>
 		<!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
 		<t id="210">Commerçant de station: Je vais chercher %1 %2 pour %3 de %4.</t>
-		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
-		<t id="211">Failed to find a trade %1 times. Request assistance.</t>
+		<!--'Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.'-->
+		<t id="211">Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.</t>
 		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
-		<t id="212">\nTotal lifetime estimated profit: %1.</t>
+		<t id="212">\nTotal estimated lifetime profit before this trade: %1.</t>
 		<t id="127">Ignore Buy Trade Restrictions</t>
 		<t id="128">Ignore Sell Trade Restrictions</t>
-		<t id="129">Enable Logbook Messages</t>
+		<t id="129">{1001,8986}(Enable) {1001,5700}(Logbook) {1001,7730}(Messages)</t>
 		<!-- Dead Tater -->
 		<t id="500">Dead Tater</t>
 		<t id="501">{3282837,103}</t>
 		<t id="502">{3282837,104}</t>
 		<t id="503">My Faction First</t>
-		<t id="504">Ignore trade rules</t>
+		<t id="504">{1002,15902}(Ignore) {1001,11010}(Trade Rules)</t>
 		<t id="505">Auto Wares</t>
-		<t id="506">Allow illegal wares</t>
-		<t id="507">Enable minimum volume</t>
-		<t id="508">Minimum volume %</t>
+		<t id="506">{1001,8986}(Enable) {1001,2435}(Illegal Wares)</t>
+		<t id="507">{1001,8986}(Enable) {1001,8357}(Minimum Volume)</t>
+		<t id="508">{1001,8357}(Minimum Volume) %</t>
 		<t id="509">{3282837,129}</t>
 		<t id="510">Dead Tater</t>
+		<t id="511">{1002,15902}(Ignore) {20221,5001}(Carrier)/{20221,5011}(Auxiliary)</t>
+		<t id="512">Préférer mes offres d'achat</t>
+		<t id="513">Préférer mes offres de vente</t>
+		<t id="514">Payer mes marchandises de faction</t>
+		<t id="515">Utiliser la file d'attente d'étalement</t>
 	</page>
 </language>

@@ -25,9 +25,9 @@
 		<t id="121">(Included Sector)Sectores Incluidos</t>
 		<t id="122">(Enable Trade Bans)Activar Prohibiciones Comerciales</t>
 		<t id="123">(Scan Speed)Velocidad de Escaneo</t>
-		<t id="124">Large legal wares</t>
-		<t id="125">Medium legal wares</t>
-		<t id="126">Small legal wares</t>
+		<t id="124">Grandes mercancías legales</t>
+		<t id="125">Mercancías legales medianas</t>
+		<t id="126">Pequeñas mercancías legales</t>
 		<t id="200">Mensajes del Libro de Registro (complete line in comment above entry)</t>
 		<!--'Selling '+$Gromount+' '+$GrofferBuy.ware+' from CargoHold at '+$GrofferBuy.unitprice/100+' I should earn '+$Gromount*$GrofferBuy.unitprice/100+' in profit.'-->
 		<t id="201">Vendiendo: %1 %2 de la carga a %3. deberia obtener %4 Cr de Beneficio.</t>
@@ -47,24 +47,29 @@
 		<t id="209">Comercial de la Estación: Comprando %1 %2 desde %3 al precio de %4. El beneficio esperado es de %5 Cr.</t>
 		<!--'Station Trader: Fetching '+$Gromount+' '+$GrofferSell.ware+' for '+$GrofferBuy.buyer.knownname+' from '+$GrofferSell.seller.knownname-->
 		<t id="210">Comercial de la Estación: Obteniendo %1 %2 para %3 desde %4.</t>
-		<!--'Failed to find a trade '+$SearchFailed+' times, request assistance'-->
-		<t id="211">Failed to find a trade %1 times. Request assistance.</t>
+		<!--'Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.'-->
+		<t id="211">Request assistance. Failed to find a trade %s times. Valid sectors for buying: %s. Valid sectors for selling: %s. Number of wares searched: %s.</t>
 		<!--'Total lifetime estimated profit: '+$LifetimeGrofit-->
-		<t id="212">\nTotal lifetime estimated profit: %1.</t>
-		<t id="127">Ignore Buy Trade Restrictions</t>
-		<t id="128">Ignore Sell Trade Restrictions</t>
-		<t id="129">Enable Logbook Messages</t>
+		<t id="212">\nBeneficio total estimado de por vida antes de esta operación: %1.</t>
+		<t id="127">Ignorar las restricciones comerciales de compra</t>
+		<t id="128">Ignorar las restricciones comerciales de venta</t>
+		<t id="129">{1001,8986}(Enable) {1001,5700}(Logbook) {1001,7730}(Messages)</t>
 		<!-- Dead Tater -->
 		<t id="500">Dead Tater</t>
 		<t id="501">{3282837,103}</t>
 		<t id="502">{3282837,104}</t>
-		<t id="503">My Faction First</t>
-		<t id="504">Ignore trade rules</t>
-		<t id="505">Auto Wares</t>
-		<t id="506">Allow illegal wares</t>
-		<t id="507">Enable minimum volume</t>
-		<t id="508">Minimum volume %</t>
+		<t id="503">Mi facción primero</t>
+		<t id="504">{1002,15902}(Ignore) {1001,11010}(Trade Rules)</t>
+		<t id="505">Mercancías automáticas</t>
+		<t id="506">{1001,8986}(Enable) {1001,2435}(Illegal Wares)</t>
+		<t id="507">{1001,8986}(Enable) {1001,8357}(Minimum Volume)</t>
+		<t id="508">{1001,8357}(Minimum Volume) %</t>
 		<t id="509">{3282837,129}</t>
 		<t id="510">Dead Tater</t>
+		<t id="511">{1002,15902}(Ignore) {20221,5001}(Carrier)/{20221,5011}(Auxiliary)</t>
+		<t id="512">Prefiere Mis Ofertas de Compra</t>
+		<t id="513">Prefiere mis ofertas de venta</t>
+		<t id="514">Pagar por mis mercancías de facción</t>
+		<t id="515">Usar cola de propagación</t>
 	</page>
 </language>

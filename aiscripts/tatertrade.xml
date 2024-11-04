@@ -11,14 +11,14 @@
 			<param name="returnhome" type="internal" default="false" text="{3282837,102}" comment="Return Home after completing a trade?"/>
 			<!-- Some Range configurations -->
 			<param name="minbuy" default="0" type="internal" text="{1041, 10066}" comment="Min gate distance to buy. Buy range supported if $minbuy and $maxbuy are provided"/>
-			<param name="maxbuy" default="0" type="number" text="{1041, 10054}" comment="Max gate distance to buy. Buy range supported if $minbuy and $maxbuy are provided">
+			<param name="maxbuy" default="[@this.ship.commander.tradenpc.skill.management, @this.ship.pilot.skill.piloting].max" type="number" text="{1041, 10054}" comment="Max gate distance to buy. Buy range supported if $minbuy and $maxbuy are provided">
 				<input_param name="startvalue" value="0"/>
 				<input_param name="min" value="0"/>
 				<input_param name="max" value="[@this.ship.commander.tradenpc.skill.management, @this.ship.pilot.skill.piloting].max * 2"/>
 				<input_param name="step" value="1"/>
 			</param>
 			<param name="minsell" default="0" type="internal" text="{1041, 10068}" comment="Min gate distance to sell. Sell range supported if $minsell and $maxsell are provided"/>
-			<param name="maxsell" default="0" type="number" text="{1041, 10057}" comment="Max gate distance to sell. Sell range supported if $minsell and $maxsell are provided">
+			<param name="maxsell" default="[@this.ship.commander.tradenpc.skill.management, @this.ship.pilot.skill.piloting].max" type="number" text="{1041, 10057}" comment="Max gate distance to sell. Sell range supported if $minsell and $maxsell are provided">
 				<input_param name="startvalue" value="0"/>
 				<input_param name="min" value="0"/>
 				<input_param name="max" value="[@this.ship.commander.tradenpc.skill.management, @this.ship.pilot.skill.piloting].max * 2"/>
@@ -317,7 +317,6 @@
 			<!-- Let's try to clean this up DA-->
 			<!-- Goal one, stop this loop DA-->
 			<!-- We will define the lists for the parameters here, then actually add them to ware basket in next label DA-->
-			<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Looping Preset Lists! Loop: '+$gotowarelist" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 			<!-- We will set the ware lists here, then process in the next label DA-->
 			<do_if value="$usepresets">
 				<do_if value="$allwares">
@@ -518,6 +517,7 @@
 			<set_value name="$buyspaceswithbanned" exact="[]"/>
 			<set_value name="$buyspaceswithbannedclone" exact="[]"/>
 			<set_value name="$buyspaces" exact="[]"/>
+			<remove_value name="$clusterstable"/>
 			<find_cluster_in_range distances="$clusterstable" multiple="true" object="$range" mindistance="$minsell" maxdistance="$maxsell"/>
 			<do_if value="$bypass == true">
 				<set_value name="$sellspaces" exact="$clusterstable.keys.sorted"/>
@@ -577,7 +577,7 @@
 					<wait exact="1ms"/>
 					<!-- This loop starts with QueenIWantToBreakFree false -->
 					<set_value name="$QueenIWantToBreakFree" exact="false"/>
-					<do_if value="$buyspaceswithbanned.{$a}.isclass.cluster or $buyspaceswithbanned.isclass.sector">
+					<do_if value="($buyspaceswithbanned.{$a}.isclass.cluster or $buyspaceswithbanned.{$a}.isclass.sector)">
 						<find_sector name="$sectors" space="$buyspaceswithbanned.{$a}" multiple="true"/>
 						<do_all exact="$sectors.count" counter="$b">
 							<wait exact="1ms"/>
@@ -590,11 +590,11 @@
 							<set_value name="$QueenIWantToBreakFree" exact="false"/>
 							<set_value name="$sector" exact="$sectors.{$b}"/>
 							<!-- Output info every time so we know what is being tested -->
-							<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- Distance %6'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,this.assignedcontrolled.gatedistance.{$sector}.{$blacklistgroup}.{this.assignedcontrolled}]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+							<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- Distance %6'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,this.assignedcontrolled.gatedistance.{$sector}.{$blacklistgroup}.{this.assignedcontrolled}]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 							<!-- Does the owner have relation of killall -->
 							<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 							<do_if value="($sector != $range) and (faction.player.relationto.{$sector.trueowner} le -0.32)">
-								<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR OWNER RELATION'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR OWNER RELATION'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 								<remove_from_list name="$buyspaceswithbannedclone" exact="$buyspaceswithbanned.{$a}" multiple="true"/>
 								<remove_value name="$sector"/>
 								<set_value name="$QueenIWantToBreakFree" exact="true"/>
@@ -604,7 +604,7 @@
 							<!-- Is the sector travel blacklisted -->
 							<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 							<do_elseif value="($sector != $range) and ($sector.isblacklisted.{blacklisttype.sectortravel}.{$blacklistgroup}.{this.assignedcontrolled})">
-								<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR TRAVEL BAN'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR TRAVEL BAN'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 								<remove_from_list name="$buyspaceswithbannedclone" exact="$buyspaceswithbanned.{$a}" multiple="true"/>
 								<remove_value name="$sector"/>
 								<set_value name="$QueenIWantToBreakFree" exact="true"/>
@@ -614,7 +614,7 @@
 							<!-- Is the sector activity blacklisted (Only matters for end sector)-->
 							<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 							<do_elseif value="($sector != $range) and ($sector.isblacklisted.{blacklisttype.sectoractivity}.{$blacklistgroup}.{this.assignedcontrolled})">
-								<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR ACTIVITY BAN'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR ACTIVITY BAN'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 								<remove_from_list name="$buyspaceswithbannedclone" exact="$buyspaceswithbanned.{$a}" multiple="true"/>
 								<remove_value name="$sector"/>
 								<set_value name="$QueenIWantToBreakFree" exact="true"/>
@@ -625,13 +625,21 @@
 							<do_else>
 								<!-- if we reach here, this should be unnecessary -->
 								<set_value name="$QueenIWantToBreakFree" exact="false"/>
+								<do_if value="$range.gatedistance.{$sector}.{$blacklistgroup}.{this.assignedcontrolled} lt 0">
+									<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- JumpPath.count %6 -- REMOVED BECAUSE INVALID JUMP PATH'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,@$range.gatedistance.{$sector}.{$blacklistgroup}.{this.assignedcontrolled}]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+									<remove_from_list name="$buyspaceswithbannedclone" exact="$buyspaceswithbanned.{$a}" multiple="true"/>
+									<remove_value name="$sector"/>
+									<set_value name="$QueenIWantToBreakFree" exact="true"/>
+									<!-- this will break out of do_all sectors.count -->
+									<break/>
+								</do_if>
 								<get_jump_path component="$jumppath" multiple="true" useblacklist="$blacklistgroup" refobject="this.assignedcontrolled">
 									<start object="$range"/>
 									<end object="$sector"/>
 								</get_jump_path>
 								<!-- if we somehow can't get a jump route but we want to make sure not to remove our home sector -->
 								<do_if value="(($jumppath == null) or ($jumppath.count == 0 )) and ($range != $sector)">
-									<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- JumpPath.count %6 -- REMOVED BECAUSE INVALID JUMP PATH'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,@$jumppath.count]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+									<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- JumpPath.count %6 -- REMOVED BECAUSE INVALID JUMP PATH'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,@$jumppath.count]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 									<remove_from_list name="$buyspaceswithbannedclone" exact="$buyspaceswithbanned.{$a}" multiple="true"/>
 									<remove_value name="$sector"/>
 									<remove_value name="$jumppath"/>
@@ -652,11 +660,11 @@
 									<!-- we only want to test clusters and sectors because gates don't have owners...i think -->
 									<do_if value="$jumppath.{$c}.isclass.cluster or $jumppath.{$c}.isclass.sector">
 										<!-- Output info every time so we know what is being tested -->
-										<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+										<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 										<!-- Does the owner of any sectors on our route have relation of killall -->
 										<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 										<do_if value="($jumppath.{$c} != $range) and (faction.player.relationto.{$jumppath.{$c}.trueowner} le -0.32)">
-											<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7 -- REMOVED BECAUSE ROUTE OWNER RELATION'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+											<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7 -- REMOVED BECAUSE ROUTE OWNER RELATION'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 											<remove_from_list name="$buyspaceswithbannedclone" exact="$buyspaceswithbanned.{$a}" multiple="true"/>
 											<remove_value name="$sector"/>
 											<remove_value name="$jumppath"/>
@@ -667,7 +675,7 @@
 										<!-- Is any sector on our route travel blacklisted -->
 										<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 										<do_elseif value="($jumppath.{$c} != $range) and ($jumppath.{$c}.isblacklisted.{blacklisttype.sectortravel}.{$blacklistgroup}.{this.assignedcontrolled})">
-											<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7 -- REMOVED BECAUSE ROUTE TRAVEL BAN'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+											<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7 -- REMOVED BECAUSE ROUTE TRAVEL BAN'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 											<remove_from_list name="$buyspaceswithbannedclone" exact="$buyspaceswithbanned.{$a}" multiple="true"/>
 											<remove_value name="$sector"/>
 											<remove_value name="$jumppath"/>
@@ -689,8 +697,16 @@
 					<!-- if we reached here, the buyspace passed all tests -->
 					<!-- lets just make sure it's not a null value and it's either a cluster or a sector -->
 					<do_if value="@$QueenIWantToBreakFree == false and $buyspaceswithbanned.{$a} != null and ($buyspaceswithbanned.{$a}.isclass.cluster or $buyspaceswithbanned.{$a}.isclass.sector)">
-						<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- ADDED TO FINAL BUYSPACES LIST'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-						<append_to_list name="$buyspaces" exact="$buyspaceswithbanned.{$a}"/>
+						<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Buyspace.{%2}.name %3 -- ADDED TO FINAL BUYSPACES LIST'.[player.age,$a,@$buyspaceswithbanned.{$a}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+						<do_if value="$buyspaceswithbanned.{$a}.isclass.cluster">
+							<find_sector name="$sectors" space="$buyspaceswithbanned.{$a}" multiple="true"/>
+							<do_for_each name="$sector" in="$sectors">
+								<append_to_list name="$buyspaces" exact="$sector"/>
+							</do_for_each>
+						</do_if>
+						<do_else>
+							<append_to_list name="$buyspaces" exact="$buyspaceswithbanned.{$a}"/>
+						</do_else>
 					</do_if>
 				</do_all>
 				<!--time for sellspaces -->
@@ -698,7 +714,7 @@
 					<wait exact="1ms"/>
 					<!-- This loop starts with QueenIWantToBreakFree false -->
 					<set_value name="$QueenIWantToBreakFree" exact="false"/>
-					<do_if value="$sellspaceswithbanned.{$a}.isclass.cluster or $sellspaceswithbanned.isclass.sector">
+					<do_if value="($sellspaceswithbanned.{$a}.isclass.cluster or $sellspaceswithbanned.{$a}.isclass.sector) and ($sellspaceswithbanned.{$a} != $range)">
 						<find_sector name="$sectors" space="$sellspaceswithbanned.{$a}" multiple="true"/>
 						<do_all exact="$sectors.count" counter="$b">
 							<wait exact="1ms"/>
@@ -711,11 +727,11 @@
 							<set_value name="$QueenIWantToBreakFree" exact="false"/>
 							<set_value name="$sector" exact="$sectors.{$b}"/>
 							<!-- Output info every time so we know what is being tested -->
-							<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- Distance %6'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,this.assignedcontrolled.gatedistance.{$sector}.{$blacklistgroup}.{this.assignedcontrolled}]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+							<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- Distance %6'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,this.assignedcontrolled.gatedistance.{$sector}.{$blacklistgroup}.{this.assignedcontrolled}]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 							<!-- Does the owner have relation of killall -->
 							<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 							<do_if value="($sector != $range) and (faction.player.relationto.{$sector.trueowner} le -0.32)">
-								<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR OWNER RELATION'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR OWNER RELATION'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 								<remove_from_list name="$sellspaceswithbannedclone" exact="$sellspaceswithbanned.{$a}" multiple="true"/>
 								<remove_value name="$sector"/>
 								<set_value name="$QueenIWantToBreakFree" exact="true"/>
@@ -725,7 +741,7 @@
 							<!-- Is the sector travel blacklisted -->
 							<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 							<do_elseif value="($sector != $range) and ($sector.isblacklisted.{blacklisttype.sectortravel}.{$blacklistgroup}.{this.assignedcontrolled})">
-								<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR TRAVEL BAN'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR TRAVEL BAN'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 								<remove_from_list name="$sellspaceswithbannedclone" exact="$sellspaceswithbanned.{$a}" multiple="true"/>
 								<remove_value name="$sector"/>
 								<set_value name="$QueenIWantToBreakFree" exact="true"/>
@@ -735,7 +751,7 @@
 							<!-- Is the sector activity blacklisted (Only matters for end sector)-->
 							<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 							<do_elseif value="($sector != $range) and ($sector.isblacklisted.{blacklisttype.sectoractivity}.{$blacklistgroup}.{this.assignedcontrolled})">
-								<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR ACTIVITY BAN'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+								<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- REMOVED BECAUSE SECTOR ACTIVITY BAN'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 								<remove_from_list name="$sellspaceswithbannedclone" exact="$sellspaceswithbanned.{$a}" multiple="true"/>
 								<remove_value name="$sector"/>
 								<set_value name="$QueenIWantToBreakFree" exact="true"/>
@@ -746,13 +762,21 @@
 							<do_else>
 								<!-- if we reach here, this should be unnecessary -->
 								<set_value name="$QueenIWantToBreakFree" exact="false"/>
+								<do_if value="$range.gatedistance.{$sector}.{$blacklistgroup}.{this.assignedcontrolled} lt 0">
+									<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- JumpPath.count %6 -- REMOVED BECAUSE INVALID JUMP PATH'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,@$range.gatedistance.{$sector}.{$blacklistgroup}.{this.assignedcontrolled}]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+									<remove_from_list name="$sellspaceswithbannedclone" exact="$sellspaceswithbanned.{$a}" multiple="true"/>
+									<remove_value name="$sector"/>
+									<set_value name="$QueenIWantToBreakFree" exact="true"/>
+									<!-- this will break out of do_all sectors.count -->
+									<break/>
+								</do_if>
 								<get_jump_path component="$jumppath" multiple="true" useblacklist="$blacklistgroup" refobject="this.assignedcontrolled">
 									<start object="$range"/>
 									<end object="$sector"/>
 								</get_jump_path>
 								<!-- if we somehow can't get a jump route but we want to make sure not to remove our home sector -->
 								<do_if value="(($jumppath == null) or ($jumppath.count == 0 )) and ($range != $sector)">
-									<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- JumpPath.count %6 -- REMOVED BECAUSE INVALID JUMP PATH'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,@$jumppath.count]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+									<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- JumpPath.count %6 -- REMOVED BECAUSE INVALID JUMP PATH'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,@$jumppath.count]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 									<remove_from_list name="$sellspaceswithbannedclone" exact="$sellspaceswithbanned.{$a}" multiple="true"/>
 									<remove_value name="$sector"/>
 									<remove_value name="$jumppath"/>
@@ -773,11 +797,11 @@
 									<!-- we only want to test clusters and sectors because gates don't have owners...i think -->
 									<do_if value="$jumppath.{$c}.isclass.cluster or $jumppath.{$c}.isclass.sector">
 										<!-- Output info every time so we know what is being tested -->
-										<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+										<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 										<!-- Does the owner of any sectors on our route have relation of killall -->
 										<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 										<do_if value="($jumppath.{$c} != $range) and (faction.player.relationto.{$jumppath.{$c}.trueowner} le -0.32)">
-											<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7 -- REMOVED BECAUSE ROUTE OWNER RELATION'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+											<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7 -- REMOVED BECAUSE ROUTE OWNER RELATION'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 											<remove_from_list name="$sellspaceswithbannedclone" exact="$sellspaceswithbanned.{$a}" multiple="true"/>
 											<remove_value name="$sector"/>
 											<remove_value name="$jumppath"/>
@@ -788,7 +812,7 @@
 										<!-- Is any sector on our route travel blacklisted -->
 										<!-- if our home sector is on a list but the player assigned us here, then ignore list -->
 										<do_elseif value="($jumppath.{$c} != $range) and ($jumppath.{$c}.isblacklisted.{blacklisttype.sectortravel}.{$blacklistgroup}.{this.assignedcontrolled})">
-											<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7 -- REMOVED BECAUSE ROUTE TRAVEL BAN'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+											<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- (%4)Sector.name %5 -- (%6)JumpPath.name %7 -- REMOVED BECAUSE ROUTE TRAVEL BAN'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname,$b,@$sector.knownname,$c,@$jumppath.{$c}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 											<remove_from_list name="$sellspaceswithbannedclone" exact="$sellspaceswithbanned.{$a}" multiple="true"/>
 											<remove_value name="$sector"/>
 											<remove_value name="$jumppath"/>
@@ -810,8 +834,16 @@
 					<!-- if we reached here, the Sellspace passed all tests -->
 					<!-- lets just make sure it's not a null value and it's either a cluster or a sector -->
 					<do_if value="@$QueenIWantToBreakFree == false and $sellspaceswithbanned.{$a} != null and ($sellspaceswithbanned.{$a}.isclass.cluster or $sellspaceswithbanned.{$a}.isclass.sector)">
-						<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- ADDED TO FINAL SELLSPACES LIST'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-						<append_to_list name="$sellspaces" exact="$sellspaceswithbanned.{$a}"/>
+						<debug_to_file name="this.assignedcontrolled.idcode" directory="'TaterTrader'" text="'MOD: TestBlacklistFiltering -- %1 -- Sellspace.{%2}.name %3 -- ADDED TO FINAL SELLSPACES LIST'.[player.age,$a,@$sellspaceswithbanned.{$a}.knownname]" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
+						<do_if value="$sellspaceswithbanned.{$a}.isclass.cluster">
+							<find_sector name="$sectors" space="$sellspaceswithbanned.{$a}" multiple="true"/>
+							<do_for_each name="$sector" in="$sectors">
+								<append_to_list name="$sellspaces" exact="$sector"/>
+							</do_for_each>
+						</do_if>
+						<do_else>
+							<append_to_list name="$sellspaces" exact="$sellspaceswithbanned.{$a}"/>
+						</do_else>
 					</do_if>
 				</do_all>
 				<remove_value name="$buyspaceswithduplicates"/>
@@ -820,6 +852,8 @@
 				<remove_value name="$sellspaceswithduplicates"/>
 				<remove_value name="$sellspaceswithbanned"/>
 				<remove_value name="$sellspaceswithbannedclone"/>
+				<remove_value name="$sectors"/>
+				<remove_value name="$sector"/>
 			</do_else>
 			<!-- Exclude selected sectors. -->
 			<do_if value="not ($excludedsectors == null)">
@@ -1210,9 +1244,9 @@
 									</do_all>
 								</do_if>
 								<do_if value="$checkdeal">
-									<set_value name="$wareprice" exact="$foundselloffer.unitprice/100"/>
+									<set_value name="$wareprice" exact="$foundselloffer.unitprice / 100.0"/>
 									<do_if value="$foundselloffer.seller.owner == this.ship.owner">
-										<set_value name="$wareprice" exact="$foundselloffer.unitprice/100*$discount/100"/>
+										<set_value name="$wareprice" exact="($foundselloffer.unitprice / 100.0) * ($discount / 100.0)"/>
 									</do_if>
 									<set_value name="$spendablemoney" exact="player.money/100"/>
 									<do_if value="this.ship.commander">
@@ -1230,7 +1264,7 @@
 									</do_else>
 									<!--<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'SpaceLeft: '+this.ship.cargo.{$stationbuyoffer.ware}.free+' BuyAmount: '+$stationbuyoffer.amount+' SellAmount: '+$foundselloffer.amount+' AmountAfforded: '+$spendablemoney/(2*$wareprice)" output="false" append="true" /> -->
 									<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'   Scanning sell offer for ( '+$Amount+' '+$stationbuyoffer.ware+' ) at ('+$foundselloffer.seller.knownname+') Price: '+$wareprice+' Faction: '+$foundselloffer.seller.owner+' Restriction: '+$foundselloffer.restriction.factions.count+' Raw OfferPrice: '+$foundselloffer.unitprice/100+' BuyAmount: '+$stationbuyoffer.amount+' SellAmount: '+$foundselloffer.amount" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-									<do_if value="$wareprice lt $stationbuyoffer.unitprice/100">
+									<do_if value="$wareprice lt ($stationbuyoffer.unitprice / 100.0)">
 										<!-- Is the station selling it cheaper then we are asking? -->
 										<do_if value="($wareprice lt $bestprice) or ($Amount gt $bestamount)">
 											<!-- Is it better then the previus best deal? -->
@@ -1249,9 +1283,9 @@
 							</do_all>
 							<do_if value="not ($bestdeal == 0)">
 								<set_value name="$WareCapacity" exact="this.ship.cargo.{$bestdeal.ware}.free"/>
-								<set_value name="$offerpriority" exact="$offerpriority+($bestamount/$WareCapacity)*25"/>
-								<set_value name="$costdiff" exact="$stationbuyoffer.unitprice/100-$bestprice"/>
-								<set_value name="$offerpriority" exact="$offerpriority+($costdiff/2)"/>
+								<set_value name="$offerpriority" exact="($bestamount / $WareCapacity) * 25.0" operation="add"/>
+								<set_value name="$costdiff" exact="($stationbuyoffer.unitprice / 100.0) - $bestprice"/>
+								<set_value name="$offerpriority" exact="($costdiff)f / 2.0" operation="add"/>
 								<do_if value="$distancecheck">
 									<set_value name="$distance" exact="$home.gatedistance.{$bestdeal.seller}.{$blacklistgroup}.{this.assignedcontrolled}"/>
 									<!-- Distance is -1 if there is no safe route -->
@@ -1272,7 +1306,7 @@
 										<set_value name="$StationTrade" exact="true"/>
 										<set_value name="$Gromount" exact="$bestamount"/>
 										<set_value name="$itemcostsell" exact="$bestprice"/>
-										<set_value name="$itemcostbuy" exact="$stationbuyoffer.unitprice/100"/>
+										<set_value name="$itemcostbuy" exact="$stationbuyoffer.unitprice / 100.0"/>
 									</do_if>
 								</do_if>
 								<debug_to_file name="this.ship.idcode" directory="'TaterTrader'" text="'Buying: ('+$stationbuyoffer.ware+') Best Deal: ('+$bestdeal.seller.knownname+') Price: '+$bestprice+' Amount: ( '+$bestamount+' / '+$WareCapacity+' Max) Priority: '+$offerpriority+' GateDistance: '+$home.gatedistance.{$bestdeal.seller}.{$blacklistgroup}.{this.assignedcontrolled}+' StockLevel: '+$stationbuyoffer.stocklevel*100+'% CargoFill: '+(($bestamount)f/($WareCapacity)f)*100+'%'" output="false" append="true" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
@@ -1608,15 +1642,10 @@
 							<do_else>
 								<set_value name="$ThisShip" exact="this.assignedcontrolled"/>
 								<do_if value="global.$DALifetimeGrofit.{$ThisShip}?">
-									<set_value name="global.$DALifetimeGrofit.{$ThisShip}" exact="$Gromount*($itemcostbuy-$itemcostsell)*100" operation="add"/>
 									<debug_text text="'MOD: TaterTrader -- %1 -- Ship: %2 -- global.$DALifetimeGrofit? %3'.[player.age,this.assignedcontrolled.idcode,global.$DALifetimeGrofit.{$ThisShip}]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
 								</do_if>
-								<do_else>
-									<set_value name="global.$DALifetimeGrofit.{$ThisShip}" exact="$Gromount*($itemcostbuy-$itemcostsell)*100"/>
-									<debug_text text="'MOD: TaterTrader -- %1 -- Ship: %2 -- global.$DALifetimeGrofit? %3'.[player.age,this.assignedcontrolled.idcode,global.$DALifetimeGrofit.{$ThisShip}]" context="false" filter="scripts" chance="if @$TaterDebugChance then ($TaterDebugChance * 100) else (0)"/>
-								</do_else>
 								<set_value name="$Message" exact="{3282837,205}.[$Gromount,$GrofferSell.ware,$itemcostsell,$itemcostbuy,$Gromount*($itemcostbuy-$itemcostsell)]"/>
-								<set_value name="$Message" exact="{3282837,212}.[if global.$DALifetimeGrofit.{$ThisShip} then (global.$DALifetimeGrofit.{$ThisShip}).formatted.{'%.k %Cr'} else {1001,9002}]" operation="add"/>
+								<set_value name="$Message" exact="{3282837,212}.[if global.$DALifetimeGrofit.{$ThisShip} then (global.$DALifetimeGrofit.{$ThisShip}).formatted.{'%.k %Cr'} else {1001,9002}]" operation="add" chance="(global.$DALifetimeGrofit.{$ThisShip}?) * 100"/>
 								<write_to_logbook category="upkeep" title="'TaterTrader: '+this.ship.knownname+' ( '+this.ship.idcode+' )'" interaction="showonmap" object="this.ship" money="-$Gromount*$itemcostsell*100" bonus="$Gromount*($itemcostbuy-$itemcostsell)*100" text="$Message" chance="if @$enablelogbook then ($enablelogbook * 100) else (0)"/>
 								<remove_value name="$Message"/>
 								<remove_value name="$ThisShip"/>

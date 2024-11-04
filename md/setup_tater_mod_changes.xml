@@ -2,7 +2,9 @@
 <mdscript name="Setup_Tater_Mod_Changes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
 	<cues>
 		<cue name="Init">
-			<actions/>
+			<actions>
+				<set_value name="$ProfitDebug" exact="false"/>
+			</actions>
 			<cues>
 				<cue name="Game_Started" instantiate="false">
 					<actions>
@@ -14,23 +16,37 @@
 						<do_if value="not global.$DALifetimeGrofit?">
 							<set_value name="global.$DALifetimeGrofit" exact="table[]"/>
 						</do_if>
-						<debug_text text="'MOD: TaterTrader -- %1 -- global.$DALifetimeGrofit? %2'.[player.age,global.$DALifetimeGrofit?]" context="false" filter="scripts"/>
+						<do_if value="not global.$DATaterStartTimes?">
+							<set_value name="global.$DATaterStartTimes" exact="table[]"/>
+						</do_if>
+						<debug_text text="'MOD: TaterTrader -- global.$DALifetimeGrofit? %s -- global.$DATaterStartTimes? %s'.[global.$DALifetimeGrofit?,global.$DATaterStartTimes?]" context="false" filter="scripts"/>
 					</actions>
 				</library>
-				<cue name="Remove_Killed" instantiate="true">
+				<cue name="Remove_Killed" instantiate="true" namespace="this">
 					<conditions>
 						<event_player_owned_destroyed/>
-						<check_value value="event.param.isclass.defensible and not event.param.ismasstraffic and not event.param.isunit and not event.param.isdeployable and not event.param.isclass.ship_xs"/>
+						<check_value value="event.param.isclass.defensible"/>
+						<check_value value="(not event.param.ismasstraffic) and (not event.param.isunit) and (not event.param.isdeployable) and (not event.param.isclass.ship_xs)"/>
 						<check_value value="event.param3 != killmethod.collected"/>
 						<check_value value="event.param3 != killmethod.removed" comment="spacesuit is removed"/>
 					</conditions>
 					<actions>
+						<do_if value="not global.$DALifetimeGrofit?">
+							<set_value name="global.$DALifetimeGrofit" exact="table[]"/>
+						</do_if>
+						<do_if value="not global.$DATaterStartTimes?">
+							<set_value name="global.$DATaterStartTimes" exact="table[]"/>
+						</do_if>
 						<set_value name="$KeyList" exact="global.$DALifetimeGrofit.keys.list"/>
+						<set_value name="$KeyList2" exact="global.$DATaterStartTimes.keys.list"/>
 						<do_if value="$KeyList.indexof.{event.param}">
-							<debug_text text="'MOD: TaterTrader -- %1 -- Removing %2 from global.$DALifetimeGrofit'.[player.age,event.param.idcode]" context="false" filter="scripts"/>
 							<remove_value name="global.$DALifetimeGrofit.{event.param}"/>
 						</do_if>
+						<do_if value="$KeyList2.indexof.{event.param}">
+							<remove_value name="global.$DATaterStartTimes.{event.param}"/>
+						</do_if>
 						<remove_value name="$KeyList"/>
+						<remove_value name="$KeyList2"/>
 					</actions>
 				</cue>
 				<cue name="TimedCheck" instantiate="true" checkinterval="30min" checktime="player.age + 30min">
@@ -40,13 +56,66 @@
 					</conditions>
 					<actions>
 						<find_ship_by_true_owner name="$PlayerShips" faction="faction.player" space="player.galaxy" multiple="true"/>
-						<do_for_each in="global.$DALifetimeGrofit.keys.list" name="$Key">
-							<do_if value="($PlayerShips.count) and (not $PlayerShips.indexof.{$Key})">
-								<debug_text text="'MOD: TaterTrader -- %1 -- Found error! %2 in global.$DALifetimeGrofit.keys.list'.[player.age,$Key]" context="false" filter="scripts"/>
-								<remove_value name="global.$DALifetimeGrofit.{$Key}"/>
-							</do_if>
-						</do_for_each>
+						<do_if value="$PlayerShips.count" min="1">
+							<do_for_each name="$Key" in="global.$DALifetimeGrofit.keys.list">
+								<do_if value="not $PlayerShips.indexof.{$Key}">
+									<remove_value name="global.$DALifetimeGrofit.{$Key}"/>
+								</do_if>
+							</do_for_each>
+							<do_for_each name="$Key" in="global.$DATaterStartTimes.keys.list">
+								<do_if value="not $PlayerShips.indexof.{$Key}">
+									<remove_value name="global.$DALifetimeGrofit.{$Key}"/>
+								</do_if>
+							</do_for_each>
+						</do_if>
 						<remove_value name="$PlayerShips"/>
+					</actions>
+				</cue>
+				<cue name="TrackProfit" instantiate="true" namespace="this">
+					<conditions>
+						<event_player_trade_completed/>
+					</conditions>
+					<actions>
+						<do_if value="not global.$DALifetimeGrofit?">
+							<set_value name="global.$DALifetimeGrofit" exact="table[]"/>
+						</do_if>
+						<do_if value="not global.$DATaterStartTimes?">
+							<set_value name="global.$DATaterStartTimes" exact="table[]"/>
+						</do_if>
+						<set_value name="$Trade" exact="event.param"/>
+						<set_value name="$Buyer" exact="$Trade.buyer"/>
+						<set_value name="$Seller" exact="$Trade.seller"/>
+						<set_value name="$Price" exact="$Trade.unitprice * $Trade.transferredamount"/>
+						<do_if value="$Buyer.isoperational and $Buyer.trueowner == faction.player and $Buyer.isclass.ship and $Buyer.defaultorder?">
+							<do_if value="((['TaterTrader','DeadTater'].indexof.{@$Buyer.defaultorder.id}) or ((@$Buyer.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{@$Buyer.commander.defaultorder.id})))">
+								<do_if value="global.$DALifetimeGrofit.{$Buyer}?">
+									<set_value name="global.$DALifetimeGrofit.{$Buyer}" exact="$Price" operation="subtract"/>
+								</do_if>
+								<do_elseif value="global.$DALifetimeGrofit?">
+									<set_value name="global.$DALifetimeGrofit.{$Buyer}" exact="$Price * -1"/>
+								</do_elseif>
+								<do_if value="not global.$DATaterStartTimes.{$Buyer}?">
+									<set_value name="global.$DATaterStartTimes.{$Buyer}" exact="player.age"/>
+								</do_if>
+							</do_if>
+						</do_if>
+						<do_elseif value="$Seller.isoperational and $Seller.trueowner == faction.player and $Seller.isclass.ship and $Seller.defaultorder?">
+							<do_if value="((['TaterTrader','DeadTater'].indexof.{@$Seller.defaultorder.id}) or ((@$Seller.defaultorder.id == 'Assist') and (['TaterTrader','DeadTater'].indexof.{@$Seller.commander.defaultorder.id})))">
+								<do_if value="global.$DALifetimeGrofit.{$Seller}?">
+									<set_value name="global.$DALifetimeGrofit.{$Seller}" exact="$Price" operation="add"/>
+								</do_if>
+								<do_elseif value="global.$DALifetimeGrofit?">
+									<set_value name="global.$DALifetimeGrofit.{$Seller}" exact="$Price"/>
+								</do_elseif>
+								<do_if value="not global.$DATaterStartTimes.{$Seller}?">
+									<set_value name="global.$DATaterStartTimes.{$Seller}" exact="player.age"/>
+								</do_if>
+							</do_if>
+						</do_elseif>
+						<remove_value name="$Trade"/>
+						<remove_value name="$Buyer"/>
+						<remove_value name="$Seller"/>
+						<remove_value name="$Price"/>
 					</actions>
 				</cue>
 			</cues>
